@@ -1,0 +1,42 @@
+# Ignore Eclipse stuf
+# (https://github.com/github/gitignore/blob/master/Global/Eclipse.gitignore)
+
+.project
+.metadata
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PDT-specific
+.buildpath
+
+# Ignore NetBeans stuff
+# (https://github.com/github/gitignore/blob/master/Global/NetBeans.gitignore)
+
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# Ignore IntelliJ stuff
+# (https://github.com/github/gitignore/blob/master/Global/IntelliJ.gitignore)
+
+*.iml
+*.ipr
+*.iws
+.idea/
