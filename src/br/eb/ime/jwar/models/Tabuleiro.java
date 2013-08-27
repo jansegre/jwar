@@ -69,16 +69,55 @@ public class Tabuleiro {
         continentes.add(new Continente("Ásia", 7, omsk, dudinka, siberia, mongolia, tchita, vladivostok, orienteMedio, aral, india, vietna, china, japao));
         continentes.add(new Continente("Oceania", 2, sumatra, borneo, novaGuine, australia));
 
-        // Relações
+        // Fronteiras
 
-        alaska.addFronteira(mackenzie, vancouver);
+        alaska.addFronteira(mackenzie, vancouver, vladivostok);
         mackenzie.addFronteira(alaska, vancouver, mackenzie, ottawa, labrador, groelandia);
         vancouver.addFronteira(california, ottawa, mackenzie, alaska);
         ottawa.addFronteira(mackenzie, vancouver, labrador, california, novaYork);
         labrador.addFronteira(groelandia, ottawa, novaYork);
+        groelandia.addFronteira(mackenzie, labrador, islandia);
         california.addFronteira(mexico, novaYork, ottawa, vancouver);
+        novaYork.addFronteira(mexico, california, ottawa, labrador);
+        mexico.addFronteira(california, novaYork, colombia);
 
-        //TODO
+        colombia.addFronteira(mexico, chile, brasil);
+        chile.addFronteira(argentina, brasil, colombia);
+        argentina.addFronteira(chile, brasil);
+        brasil.addFronteira(argentina, chile, colombia, argelia);
+
+        argelia.addFronteira(portugal, egito, sudao, congo, brasil);
+        congo.addFronteira(argelia, africaDoSul, sudao);
+        africaDoSul.addFronteira(congo, sudao, madagascar);
+        madagascar.addFronteira(africaDoSul, sudao);
+        sudao.addFronteira(madagascar, africaDoSul, congo, argelia, egito);
+        egito.addFronteira(sudao, argelia, orienteMedio, polonia, portugal);
+
+        portugal.addFronteira(egito, argelia, inglaterra, alemanha, polonia);
+        inglaterra.addFronteira(portugal, alemanha, islandia, suecia);
+        islandia.addFronteira(groelandia, inglaterra, suecia);
+        alemanha.addFronteira(portugal, polonia, moscou, inglaterra);
+        suecia.addFronteira(inglaterra, moscou);
+        polonia.addFronteira(moscou, alemanha, portugal, orienteMedio);
+        moscou.addFronteira(suecia, polonia, orienteMedio, aral, omsk);
+
+        orienteMedio.addFronteira(egito, polonia, moscou, aral, india);
+        aral.addFronteira(india, orienteMedio, moscou, omsk, china);
+        omsk.addFronteira(moscou, dudinka, mongolia, china, aral);
+        dudinka.addFronteira(siberia, tchita, mongolia, omsk);
+        siberia.addFronteira(dudinka, tchita, vladivostok);
+        vladivostok.addFronteira(siberia, tchita, china, alaska);
+        japao.addFronteira(vladivostok, china);
+        tchita.addFronteira(dudinka, siberia, vladivostok, china, mongolia, omsk);
+        mongolia.addFronteira(omsk, dudinka, tchita, china);
+        china.addFronteira(aral, omsk, mongolia, vladivostok, japao, vietna, india);
+        india.addFronteira(orienteMedio, aral, china, vietna, sumatra);
+        vietna.addFronteira(india, china, borneo);
+
+        sumatra.addFronteira(india, australia);
+        australia.addFronteira(sumatra, borneo, novaGuine);
+        novaGuine.addFronteira(australia, borneo);
+        borneo.addFronteira(novaGuine, australia, vietna);
 
         return continentes;
     }
