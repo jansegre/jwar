@@ -1,0 +1,64 @@
+== Territories ==
+The following is a typical layout of the ''Risk'' game board, with a table of the corresponding continent and territory names.<ref>{{cite web | url = http://www.gamingcorner.nl/risk-territories.htm | title = Risk territories | work = The Gaming Corner | accessdate = 2006-05-12}}</ref> Each territory on the typical ''Risk'' game board represents a real-life geographical or political region on Earth. As such, the territory [[border]]s are drawn to resemble the geography of those regions. This provides an interior space on which to place the army units, adds an element of realism to the game, and also adds complexity.
+
+[[File:Risk game map fixed.png|thumb|none|1000px|A representation of the ''Risk'' game board, showing the different territories, an approximation of their borders, and an approximation of their usual coloring.]]
+
+The numbers in parentheses represent the number of additional armies granted during the reinforcement stage of a player's turn who controls all of the territories in that continent.
+{{Multicol}}
+; [[North America]] (5)
+# [[Alaska]]
+# [[Alberta]]<ref group="note" name="AltVerNames" />
+# [[Central America]]
+# [[Eastern United States]]
+# [[Greenland]]
+# [[Northwest Territories|Northwest Territory]]
+# [[Ontario]]<ref group="note" name="AltVerNames" />
+# [[Quebec]]<ref group="note" name="AltVerNames" />
+# [[Western United States]]
+; [[South America]] (2)
+# [[Argentina]]
+# [[Brazil]]
+# [[Peru]]
+# [[Venezuela]]
+{{Multicol-break}}
+; [[Europe]] (5)
+# [[Great Britain]]<ref group="note" name="AltVerNames" />
+# [[Iceland]]
+# [[Northern Europe]]
+# [[Scandinavia]]
+# [[Southern Europe]]
+# [[Ukraine]]<ref group="note" name="AltVerNames" />
+# [[Western Europe]]
+; [[Africa]] (3)
+# [[Congo Basin|Congo]]<ref group="note" name="AltVerNames" />
+# [[East Africa]]
+# [[Egypt]]
+# [[Madagascar]]
+# [[North Africa]]
+# [[Southern Africa|South Africa]]
+{{Multicol-break}}
+; [[Asia]] (7)
+# [[Afghanistan]]<ref group="note" name="Afghanistan" />
+# [[China]]
+# [[India]]<ref group="note" name="AltVerNames" />
+# [[Irkutsk Oblast|Irkutsk]]
+# [[Japan]]
+# [[Kamchatka]]
+# [[Middle East]]
+# [[Mongolia]]
+# [[Siam]]<ref group="note" name="AltVerNames" />
+# [[Siberia]]
+# [[Ural (region)|Ural]]
+# [[Sakha Republic|Yakutsk]]
+; [[Oceania|Australia]] (2)
+# [[Eastern states of Australia|Eastern Australia]]
+# [[Indonesia]]
+# [[New Guinea]]
+# [[Western Australia]]
+{{Multicol-end}}
+
+; Notes
+<references group="note">
+<ref name="AltVerNames">On some versions of the board, ''Alberta'', ''Ontario'', ''Quebec'', ''Great Britain'', ''Ukraine'', ''Congo'', ''India'', and ''Siam'' are known as ''Western Canada'', ''Central Canada'', ''Eastern Canada'', ''Great Britain & Ireland'', ''Eastern Europe'', ''Central Africa'', ''Hindustan'', ''Pakistan'', and ''Southeast Asia'', respectively. Not all variations occur concurrently.</ref>
+<ref name="Afghanistan">Note that the territory of Afghanistan does not include the real life country of Afghanistan.</ref>
+</references>
