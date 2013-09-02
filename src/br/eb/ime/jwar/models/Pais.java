@@ -1,13 +1,16 @@
 package br.eb.ime.jwar.models;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Pais {
+
     protected String nome;
     protected Set<Pais> fronteiras;
     protected int exercitos;
     protected Continente continente;
+    protected Jogador dono;
 
     public Pais(String nome_) {
         nome = nome_;
@@ -28,9 +31,16 @@ public class Pais {
         return exercitos;
     }
 
-    public void addFronteira(Pais ... paises) {
-        for (Pais pais: paises)
-            fronteiras.add(pais);
+    public void setDono(Jogador jogador) {
+        this.dono = jogador;
+    }
+
+    public Jogador getDono() {
+        return this.dono;
+    }
+
+    public void addFronteira(Pais... paises) {
+        fronteiras.addAll(Arrays.asList(paises));
     }
 
     public boolean fazFronteira(Pais pais) {

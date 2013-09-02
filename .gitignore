@@ -25,13 +25,15 @@ local.properties
 # Ignore NetBeans stuff
 # (https://github.com/github/gitignore/blob/master/Global/NetBeans.gitignore)
 
-nbproject/private/
+nbproject/
 build/
 nbbuild/
 dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
+nbbuild.xml
+manifest.mf
 
 # Ignore IntelliJ stuff
 # (https://github.com/github/gitignore/blob/master/Global/IntelliJ.gitignore)
