@@ -1,5 +1,5 @@
-all:
+all: maps
 
 .PHONY: maps
 maps:
-	topojson --id-property name -p -o webapp/maps/risk/world.json maps/risk/countries.shp
+	topojson --id-property id -p -o webapp/maps/risk/world.json maps/risk/countries.shp
