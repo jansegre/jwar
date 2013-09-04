@@ -42,3 +42,6 @@ manifest.mf
 *.ipr
 *.iws
 .idea/
+
+# Other ignores:
+/original_maps
