@@ -18,7 +18,7 @@
 .map svg {
     max-height: 10000px;
     max-width: 5200px;
-    margin-bottom: -6px;
+    margin-bottom: -5px;
 }
 
 .country {
@@ -174,8 +174,12 @@ var projections = [
         .translate([width / 2, height / 2 + 50]),
     d3.geo.miller()
         .scale(180)
-        .translate([width / 2, height / 2 + 40]),
+        .translate([width / 2, height / 2 + 50]),
     //4
+    d3.geo.equirectangular()
+        .scale(166)
+        .translate([width / 2, height / 2])
+        .precision(.1),
     d3.geo.naturalEarth()
         .scale(220)
         .translate([width / 2, height / 2 + 30])
@@ -188,6 +192,7 @@ var projections = [
         .scale(250)
         .translate([width / 2, height / 2])
         .clipAngle(92),
+    //8
     d3.geo.stereographic()
         .scale(245)
         .translate([width / 2, height / 2])
@@ -197,7 +202,7 @@ var projections = [
         .precision(.1)
 ]
 
-var projection = projections[3];
+var projection = projections[4];
 
 var color = d3.scale.category20();
 var graticule = d3.geo.graticule();
