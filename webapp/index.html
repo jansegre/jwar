@@ -23,14 +23,15 @@
 
 .country {
   fill: #999;
-  stroke: #eee;
+  stroke: #111;
+  stroke-opacity: .8;
   stroke-width: .5px;
   stroke-linejoin: round;
 }
 
 .graticule {
   fill: none;
-  stroke: #000;
+  stroke: #111;
   stroke-opacity: .1;
   stroke-width: .5px;
 }
@@ -69,18 +70,18 @@
 .country.EU.c1  { fill: #002abb; }
 .country.EU.c2  { fill: #0055da; }
 .country.EU.c3  { fill: #0692f0; }
-.country.EU.c4  { fill: #009bd5; }
+.country.EU.c4  { fill: #000f2b; }
 .country.EU.c5  { fill: #0082b8; }
 .country.EU.c6  { fill: #0069c9; }
-.country.NA.c0  { fill: #fae237; }
-.country.NA.c1  { fill: #ffd42a; }
+.country.NA.c0  { fill: #ff9b13; }
+.country.NA.c1  { fill: #e7d149; }
 .country.NA.c2  { fill: #ffe627; }
 .country.NA.c3  { fill: #eac42c; }
-.country.NA.c4  { fill: #f5d829; }
+.country.NA.c4  { fill: #e4a200; }
 .country.NA.c5  { fill: #ffed18; }
-.country.NA.c6  { fill: #ffd12c; }
-.country.NA.c7  { fill: #ffdc1a; }
-.country.NA.c8  { fill: #ebe812; }
+.country.NA.c6  { fill: #e4bb2c; }
+.country.NA.c7  { fill: #bb9000; }
+.country.NA.c8  { fill: #ffd600; }
 .country.SA.c0  { fill: #00940d; }
 .country.SA.c1  { fill: #00d211; }
 .country.SA.c2  { fill: #41a223; }
@@ -227,7 +228,6 @@ var φ = d3.scale.linear()
 
 map.on("click", function() {
   if (d3.event.defaultPrevented) return; // click suppressed
-  console.log("clicked!");
 });
 
 var dragthis;
