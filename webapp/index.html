@@ -18,11 +18,12 @@
 .map svg {
     max-height: 10000px;
     max-width: 5200px;
+    margin-bottom: -6px;
 }
 
 .country {
-  fill: #ccc;
-  stroke: #111;
+  fill: #999;
+  stroke: #eee;
   stroke-width: .5px;
   stroke-linejoin: round;
 }
@@ -34,84 +35,56 @@
   stroke-width: .5px;
 }
 
-.graticule.outline {
-  stroke: #333;
-  stroke-opacity: 1;
-  stroke-width: 1.5px;
+.outline {
+  fill: none;
+  stroke: #002;
+  stroke-opacity: .5;
+  stroke-width: .5px;
 }
 
-.country.SA0  { fill: #00dd00; }
-.country.SA1  { fill: #00cc00; }
-.country.SA2  { fill: #00bb00; }
-.country.SA3  { fill: #00aa00; }
-.country.SA4  { fill: #009900; }
-.country.SA5  { fill: #008800; }
-.country.SA6  { fill: #007700; }
-.country.SA7  { fill: #006600; }
-.country.SA8  { fill: #005500; }
-.country.SA9  { fill: #004400; }
-.country.SA10 { fill: #003300; }
-.country.SA11 { fill: #002200; }
-.country.NA0  { fill: #dddd00; }
-.country.NA1  { fill: #cccc00; }
-.country.NA2  { fill: #bbbb00; }
-.country.NA3  { fill: #aaaa00; }
-.country.NA4  { fill: #999900; }
-.country.NA5  { fill: #888800; }
-.country.NA6  { fill: #777700; }
-.country.NA7  { fill: #666600; }
-.country.NA8  { fill: #555500; }
-.country.NA9  { fill: #444400; }
-.country.NA10 { fill: #333300; }
-.country.NA11 { fill: #222200; }
-.country.EU0  { fill: #0000dd; }
-.country.EU1  { fill: #0000cc; }
-.country.EU2  { fill: #0000bb; }
-.country.EU3  { fill: #0000aa; }
-.country.EU4  { fill: #000099; }
-.country.EU5  { fill: #000088; }
-.country.EU6  { fill: #000077; }
-.country.EU7  { fill: #000066; }
-.country.EU8  { fill: #000055; }
-.country.EU9  { fill: #000044; }
-.country.EU10 { fill: #000033; }
-.country.EU11 { fill: #000022; }
-.country.AU0  { fill: #dd0000; }
-.country.AU1  { fill: #cc0000; }
-.country.AU2  { fill: #bb0000; }
-.country.AU3  { fill: #aa0000; }
-.country.AU4  { fill: #990000; }
-.country.AU5  { fill: #880000; }
-.country.AU6  { fill: #770000; }
-.country.AU7  { fill: #660000; }
-.country.AU8  { fill: #550000; }
-.country.AU9  { fill: #440000; }
-.country.AU10 { fill: #330000; }
-.country.AU11 { fill: #220000; }
-.country.AF0  { fill: #dd00dd; }
-.country.AF1  { fill: #cc00cc; }
-.country.AF2  { fill: #bb00bb; }
-.country.AF3  { fill: #aa00aa; }
-.country.AF4  { fill: #990099; }
-.country.AF5  { fill: #880088; }
-.country.AF6  { fill: #770077; }
-.country.AF7  { fill: #660066; }
-.country.AF8  { fill: #550055; }
-.country.AF9  { fill: #440044; }
-.country.AF10 { fill: #330033; }
-.country.AF11 { fill: #220022; }
-.country.AS0  { fill: #ffbb00; }
-.country.AS1  { fill: #eeaa00; }
-.country.AS2  { fill: #dd9900; }
-.country.AS3  { fill: #cc8800; }
-.country.AS4  { fill: #bb7700; }
-.country.AS5  { fill: #aa6600; }
-.country.AS6  { fill: #995500; }
-.country.AS7  { fill: #884400; }
-.country.AS8  { fill: #773300; }
-.country.AS9  { fill: #662200; }
-.country.AS10 { fill: #551100; }
-.country.AS11 { fill: #440000; }
+.country.AN.c0  { fill: #ffffff; }
+.country.AF.c0  { fill: #a407b7; }
+.country.AF.c1  { fill: #9418be; }
+.country.AF.c2  { fill: #7008b4; }
+.country.AF.c3  { fill: #8b05c5; }
+.country.AF.c4  { fill: #9700b2; }
+.country.AF.c5  { fill: #7d00af; }
+.country.AS.c0  { fill: #d76100; }
+.country.AS.c1  { fill: #ef5100; }
+.country.AS.c2  { fill: #db3500; }
+.country.AS.c3  { fill: #f14b05; }
+.country.AS.c4  { fill: #fb6c08; }
+.country.AS.c5  { fill: #ff8a1e; }
+.country.AS.c6  { fill: #ff8427; }
+.country.AS.c7  { fill: #ffb738; }
+.country.AS.c8  { fill: #ff7f1c; }
+.country.AS.c9  { fill: #ff5115; }
+.country.AS.c10 { fill: #ff8007; }
+.country.AS.c11 { fill: #ffa000; }
+.country.AU.c0  { fill: #c10003; }
+.country.AU.c1  { fill: #b40024; }
+.country.AU.c2  { fill: #690016; }
+.country.AU.c3  { fill: #9e0309; }
+.country.EU.c0  { fill: #0094ec; }
+.country.EU.c1  { fill: #002abb; }
+.country.EU.c2  { fill: #0055da; }
+.country.EU.c3  { fill: #0692f0; }
+.country.EU.c4  { fill: #009bd5; }
+.country.EU.c5  { fill: #0082b8; }
+.country.EU.c6  { fill: #0069c9; }
+.country.NA.c0  { fill: #fae237; }
+.country.NA.c1  { fill: #ffd42a; }
+.country.NA.c2  { fill: #ffe627; }
+.country.NA.c3  { fill: #eac42c; }
+.country.NA.c4  { fill: #f5d829; }
+.country.NA.c5  { fill: #ffed18; }
+.country.NA.c6  { fill: #ffd12c; }
+.country.NA.c7  { fill: #ffdc1a; }
+.country.NA.c8  { fill: #ebe812; }
+.country.SA.c0  { fill: #00940d; }
+.country.SA.c1  { fill: #00d211; }
+.country.SA.c2  { fill: #41a223; }
+.country.SA.c3  { fill: #19b512; }
 </style>
 
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -190,21 +163,17 @@ var svg = map.append("svg")
 var projections = [
     //0
     d3.geo.kavrayskiy7()
-        .scale(200)
-        .precision(.1),
+        .scale(200),
     d3.geo.eckert4()
         .scale(200)
-        .translate([width / 2, height / 2])
-        .precision(.1),
+        .translate([width / 2, height / 2]),
     d3.geo.cylindricalStereographic()
         .parallel(45)
         .scale(230)
-        .translate([width / 2, height / 2 + 50])
-        .precision(.1),
+        .translate([width / 2, height / 2 + 50]),
     d3.geo.miller()
         .scale(180)
-        .translate([width / 2, height / 2 + 40])
-        .precision(.1),
+        .translate([width / 2, height / 2 + 40]),
     //4
     d3.geo.naturalEarth()
         .scale(220)
@@ -217,7 +186,7 @@ var projections = [
     d3.geo.orthographic()
         .scale(250)
         .translate([width / 2, height / 2])
-        .clipAngle(90),
+        .clipAngle(92),
     d3.geo.stereographic()
         .scale(245)
         .translate([width / 2, height / 2])
@@ -238,10 +207,10 @@ svg.append("path")
     .attr("class", "graticule")
     .attr("d", path);
 
-//svg.append("path")
-//    .datum(graticule.outline)
-//    .attr("class", "graticule outline")
-//    .attr("d", path);
+svg.append("path")
+    .datum(graticule.outline)
+    .attr("class", "outline")
+    .attr("d", path);
 
 // helper functions to transform
 // screen positions on rotation coordinates
@@ -275,11 +244,21 @@ map.call(d3.behavior.drag()
         var r = [λ(m[0]) + window.lr[0], 0];
         //var r = [λ(m[0]) + window.lr[0], φ(m[1]) + window.lr[1]];
         projection.rotate(r);
-        svg.selectAll("path").attr("d", path);
+        svg.selectAll(".country,.graticule").attr("d", path);
     })
 );
 
 // loading the data
+
+var cont_sizes = {
+    AF: 6,
+    AS: 12,
+    AU: 4,
+    EU: 7,
+    NA: 9,
+    SA: 4,
+    AN: 1
+}
 
 d3.json("maps/risk/world.json", function(error, world) {
     var countries = topojson.feature(world, world.objects.countries).features,
@@ -289,7 +268,7 @@ d3.json("maps/risk/world.json", function(error, world) {
     svg.selectAll(".country")
         .data(countries)
         .enter().insert("path", ".graticule")
-        .attr("class", function(d, i) { return "country " + d.properties.cont + (d.id % 12); })
+        .attr("class", function(d, i) { return ["country", d.properties.cont , "c" + (d.id % window.cont_sizes[d.properties.cont])].join(" "); })
         .attr("d", path);
         //.style("fill", function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); });
 });
