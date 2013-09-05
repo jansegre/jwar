@@ -18,7 +18,20 @@
 .map svg {
     max-height: 10000px;
     max-width: 5200px;
-    margin-bottom: -5px;
+    margin-bottom: -4px;
+}
+
+.country-label {
+    display: block;
+    fill: #eee;
+    font-size: 10px;
+    font-weight: 300;
+    text-anchor: right;
+    filter: url(#shadow);
+}
+
+.country-label:hover, .country:hover {
+    cursor: pointer;
 }
 
 .country {
@@ -151,7 +164,7 @@
 <script src="js/d3.geo.projection.v0.min.js"></script>
 <script src="js/topojson.v1.min.js"></script>
 <script>
-var width = 1000, height = 520;
+var width = 1000, height = 500;
 
 var map = d3.select(".map");
 var svg = map.append("svg")
@@ -159,6 +172,19 @@ var svg = map.append("svg")
     .attr("preserveAspectRatio", "xMinYMin meet");
     //.attr("width", "100%")
     //.attr("height", height);
+var defs = svg.append("defs")
+
+var filter = defs.append("filter").attr("id", "shadow");
+{
+//filter.append("feGaussianBlur").attr("stdDeviation", .5);
+filter.append("feGaussianBlur")
+    .attr("in", "SourceAlpha")
+    .attr("stdDeviation", 1)
+    .attr("result", "blurred");
+var merge = filter.append("feMerge")
+merge.append("feMergeNode").attr("in", "blurred");
+merge.append("feMergeNode").attr("in", "SourceGraphic");
+}
 
 // Possible projections
 var projections = [
@@ -177,7 +203,8 @@ var projections = [
         .translate([width / 2, height / 2 + 50]),
     //4
     d3.geo.equirectangular()
-        .scale(166)
+        .scale(160)
+        .rotate([-10])
         .translate([width / 2, height / 2])
         .precision(.1),
     d3.geo.naturalEarth()
@@ -207,16 +234,21 @@ var projection = projections[4];
 var color = d3.scale.category20();
 var graticule = d3.geo.graticule();
 var path = d3.geo.path().projection(projection);
+//var transform = function(d) { return "translate(" + path.centroid(d) + ")"; }
+var transform = function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; }
 
 svg.append("path")
     .datum(graticule)
     .attr("class", "graticule")
     .attr("d", path);
 
+var _r = projection.rotate();
+projection.rotate([0]);
 svg.append("path")
     .datum(graticule.outline)
     .attr("class", "outline")
     .attr("d", path);
+projection.rotate(_r);
 
 // helper functions to transform
 // screen positions on rotation coordinates
@@ -250,6 +282,7 @@ map.call(d3.behavior.drag()
         //var r = [λ(m[0]) + window.lr[0], φ(m[1]) + window.lr[1]];
         projection.rotate(r);
         svg.selectAll(".country,.graticule").attr("d", path);
+        svg.selectAll(".country-label").attr("transform", transform);
     })
 );
 
@@ -267,7 +300,8 @@ var cont_sizes = {
 
 d3.json("maps/risk/world.json", function(error, world) {
     var countries = topojson.feature(world, world.objects.countries).features,
-        neighbors = topojson.neighbors(world.objects.countries.geometries);
+        neighbors = topojson.neighbors(world.objects.countries.geometries),
+        labels = topojson.feature(world, world.objects.labels).features;
     window.world = world;
 
     svg.selectAll(".country")
@@ -276,6 +310,21 @@ d3.json("maps/risk/world.json", function(error, world) {
         .attr("class", function(d, i) { return ["country", d.properties.cont , "c" + (d.id % window.cont_sizes[d.properties.cont])].join(" "); })
         .attr("d", path);
         //.style("fill", function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); });
+
+    //svg.selectAll(".country-label")
+    //    .data(countries)
+    //    .enter().append("text")
+    //    .attr("class", function(d) { return "country-label " + d.id; })
+    //    .attr("transform", transform)
+    //    .attr("dy", ".35em")
+    //    .text(function(d) { return d.properties.name; });
+    svg.selectAll(".country-label")
+        .data(labels)
+        .enter().append("text")
+        .attr("class", "country-label")
+        .attr("transform", transform)
+        .attr("dy", ".35em")
+        .text(function(d) { return d.properties.name; });
 });
 
 </script>
