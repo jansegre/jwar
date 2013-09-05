@@ -18,7 +18,6 @@
 
 package br.eb.ime.jwar.models;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,7 +32,7 @@ public class Continente {
         paises = new HashSet<>(paises_.length);
         for (Pais pais: paises_) {
             paises.add(pais);
-            pais.continente = this;
+            pais.setContinente(this);
         }
     }
 }

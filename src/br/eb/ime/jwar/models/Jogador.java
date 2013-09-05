@@ -18,6 +18,67 @@
 
 package br.eb.ime.jwar.models;
 
+import java.util.List;
+
 public class Jogador {
-    //TODO
+   
+    protected final Cor cor;
+    protected List<Pais> dominios;
+    protected List<Carta> cartas;
+    protected Objetivo objetivo;
+    
+    
+    public enum Cor{
+        azul,
+        amarelo,
+        vermelho,
+        verde,
+        branco,
+        preto
+    }
+    
+    
+    public Jogador(Cor cor)
+    {
+        this.cor = cor;
+    }
+    
+    public Cor getCor()
+    {
+        return this.cor;
+    }
+    
+    public void addCarta(Carta carta)
+    {
+        this.cartas.add(carta);
+    }
+    
+    public List<Carta> getCartas()
+    {
+        return this.cartas;
+    }
+    
+    public void addDominio(Pais pais)
+    {
+        this.dominios.add(pais);
+        pais.setDono(this);
+    }
+    
+    public List<Pais> getDominios()
+    {
+        return this.dominios;
+    }
+    
+    public void addObjetivo(Objetivo objetivo)
+    {
+        this.objetivo = objetivo;
+        objetivo.setDono(this);
+    }
+    
+    public Objetivo getObjetivo()
+    {
+        return this.objetivo;
+    }
+    
+    
 }

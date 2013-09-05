@@ -36,19 +36,29 @@ public class Pais {
         exercitos = 1;
         continente = null;
     }
+    
+    public void setContinente(Continente continente)
+    {
+        this.continente = continente;
+    }
 
     public String getNome() {
         return nome;
     }
 
+    // CHAMAR ESTE METODO PARA VERIFICAR SE UM ATAQUE EH POSSIVEL
     public Set<Pais> getFronteiras() {
         return fronteiras;
     }
 
+    // METODO PARA MUDAR O NUMERO DE EXERCITOS DE UM PAIS
     public int getExercitos() {
         return exercitos;
     }
 
+    // METODO PARA MUDAR O DONO DO PAIS,
+    // DURANTE O JOGO QUANDO UM PAIS MUDAR DE DONO
+    // CHAMAR ESTE METODO
     public void setDono(Jogador jogador) {
         this.dono = jogador;
     }
@@ -57,6 +67,7 @@ public class Pais {
         return this.dono;
     }
 
+    // CHAMAR ESTE METODO APENAS NA CONSTRUCAO DO JOGO
     public void addFronteira(Pais... paises) {
         fronteiras.addAll(Arrays.asList(paises));
     }
@@ -64,4 +75,6 @@ public class Pais {
     public boolean fazFronteira(Pais pais) {
         return fronteiras.contains(pais);
     }
+    
+    
 }

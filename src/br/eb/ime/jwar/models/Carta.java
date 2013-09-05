@@ -19,5 +19,33 @@
 package br.eb.ime.jwar.models;
 
 public class Carta {
-    //TODO
+
+    final protected Pais pais;
+
+    final protected Simbolo simbolo;
+    
+    public enum Simbolo {
+
+        quadrado,
+        circulo,
+        triangulo
+    }
+    
+    public Carta(Pais nome, Simbolo simbolo)
+    {
+        this.pais = nome;
+        this.simbolo = simbolo;
+    }
+    
+    public Pais getPais()
+    {
+        return this.pais;
+    }
+    
+    public Simbolo getSimbolo()
+    {
+        return this.simbolo;
+    }
+    
+    
 }
