@@ -45,3 +45,6 @@ manifest.mf
 
 # Other ignores:
 /original_maps
+/bower_components
+/target
+/out

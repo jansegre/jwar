@@ -1,0 +1,44 @@
+{
+  "name": "jwar",
+  "dist": [
+    "./dist/**"
+  ],
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "socket.io-client": "0.9.11",
+    "jquery": ">=1.9.0",
+    "d3": "~3.3.5",
+    "bootstrap": "~3.0",
+    "font-awesome": "~3.2",
+    "screenfull": "~1.1",
+    "momentjs": "~2.3.1"
+  },
+  "exportsOverride": {
+    "socket.io-client": {
+      "js": "dist/*"
+    },
+    "jquery": {
+      "js": "jquery.*"
+    },
+    "d3": {
+      "js": [
+        "*.js",
+        "*.map"
+      ]
+    },
+    "bootstrap": {
+      "js": "dist/js/*",
+      "css": "dist/css/*",
+      "fonts": "dist/fonts/*"
+    },
+    "font-awesome": {
+      "css": "css/*",
+      "font": "font/*"
+    },
+    "screenfull": {
+      "js": "dist/*.js"
+    }
+  }
+}
