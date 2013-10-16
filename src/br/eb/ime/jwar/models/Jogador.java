@@ -81,27 +81,27 @@ public class Jogador {
         return this.objetivo;
     }
     
-    void dados(int n_dados){
+    public void dados(int n_dados){
         Random gerador = new Random();
 
-		  for(int i = 0 ; i<n_dados ;i++){
-			   int aux = gerador.nextInt(6)+1;
-			   System.out.print(aux + " ");
-		  }
-
-		  System.out.print("\n");
+	for(int i = 0 ; i<n_dados ;i++){
+		int aux = gerador.nextInt(6)+1;
+		System.out.print(aux + " ");
 	}
 
-	void addExercitos(int n, Pais p){
-		int n_max_exercito = 10;
+	System.out.print("\n");
+    }
 
-		if(p.exercitos + n > n_max_exercito) p.exercitos = n_max_exercito;
+    public void addExercitos(int n, Pais p){
+	int n_max_exercito = 10;
 
-		else	p.exercitos += n;
-	}
+	if(p.exercitos + n > n_max_exercito) p.exercitos = n_max_exercito;
 
-	void removeExercitos(int n, Pais p){
-		if(p.exercitos < n) p.exercitos = 0;
-		else p.exercitos -= n;
-	}
+	else	p.exercitos += n;
+    }
+
+    public void removeExercitos(int n, Pais p){
+	if(p.exercitos < n) p.exercitos = 0;
+	else p.exercitos -= n;
+    }
 }
