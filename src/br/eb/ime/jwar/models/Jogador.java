@@ -19,6 +19,7 @@
 package br.eb.ime.jwar.models;
 
 import java.util.List;
+import java.util.Random;
 
 public class Jogador {
    
@@ -80,5 +81,27 @@ public class Jogador {
         return this.objetivo;
     }
     
-    
+    void dados(int n_dados){
+        Random gerador = new Random();
+
+		  for(int i = 0 ; i<n_dados ;i++){
+			   int aux = gerador.nextInt(6)+1;
+			   System.out.print(aux + " ");
+		  }
+
+		  System.out.print("\n");
+	}
+
+	void addExercitos(int n, Pais p){
+		int n_max_exercito = 10;
+
+		if(p.exercitos + n > n_max_exercito) p.exercitos = n_max_exercito;
+
+		else	p.exercitos += n;
+	}
+
+	void removeExercitos(int n, Pais p){
+		if(p.exercitos < n) p.exercitos = 0;
+		else p.exercitos -= n;
+	}
 }
