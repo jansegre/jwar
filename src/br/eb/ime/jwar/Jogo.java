@@ -17,7 +17,38 @@
  */
 
 package br.eb.ime.jwar;
+import java.util.*;
 
 public class Jogo {
-    //TODO
+	void dados(int n_dados){
+		Random gerador = new Random();
+
+		for(int i = 0 ; i<n_dados ;i++){
+			int aux = gerador.nextInt(6)+1;
+			System.out.print(aux + " ");
+		}
+
+		System.out.print("\n");
+	}
+
+	void add_exercitos(int n, Pais p){
+		int n_max_exercito = 10;
+
+		if(p.n_exercitos + n > n_max_exercito) p.n_exercitos = n_max_exercito;
+
+		else	p.n_exercitos += n;
+	}
+
+	void remove_exercitos(int n, Pais p){
+		if(p.n_exercitos < n) p.n_exercitos = 0;
+		else p.n_exercitos -= n;
+	}
+}
+
+class Pais{
+	int n_exercitos;
+
+	Pais(int n){
+		n_exercitos = n;
+	}
 }
