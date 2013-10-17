@@ -17,7 +17,8 @@
  */
 
 package br.eb.ime.jwar;
+import java.util.*;
 
 public class Jogo {
-    //TODO
+
 }
