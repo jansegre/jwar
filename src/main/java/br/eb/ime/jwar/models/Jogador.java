@@ -65,6 +65,11 @@ public class Jogador {
         pais.setDono(this);
     }
     
+    public void removeDominio(Pais pais)
+    {
+        this.dominios.remove(pais);
+    }
+    
     public List<Pais> getDominios()
     {
         return this.dominios;
