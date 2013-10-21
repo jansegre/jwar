@@ -69,13 +69,14 @@ public class Jogo {
     }
 
     //mudar dono do país
-    public void mudarDono( Jogador donoNovo, Pais pais) {
+     public void mudarDono( Jogador donoNovo, Pais pais) {
         Jogador donoAntigo = pais.getDono();
         if (null != donoAntigo) {
             donoAntigo.removeDominio(pais);
         }
         donoNovo.addDominio(pais);
     }
+
 
     public void jogarDados(int n_dados) {
         Random gerador = new Random();
@@ -87,4 +88,18 @@ public class Jogo {
 
         System.out.print("\n");
     }
+    
+    public void alterarExercitos(int n, Jogador jogador, Pais pais)
+    {
+        if(n > 0)
+        {
+            jogador.addExercitos(n, pais);
+        }
+        else
+        {
+            jogador.removeExercitos(n, pais);
+        }
+        
+    }
+    
 }

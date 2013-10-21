@@ -54,10 +54,6 @@ public class Jogador {
     }
 
     public void addDominio(Pais pais) {
-        Jogador donoAntigo = pais.getDono();
-        if (null != donoAntigo) {
-            donoAntigo.removeDominio(pais);
-        }
         this.dominios.add(pais);
         pais.setDono(this);
     }
