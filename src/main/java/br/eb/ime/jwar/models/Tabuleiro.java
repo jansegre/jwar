@@ -22,9 +22,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Tabuleiro {
-    //TODO
-
-    private static Set<Continente> mundoWarS() {
+    
+   public static Set<Continente> mundoWarS() {
         Set<Continente> continentes = new HashSet<>();
 
         // Países

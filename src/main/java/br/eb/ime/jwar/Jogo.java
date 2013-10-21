@@ -17,18 +17,37 @@
  */
 
 package br.eb.ime.jwar;
+import br.eb.ime.jwar.models.Continente;
 import br.eb.ime.jwar.models.Jogador;
+import br.eb.ime.jwar.models.Jogador.Cor;
 import br.eb.ime.jwar.models.Pais;
+import br.eb.ime.jwar.models.Tabuleiro;
+
 import java.util.*;
 
 public class Jogo {
+    
+        public List<Jogador> jogadores;
+        public Set<Continente> continentes;
+    
+        public Jogo(int numJogadores, List<Cor> cores)
+        {
+            continentes = Tabuleiro.mundoWarS();
+            for (int i = 0; i < numJogadores; i++) {
+             jogadores.add(new Jogador(cores.get(i))); 
+            }
+            this.distribuirPaises(numJogadores);
+        }
+    
+    
         //distribuir países
         private boolean distribuirPaises(int numJogadores){
             int paisesPorJogador;
             paisesPorJogador = 42/numJogadores;
             List paises = new ArrayList();
-            
+            //paises.add(Tabuleiro.alaska);
             //popular lista
+            /*
             paises.add("Alaska");
             paises.add("Mackenzie");
             paises.add("Groelandia");
@@ -77,6 +96,16 @@ public class Jogo {
             paises.add("Nova Guiné");
             paises.add("Austrália");
             
+            */
+            
+            while(continentes.iterator().hasNext()) {
+                while(continentes.iterator().next().getPaises().iterator().hasNext()) {
+                    paises.add(continentes.iterator().next().getPaises().iterator().next());
+                }
+                
+            }
+            
+            
             //shuffle
             Collections.shuffle(paises);
             
@@ -98,4 +127,6 @@ public class Jogo {
             donoNovo.addDominio(pais);
             donoAntigo.removeDominio(pais);
         }
+                            
+          
 }

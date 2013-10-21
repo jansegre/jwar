@@ -35,4 +35,10 @@ public class Continente {
             pais.setContinente(this);
         }
     }
+    
+    
+    public Set<Pais> getPaises()
+    {
+        return paises;
+    }
 }
