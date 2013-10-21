@@ -15,21 +15,20 @@
  * along with this program.
  *
  */
-
 package br.eb.ime.jwar.models;
 
 import java.util.List;
 import java.util.Random;
 
 public class Jogador {
-   
+
     protected final Cor cor;
     protected List<Pais> dominios;
     protected List<Carta> cartas;
     protected Objetivo objetivo;
-    
-    
-    public enum Cor{
+
+    public enum Cor {
+
         azul,
         amarelo,
         vermelho,
@@ -37,76 +36,64 @@ public class Jogador {
         branco,
         preto
     }
-    
-    
-    public Jogador(Cor cor)
-    {
+
+    public Jogador(Cor cor) {
         this.cor = cor;
     }
-    
-    public Cor getCor()
-    {
+
+    public Cor getCor() {
         return this.cor;
     }
-    
-    public void addCarta(Carta carta)
-    {
+
+    public void addCarta(Carta carta) {
         this.cartas.add(carta);
     }
-    
-    public List<Carta> getCartas()
-    {
+
+    public List<Carta> getCartas() {
         return this.cartas;
     }
-    
-    public void addDominio(Pais pais)
-    {
+
+    public void addDominio(Pais pais) {
+        Jogador donoAntigo = pais.getDono();
+        if (null != donoAntigo) {
+            donoAntigo.removeDominio(pais);
+        }
         this.dominios.add(pais);
         pais.setDono(this);
     }
-    
-    public void removeDominio(Pais pais)
-    {
+
+    public void removeDominio(Pais pais) {
         this.dominios.remove(pais);
     }
-    
-    public List<Pais> getDominios()
-    {
+
+    public List<Pais> getDominios() {
         return this.dominios;
     }
-    
-    public void addObjetivo(Objetivo objetivo)
-    {
+
+    public void addObjetivo(Objetivo objetivo) {
         this.objetivo = objetivo;
         objetivo.setDono(this);
     }
-    
-    public Objetivo getObjetivo()
-    {
+
+    public Objetivo getObjetivo() {
         return this.objetivo;
     }
-    
-    public void dados(int n_dados){
-        Random gerador = new Random();
 
-	for(int i = 0 ; i<n_dados ;i++){
-		int aux = gerador.nextInt(6)+1;
-		System.out.print(aux + " ");
-	}
+    public void addExercitos(int n, Pais p) {
+        int n_max_exercito = 10;
 
-	System.out.print("\n");
+        if (p.exercitos + n > n_max_exercito) {
+            p.exercitos = n_max_exercito;
+        } else {
+            p.exercitos += n;
+        }
     }
 
-    public void addExercitos(int n, Pais p){
-	int n_max_exercito = 10;
-
-	if(p.exercitos + n > n_max_exercito) p.exercitos = n_max_exercito;
-
-	else	p.exercitos += n;
-    }
-
-    public void removeExercitos(int n, Pais p){
-	if(p.exercitos < n) p.exercitos = 0;
-	else p.exercitos -= n;
+    public void removeExercitos(int n, Pais p) {
+        if (p.exercitos < n) {
+            p.exercitos = 0;
+        } else {
+            p.exercitos -= n;
+        }
     }
 }

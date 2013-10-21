@@ -116,7 +116,7 @@ public class Tabuleiro {
         alemanha.addFronteira(portugal, polonia, moscou, inglaterra);
         suecia.addFronteira(inglaterra, moscou);
         polonia.addFronteira(moscou, alemanha, portugal, orienteMedio);
-        moscou.addFronteira(suecia, polonia, orienteMedio, aral, omsk);
+        moscou.addFronteira(suecia, polonia, orienteMedio, aral, omsk, alemanha);
 
         orienteMedio.addFronteira(egito, polonia, moscou, aral, india);
         aral.addFronteira(india, orienteMedio, moscou, omsk, china);
@@ -135,6 +135,123 @@ public class Tabuleiro {
         australia.addFronteira(sumatra, borneo, novaGuine);
         novaGuine.addFronteira(australia, borneo);
         borneo.addFronteira(novaGuine, australia, vietna);
+
+        return continentes;
+    }
+   
+   
+    public static Set<Continente> mundoRisk() {
+        Set<Continente> continentes = new HashSet<>();
+
+        // Países
+
+        Pais alaska = new Pais("Alaska");
+        Pais northwestTerritory = new Pais("Northwest Territory");
+        Pais greenland = new Pais("Greenland");
+        Pais alberta = new Pais("Alberta");
+        Pais ontario = new Pais("Ontario");
+        Pais quebec = new Pais("Quebec");
+        Pais westernUnitedStates = new Pais("Western United States");
+        Pais esternUnitedStates = new Pais("Estern United States");
+        Pais centralAmerica = new Pais("Central America");
+
+        Pais venezuela = new Pais("Venezuela");
+        Pais peru = new Pais("Peru");
+        Pais brasil = new Pais("Brasil");
+        Pais argentina = new Pais("Argentina");
+
+        Pais eastAfrica = new Pais("East Africa");
+        Pais egypt = new Pais("Egypt");
+        Pais northAfrica = new Pais("North Africa");
+        Pais congo = new Pais("Congo");
+        Pais southAfrica = new Pais("South Africa");
+        Pais madagascar = new Pais("Madagascar");
+
+        Pais scandinavia = new Pais("Scandinavia");
+        Pais iceland = new Pais("Iceland");
+        Pais ukraine = new Pais("Ukraine");
+        Pais northenEurope = new Pais("Northen Europe");
+        Pais granBritain = new Pais("Gran Britain");
+        Pais westernEurope = new Pais("Western Europe");
+        Pais southernEurope = new Pais("Southern Europe");
+
+        Pais ural = new Pais("Ural");
+        Pais afghanistan = new Pais("Afghanistan");
+        Pais middleEast = new Pais("Middle East");
+        Pais yakutsk = new Pais("Yakutsk");
+        Pais irkutsk = new Pais("Irkutsk");
+        Pais kamchatka = new Pais("Kamchatka");
+        Pais mongolia = new Pais("Mongolia");
+        Pais siberia = new Pais("Siberia");
+        Pais india = new Pais("Índia");
+        Pais siam = new Pais("Siam");
+        Pais china = new Pais("China");
+        Pais japan = new Pais("Japãn");
+
+        Pais indonesia = new Pais("Indonesia");
+        Pais easternAustralia = new Pais("Eastern Australia");
+        Pais newGuine = new Pais("New Guiné");
+        Pais weasternAustralia = new Pais("Weastern Australia");
+
+
+        // Continentes
+
+        continentes.add(new Continente("América do Norte", 5, alaska, northwestTerritory, greenland, alberta, ontario, quebec, westernUnitedStates, esternUnitedStates, centralAmerica));
+        continentes.add(new Continente("América do Sul", 2, venezuela, peru, brasil, argentina));
+        continentes.add(new Continente("África", 3, egypt, northAfrica, eastAfrica, congo, southAfrica ,madagascar));
+        continentes.add(new Continente("Europa", 5, iceland, granBritain, ukraine, northenEurope, scandinavia, westernEurope, southernEurope));
+        continentes.add(new Continente("Ásia", 7, ural, afghanistan, middleEast, mongolia, india, siberia, irkutsk, yakutsk, india, kamchatka, china, japan));
+        continentes.add(new Continente("Oceania", 2, indonesia, newGuine, weasternAustralia, easternAustralia));
+
+        // Fronteiras
+
+        alaska.addFronteira(kamchatka, northwestTerritory, alberta);
+        northwestTerritory.addFronteira(alaska, alberta, ontario,greenland);
+        greenland.addFronteira(northwestTerritory, quebec, iceland);
+        alberta.addFronteira(alaska, northwestTerritory, ontario, westernUnitedStates);
+        ontario.addFronteira(northwestTerritory, alberta, quebec, esternUnitedStates, westernUnitedStates);
+        quebec.addFronteira(greenland, esternUnitedStates, ontario);
+        westernUnitedStates.addFronteira(centralAmerica, ontario, alberta, esternUnitedStates);
+        esternUnitedStates.addFronteira(westernUnitedStates, centralAmerica, quebec, ontario);
+        centralAmerica.addFronteira(westernUnitedStates, esternUnitedStates, venezuela);
+
+        venezuela.addFronteira(centralAmerica, peru, brasil);
+        peru.addFronteira(argentina, brasil, venezuela);
+        argentina.addFronteira(peru, brasil);
+        brasil.addFronteira(argentina, peru, venezuela, northAfrica);
+
+        northAfrica.addFronteira(westernEurope, southernEurope, egypt, congo, eastAfrica, brasil);
+        congo.addFronteira(northAfrica, southAfrica, eastAfrica);
+        southAfrica.addFronteira(congo, eastAfrica, madagascar);
+        madagascar.addFronteira(southAfrica, eastAfrica);
+        eastAfrica.addFronteira(madagascar, southAfrica, congo, northAfrica, egypt);
+        egypt.addFronteira(northAfrica, eastAfrica, middleEast, southernEurope, westernEurope);
+
+        westernEurope.addFronteira(egypt, northAfrica, granBritain, northenEurope, southernEurope);
+        granBritain.addFronteira(iceland, scandinavia, westernEurope, northenEurope);
+        iceland.addFronteira(greenland, granBritain);
+        scandinavia.addFronteira(ukraine, granBritain);
+        northenEurope.addFronteira(granBritain, ukraine, southernEurope, westernEurope);
+        southernEurope.addFronteira(ukraine, northenEurope, westernEurope, middleEast, egypt);
+        ukraine.addFronteira(scandinavia, northenEurope, southernEurope, ural, afghanistan, middleEast);
+
+        middleEast.addFronteira(egypt, southernEurope, ukraine, afghanistan, india);
+        ural.addFronteira(afghanistan, ukraine, siberia, china);
+        afghanistan.addFronteira(ukraine, ural, india, china, middleEast);
+        siberia.addFronteira(ural, china, mongolia, irkutsk, yakutsk);
+        yakutsk.addFronteira(siberia, irkutsk, kamchatka);
+        irkutsk.addFronteira(siberia, yakutsk , china, mongolia);
+        japan.addFronteira(kamchatka, china);
+        kamchatka.addFronteira(yakutsk, irkutsk, mongolia, japan, alaska);
+        mongolia.addFronteira(siberia, irkutsk, kamchatka, china);
+        china.addFronteira(ural, afghanistan, india, siam, japan, mongolia, siberia);
+        india.addFronteira(middleEast, afghanistan, china, siam, indonesia);
+        siam.addFronteira(india, china, newGuine);
+
+        indonesia.addFronteira(india, weasternAustralia);
+        easternAustralia.addFronteira(indonesia, weasternAustralia, newGuine);
+        newGuine.addFronteira(easternAustralia, weasternAustralia, siam);
+        weasternAustralia.addFronteira(easternAustralia, newGuine);
 
         return continentes;
     }

@@ -15,8 +15,8 @@
  * along with this program.
  *
  */
-
 package br.eb.ime.jwar;
+
 import br.eb.ime.jwar.models.Continente;
 import br.eb.ime.jwar.models.Jogador;
 import br.eb.ime.jwar.models.Jogador.Cor;
@@ -26,53 +26,80 @@ import br.eb.ime.jwar.models.Tabuleiro;
 import java.util.*;
 
 public class Jogo {
+
+    public List<Jogador> jogadores;
+    public Set<Continente> continentes;
+
+    public Jogo(int numJogadores, List<Cor> cores) {
+        continentes = Tabuleiro.mundoWarS();
+        for (int i = 0; i < numJogadores; i++) {
+            jogadores.add(new Jogador(cores.get(i)));
+        }
+        this.distribuirPaises(numJogadores);
+    }
+
+    //distribuir países
+    private boolean distribuirPaises(int numJogadores) {
+        int paisesPorJogador;
+        paisesPorJogador = 42 / numJogadores;
+        List paises = new ArrayList();
+
+        //popular lista
+        Iterator iteratorContinentes = continentes.iterator();
+        while (iteratorContinentes.hasNext()) {
+            Iterator iteratorPaises = continentes.iterator().next().getPaises().iterator();
+            while (iteratorPaises.hasNext()) {
+                iteratorPaises.next();
+            }
+        }
+
+        //shuffle
+        Collections.shuffle(paises);
+
+        //distribuir
+        for (int i = 0, j = 0; i < 42 && j < numJogadores; i++) {
+            //atribuir pais ao jogador (setDono no pais feito junto)
+            jogadores.get(j).addDominio((Pais) paises.get(i));
+            if ((i + 1) % paisesPorJogador == 0) {
+                j++;
+            }
+        }
+        return true;
+
+    }
+
+    //mudar dono do país
+    public void mudarDono(Jogador donoAntigo, Jogador donoNovo, Pais pais) {
+        donoNovo.addDominio(pais);
+        donoAntigo.removeDominio(pais);
+    }
+
+    public void jogarDados(int n_dados) {
+        Random gerador = new Random();
+
+        for (int i = 0; i < n_dados; i++) {
+            int aux = gerador.nextInt(6) + 1;
+            System.out.print(aux + " ");
+        }
+
+        System.out.print("\n");
+    }
     
-        public List<Jogador> jogadores;
-        public Set<Continente> continentes;
-    
-        public Jogo(int numJogadores, List<Cor> cores)
+    public void alterarExercitos(int n, Jogador jogador, Pais pais)
+    {
+        if(n > 0)
         {
-            continentes = Tabuleiro.mundoWarS();
-            for (int i = 0; i < numJogadores; i++) {
-             jogadores.add(new Jogador(cores.get(i))); 
-            }
-            this.distribuirPaises(numJogadores);
+            jogador.addExercitos(n, pais);
         }
-    
-    
-        //distribuir países
-        private boolean distribuirPaises(int numJogadores){
-            int paisesPorJogador;
-            paisesPorJogador = 42/numJogadores;
-            List paises = new ArrayList();
-            
-            //popular lista
-            while(continentes.iterator().hasNext()) {
-                while(continentes.iterator().next().getPaises().iterator().hasNext()) {
-                    paises.add(continentes.iterator().next().getPaises().iterator().next());
-                }
-            }
-            
-            //shuffle
-            Collections.shuffle(paises);
-            
-            //distribuir
-            for(int i = 0, j = 0; i<42 && j<numJogadores; i++){
-                //atribuir pais ao jogador (setDono no pais feito junto)
-                jogadores.get(j).addDominio((Pais)paises.get(i));
-                if((i+1)%paisesPorJogador == 0)
-                    j++;
-            }
-            return true;
+        else
+        {
+            jogador.removeExercitos(n, pais);
+        }
         
-        }
+    }
     
-        //mudar dono do país
-        
-        public void mudarDono(Jogador donoAntigo, Jogador donoNovo, Pais pais){
-            donoNovo.addDominio(pais);
-            donoAntigo.removeDominio(pais);
-        }
-                            
-          
+    public void trocaDominio(Jogador jogador, Pais pais)
+    {
+        jogador.addDominio(pais);
+    }
 }
