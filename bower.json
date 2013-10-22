@@ -12,8 +12,7 @@
     "d3": "~3.3.5",
     "bootstrap": "~3.0",
     "font-awesome": "~3.2",
-    "screenfull": "~1.1",
-    "momentjs": "~2.3.1"
+    "screenfull": "~1.1"
   },
   "exportsOverride": {
     "socket.io-client": {

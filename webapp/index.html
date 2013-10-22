@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- vim: et sw=2 ts=2 sts=2
+  -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="">
@@ -12,12 +14,20 @@
 
 <!-- Custom styles for this template -->
 <style>
+.jwar .well {
+    padding: 0;
+}
+
+.jwar .panel-footer {
+    background: white;
+}
+
 .map {
     padding: 0;
 }
 .map svg {
     max-height: 10000px;
-    max-width: 5200px;
+    max-width: 5000px;
     margin-bottom: -4px;
 }
 
@@ -107,6 +117,27 @@
 .country.SA.c1  { fill: #00d211; }
 .country.SA.c2  { fill: #41a223; }
 .country.SA.c3  { fill: #19b512; }
+
+/* chat styles */
+.chat-user {
+  font-weight: bold;
+}
+
+.chat-user:after {
+  content: ": ";
+}
+
+.chat-log {
+  padding: 5px 10px 5px;
+}
+
+@media (min-width: 768px) {
+  .chat-form .form-group {
+    width: 500px;
+  }
+}
+
+
 </style>
 
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -119,19 +150,17 @@
 <div class="navbar navbar-default navbar-static-top">
   <div class="container">
     <div class="navbar-header">
-      <!--
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      -->
       <a class="navbar-brand" href="#">JWar</a>
     </div>
-    <!--
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">Home</a></li>
+        <!--
         <li><a href="#about">About</a></li>
         <li><a href="#contact">Contact</a></li>
         <li class="dropdown">
@@ -146,19 +175,41 @@
             <li><a href="#">One more separated link</a></li>
           </ul>
         </li>
+        -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li class="active"><a href="#">Fixed top</a></li>
+        <li><a href="#"><i class="glyphicon glyphicon-remove"></i> Quit</a></li>
       </ul>
     </div>
-    -->
   </div>
 </div>
 
-<div class="container">
+<div class="container jwar">
 
   <!-- Main component for a primary marketing message or call to action -->
+  <!--
   <div class="well map"></div>
+  -->
+  <div class="panel panel-default well">
+    <div class="panel-body map"></div>
+    <div class="panel-footer">
+      <span class="label label-default selected-country">&nbsp;</span>
+    </div>
+  </div>
+
+  <!-- chat -->
+  <div class="chat well">
+    <!--<h4>Chat</h4>-->
+    <div class="console">
+    </div>
+
+    <form class="form-inline chat-form" role="form">
+      <div class="form-group">
+        <input class="msg form-control" type="text" placeholder="Digite sua mensagem...">
+      </div>
+      <input type="submit" class="btn btn-default" value="Enviar">
+    </form>
+  </div>
 
 </div> <!-- /container -->
 
@@ -181,6 +232,7 @@ var svg = map.append("svg")
     //.attr("width", "100%")
     //.attr("height", height);
 var defs = svg.append("defs")
+var selected_country = d3.select(".selected-country");
 
 var filter = defs.append("filter").attr("id", "shadow");
 (function() {
@@ -249,7 +301,6 @@ svg.append("path")
     .attr("class", "graticule")
     .attr("d", path);
 
-var _r = projection.rotate();
 svg.append("path")
     .datum(graticule.outline)
     .attr("class", "outline")
@@ -268,8 +319,8 @@ var φ = d3.scale.linear()
 
 // the drag
 
-map.on("click", function() {
-  if (d3.event.defaultPrevented) return; // click suppressed
+map.on("click", function(d,i) {
+  //if (d3.event.defaultPrevented) return; // click suppressed
 });
 
 var dragthis;
@@ -331,6 +382,55 @@ d3.json("maps/risk/world.json", function(error, world) {
         .attr("dy", ".35em")
         .attr("data-country", function(d) { return d.properties.CC })
         .text(function(d) { return d.properties.NAME; });
+
+    svg.selectAll(".country,.country-label")
+        .on("click", function(d,i) {
+            selected_country
+                .html(d.properties.NAME);
+        });
 });
 
+</script>
+<!-- chat example -->
+<script src="js/socket.io/socket.io.js"></script>
+<script>
+(function() {
+  var _ns = 'br.eb.ime.jwar.webapi.';
+  var user = 'Usuário ' + Math.floor((Math.random()*1000)+1);
+  console.log(user);
+  var chatSocket =  io.connect('http://localhost:9092/chat');
+
+  chatSocket.on('connect', function () {
+    console.log("Connected to the server!");
+  });
+
+  chatSocket.on('disconnect', function () {
+    console.log("Disconnected from server!");
+  });
+
+  chatSocket.on('message', function (data) {
+    var chat_log = $('<div>').addClass("chat-log");
+    if (data.user)
+      chat_log.append($("<span>").addClass("chat-user").text(data.user));
+    if (data.message)
+      chat_log.append($("<span>").addClass("chat-message").text(data.message))
+    $('.chat .console').append(chat_log);
+  });
+
+  $(".chat-form").on('submit', function (e) {
+    e.preventDefault();
+
+    // get the message and clear the form
+    var message = $('.chat-form .msg').val();
+    $('.chat-form .msg').val('');
+
+    //console.log(user + ": " + message);
+    chatSocket.json.send({
+      '@class': _ns + 'ChatObject',
+      user: user,
+      message: message
+    });
+    //chatSocket.emit('chatevent', {user: user, message: message});
+  });
+})();
 </script>
