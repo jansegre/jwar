@@ -26,19 +26,18 @@ public class Continente {
     final protected int bonus;
     protected Set<Pais> paises;
 
-    public Continente(String nome_, int bonus_, Pais ... paises_) {
+    public Continente(String nome_, int bonus_, Pais... paises_) {
         nome = nome_;
         bonus = bonus_;
         paises = new HashSet<>(paises_.length);
-        for (Pais pais: paises_) {
+        for (Pais pais : paises_) {
             paises.add(pais);
             pais.setContinente(this);
         }
     }
-    
-    
-    public Set<Pais> getPaises()
-    {
+
+
+    public Set<Pais> getPaises() {
         return paises;
     }
 }

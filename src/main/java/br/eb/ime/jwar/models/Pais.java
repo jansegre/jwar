@@ -36,9 +36,8 @@ public class Pais {
         exercitos = 1;
         continente = null;
     }
-    
-    public void setContinente(Continente continente)
-    {
+
+    public void setContinente(Continente continente) {
         this.continente = continente;
     }
 
@@ -75,6 +74,6 @@ public class Pais {
     public boolean fazFronteira(Pais pais) {
         return fronteiras.contains(pais);
     }
-    
-    
+
+
 }

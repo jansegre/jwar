@@ -22,8 +22,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Tabuleiro {
-    
-   public static Set<Continente> mundoWarS() {
+
+    public static Set<Continente> mundoWarS() {
         Set<Continente> continentes = new HashSet<>();
 
         // Países
@@ -138,8 +138,8 @@ public class Tabuleiro {
 
         return continentes;
     }
-   
-   
+
+
     public static Set<Continente> mundoRisk() {
         Set<Continente> continentes = new HashSet<>();
 
@@ -198,7 +198,7 @@ public class Tabuleiro {
 
         continentes.add(new Continente("América do Norte", 5, alaska, northwestTerritory, greenland, alberta, ontario, quebec, westernUnitedStates, esternUnitedStates, centralAmerica));
         continentes.add(new Continente("América do Sul", 2, venezuela, peru, brasil, argentina));
-        continentes.add(new Continente("África", 3, egypt, northAfrica, eastAfrica, congo, southAfrica ,madagascar));
+        continentes.add(new Continente("África", 3, egypt, northAfrica, eastAfrica, congo, southAfrica, madagascar));
         continentes.add(new Continente("Europa", 5, iceland, granBritain, ukraine, northenEurope, scandinavia, westernEurope, southernEurope));
         continentes.add(new Continente("Ásia", 7, ural, afghanistan, middleEast, mongolia, india, siberia, irkutsk, yakutsk, india, kamchatka, china, japan));
         continentes.add(new Continente("Oceania", 2, indonesia, newGuine, weasternAustralia, easternAustralia));
@@ -206,7 +206,7 @@ public class Tabuleiro {
         // Fronteiras
 
         alaska.addFronteira(kamchatka, northwestTerritory, alberta);
-        northwestTerritory.addFronteira(alaska, alberta, ontario,greenland);
+        northwestTerritory.addFronteira(alaska, alberta, ontario, greenland);
         greenland.addFronteira(northwestTerritory, quebec, iceland);
         alberta.addFronteira(alaska, northwestTerritory, ontario, westernUnitedStates);
         ontario.addFronteira(northwestTerritory, alberta, quebec, esternUnitedStates, westernUnitedStates);
@@ -240,7 +240,7 @@ public class Tabuleiro {
         afghanistan.addFronteira(ukraine, ural, india, china, middleEast);
         siberia.addFronteira(ural, china, mongolia, irkutsk, yakutsk);
         yakutsk.addFronteira(siberia, irkutsk, kamchatka);
-        irkutsk.addFronteira(siberia, yakutsk , china, mongolia);
+        irkutsk.addFronteira(siberia, yakutsk, china, mongolia);
         japan.addFronteira(kamchatka, china);
         kamchatka.addFronteira(yakutsk, irkutsk, mongolia, japan, alaska);
         mongolia.addFronteira(siberia, irkutsk, kamchatka, china);

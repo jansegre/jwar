@@ -21,7 +21,6 @@ import br.eb.ime.jwar.models.Continente;
 import br.eb.ime.jwar.models.Jogador;
 import br.eb.ime.jwar.models.Jogador.Cor;
 import br.eb.ime.jwar.models.Pais;
-import br.eb.ime.jwar.models.Tabuleiro;
 
 import java.util.*;
 
@@ -30,10 +29,11 @@ public class Jogo {
     public List<Jogador> jogadores;
     public Set<Continente> continentes;
 
-    public Jogo(int numJogadores, List<Cor> cores) {
-        continentes = Tabuleiro.mundoWarS();
-        for (int i = 0; i < numJogadores; i++) {
-            jogadores.add(new Jogador(cores.get(i)));
+    public Jogo(List<Cor> cores, Set<Continente> continentes) {
+        this.continentes = continentes;
+        int numJogadores = cores.size();
+        for (Cor cor : cores) {
+            jogadores.add(new Jogador(cor));
         }
         this.distribuirPaises(numJogadores);
     }
@@ -69,7 +69,7 @@ public class Jogo {
     }
 
     //mudar dono do país
-     public void mudarDono( Jogador donoNovo, Pais pais) {
+    public void mudarDono(Jogador donoNovo, Pais pais) {
         Jogador donoAntigo = pais.getDono();
         if (null != donoAntigo) {
             donoAntigo.removeDominio(pais);
@@ -88,18 +88,14 @@ public class Jogo {
 
         System.out.print("\n");
     }
-    
-    public void alterarExercitos(int n, Jogador jogador, Pais pais)
-    {
-        if(n > 0)
-        {
+
+    public void alterarExercitos(int n, Jogador jogador, Pais pais) {
+        if (n > 0) {
             jogador.addExercitos(n, pais);
-        }
-        else
-        {
+        } else {
             jogador.removeExercitos(n, pais);
         }
-        
+
     }
-    
+
 }

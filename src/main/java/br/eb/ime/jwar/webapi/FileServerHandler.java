@@ -31,43 +31,39 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
-import static io.netty.handler.codec.http.HttpHeaders.*;
-import static io.netty.handler.codec.http.HttpMethod.*;
+import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
+import static io.netty.handler.codec.http.HttpHeaders.setContentLength;
+import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
-import static io.netty.handler.codec.http.HttpVersion.*;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * A simple handler that serves incoming HTTP requests to send their respective
  * HTTP responses.  It also implements {@code 'If-Modified-Since'} header to
  * take advantage of browser cache, as described in
  * <a href="http://tools.ietf.org/html/rfc2616#section-14.25">RFC 2616</a>.
- *
+ * <p/>
  * <h3>How Browser Caching Works</h3>
- *
+ * <p/>
  * Web browser caching works with HTTP headers as illustrated by the following
  * sample:
  * <ol>
  * <li>Request #1 returns the content of {@code /file1.txt}.</li>
  * <li>Contents of {@code /file1.txt} is cached by the browser.</li>
  * <li>Request #2 for {@code /file1.txt} does return the contents of the
- *     file again. Rather, a 304 Not Modified is returned. This tells the
- *     browser to use the contents stored in its cache.</li>
+ * file again. Rather, a 304 Not Modified is returned. This tells the
+ * browser to use the contents stored in its cache.</li>
  * <li>The server knows the file has not been modified because the
- *     {@code If-Modified-Since} date is the same as the file's last
- *     modified date.</li>
+ * {@code If-Modified-Since} date is the same as the file's last
+ * modified date.</li>
  * </ol>
- *
+ * <p/>
  * <pre>
  * Request #1 Headers
  * ===================
@@ -309,7 +305,7 @@ class _FileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         buf.append("<ul>");
         buf.append("<li><a href=\"../\">..</a></li>\r\n");
 
-        for (File f: dir.listFiles()) {
+        for (File f : dir.listFiles()) {
             if (f.isHidden() || !f.canRead()) {
                 continue;
             }
@@ -355,8 +351,7 @@ class _FileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     /**
      * When file timestamp is the same as what the browser is sending up, send a "304 Not Modified"
      *
-     * @param ctx
-     *            Context
+     * @param ctx Context
      */
     private static void sendNotModified(ChannelHandlerContext ctx) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_MODIFIED);
@@ -369,8 +364,7 @@ class _FileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     /**
      * Sets the Date header for the HTTP response
      *
-     * @param response
-     *            HTTP response
+     * @param response HTTP response
      */
     private static void setDateHeader(FullHttpResponse response) {
         SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
@@ -383,10 +377,8 @@ class _FileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     /**
      * Sets the Date and Cache headers for the HTTP Response
      *
-     * @param response
-     *            HTTP response
-     * @param fileToCache
-     *            file to extract content type
+     * @param response    HTTP response
+     * @param fileToCache file to extract content type
      */
     private static void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
         SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
@@ -408,11 +400,12 @@ class _FileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
      * Sets the content type header for the HTTP Response
      *
      * @param response
-     *            HTTP response
+     * HTTP response
      * @param file
-     *            file to extract content type
+     * file to extract content type
      */
     private static MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+
     private static void setContentTypeHeader(HttpResponse response, File file) {
         response.headers().set(CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
     }

@@ -23,29 +23,26 @@ public class Carta {
     final protected Pais pais;
 
     final protected Simbolo simbolo;
-    
+
     public enum Simbolo {
 
         quadrado,
         circulo,
         triangulo
     }
-    
-    public Carta(Pais nome, Simbolo simbolo)
-    {
+
+    public Carta(Pais nome, Simbolo simbolo) {
         this.pais = nome;
         this.simbolo = simbolo;
     }
-    
-    public Pais getPais()
-    {
+
+    public Pais getPais() {
         return this.pais;
     }
-    
-    public Simbolo getSimbolo()
-    {
+
+    public Simbolo getSimbolo() {
         return this.simbolo;
     }
-    
-    
+
+
 }

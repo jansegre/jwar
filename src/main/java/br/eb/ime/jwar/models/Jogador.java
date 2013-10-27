@@ -18,7 +18,6 @@
 package br.eb.ime.jwar.models;
 
 import java.util.List;
-import java.util.Random;
 
 public class Jogador {
 
@@ -28,7 +27,6 @@ public class Jogador {
     protected Objetivo objetivo;
 
     public enum Cor {
-
         azul,
         amarelo,
         vermelho,
