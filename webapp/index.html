@@ -398,7 +398,9 @@ d3.json("maps/risk/world.json", function(error, world) {
   var _ns = 'br.eb.ime.jwar.webapi.';
   var user = 'Usuário ' + Math.floor((Math.random()*1000)+1);
   console.log(user);
-  var chatSocket =  io.connect('http://localhost:9092/chat');
+  var endpointBase = location.protocol + '//' + location.hostname + ':9092';
+  var chatEndpoint = endpointBase + '/chat';
+  var chatSocket =  io.connect(chatEndpoint);
 
   chatSocket.on('connect', function () {
     console.log("Connected to the server!");
