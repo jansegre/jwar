@@ -18,19 +18,25 @@
 
 package br.eb.ime.jwar.models;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Tabuleiro {
 
     private final Set<Continente> continentes;
+    private final Map<String, Pais> paisMap;
     private final List<Jogador> jogadores;
 
     public Tabuleiro(Set<Continente> continentes, List<Jogador> jogadores) {
         this.continentes = continentes;
         this.jogadores = jogadores;
+        this.paisMap = new HashMap<>();
+        for (Pais pais : getPaises()) {
+            this.paisMap.put(pais.getSlug(), pais);
+        }
+    }
+
+    public Pais getPaisBySlug(String slug) {
+        return paisMap.get(slug);
     }
 
     public List<Jogador> getJogadores() {

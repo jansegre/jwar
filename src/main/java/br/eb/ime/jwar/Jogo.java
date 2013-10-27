@@ -115,8 +115,7 @@ public class Jogo {
     public String showExercitos() {
         String out = "";
         for (Pais pais : tabuleiro.getPaises()) {
-            out += pais.getSlug() + ": " + pais.getDono().getSlug()
-                    + " [" + pais.getExercitos() + "]" + System.lineSeparator();
+            out += pais.showShortSummary() + System.lineSeparator();
         }
         return out;
     }
@@ -125,11 +124,26 @@ public class Jogo {
         String out = "";
         for (Pais pais : tabuleiro.getPaises()) {
             out += pais.getSlug() + ":";
-            for (Pais vizinho : pais.getFronteiras()) {
+            for (Pais vizinho : pais.getFronteiras())
                 out += " " + vizinho.getSlug();
-            }
-            out += "\n";
+            out += System.lineSeparator();
         }
         return out;
+    }
+
+    public String showContinentes() {
+        String out = "";
+        for (Continente continente : tabuleiro.getContinentes()) {
+            out += continente.getSlug() + ": ";
+            for (Pais pais : continente.getPaises())
+                out += " " + pais.getSlug();
+            out += System.lineSeparator();
+        }
+        return out;
+    }
+
+    //TODO: mudar a aplicação para que isso não seja nescessário
+    public Tabuleiro getTabuleiro() {
+        return tabuleiro;
     }
 }

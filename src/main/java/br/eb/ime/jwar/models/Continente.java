@@ -22,20 +22,34 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Continente {
+    final protected String slug;
     final protected String nome;
     final protected int bonus;
     protected Set<Pais> paises;
 
-    public Continente(String nome_, int bonus_, Pais... paises_) {
-        nome = nome_;
-        bonus = bonus_;
-        paises = new HashSet<>(paises_.length);
-        for (Pais pais : paises_) {
-            paises.add(pais);
+    public Continente(String nome, int bonus, Pais... paises) {
+        this(nome.replaceAll("\\s", "").toLowerCase(), nome, bonus, paises);
+        System.err.println("DEPRECATED: Continente(String nome, int bonus, Pais... paises)");
+    }
+
+    public Continente(String slug, String nome, int bonus, Pais... paises) {
+        this.slug = slug;
+        this.nome = nome;
+        this.bonus = bonus;
+        this.paises = new HashSet<>(paises.length);
+        for (Pais pais : paises) {
+            this.paises.add(pais);
             pais.setContinente(this);
         }
     }
 
+    public String getSlug() {
+        return slug;
+    }
+
+    public String getNome() {
+        return nome;
+    }
 
     public Set<Pais> getPaises() {
         return paises;

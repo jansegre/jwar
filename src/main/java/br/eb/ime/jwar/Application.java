@@ -19,14 +19,17 @@
 package br.eb.ime.jwar;
 
 import br.eb.ime.jwar.models.Jogador;
+import br.eb.ime.jwar.models.Pais;
 import br.eb.ime.jwar.models.Tabuleiro;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Application {
-    static public void main(String[] args) {
+    static public void main(String[] args) throws IOException {
         List<Jogador.Cor> cores = new LinkedList<>();
         cores.add(Jogador.Cor.azul);
         cores.add(Jogador.Cor.vermelho);
@@ -35,28 +38,43 @@ public class Application {
         Jogo jogo = new Jogo(cores, Tabuleiro.mundoRisk());
 
         String command[], input;
-        Scanner scanner = new Scanner(System.in);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("Jogo iniciado.");
         System.out.print(jogo.showFronteiras());
         boolean quit = false;
         while (!quit) {
             System.out.print("> ");
-            input = scanner.next().toLowerCase();
+            input = reader.readLine();
             command = input.split("\\s");
             if (command.length > 0) switch (command[0]) {
+                case "continentes":
+                    System.out.print(jogo.showContinentes());
+                    break;
+                case "fronteiras":
+                    System.out.print(jogo.showFronteiras());
+                    break;
                 case "mostrar":
                 case "show":
-                    System.out.println(jogo.showExercitos());
+                    if (command.length > 1) {
+                        Pais pais = jogo.getTabuleiro().getPaisBySlug(command[1]);
+                        if (pais != null) {
+                            System.out.println(pais.showSummary());
+                        } else {
+                            System.out.println("país não encontrado");
+                        }
+                    } else {
+                        System.out.println(jogo.showExercitos());
+                    }
                     break;
                 case "q":
                 case "sair":
                 case "quit":
-                    System.out.println("Tchau!");
+                    System.out.println("tchau!");
                     quit = true;
                     break;
                 default:
-                    System.out.println("Comando não reconhecido");
+                    System.out.println("comando não reconhecido");
                     break;
             }
         }

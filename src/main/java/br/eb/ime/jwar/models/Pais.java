@@ -32,10 +32,11 @@ public class Pais {
     protected Jogador dono;
 
     public Pais(String nome) {
-        this(nome, nome.replaceAll("\\s", "").toLowerCase());
+        this(nome.replaceAll("\\s", "").toLowerCase(), nome);
+        System.err.println("DEPRECATED: Pais(String nome)");
     }
 
-    public Pais(String nome, String slug) {
+    public Pais(String slug, String nome) {
         this.slug = slug;
         this.nome = nome;
         this.fronteiras = new HashSet<>();
@@ -89,5 +90,14 @@ public class Pais {
         return fronteiras.contains(pais);
     }
 
+    public String showShortSummary() {
+        return slug + ": " + dono.getSlug() + " [" + exercitos + "]";
+    }
 
+    public String showSummary() {
+        String out = showShortSummary();
+        for (Pais fronteira : fronteiras)
+            out += " " + fronteira.getSlug();
+        return out;
+    }
 }
