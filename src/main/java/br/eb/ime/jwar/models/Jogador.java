@@ -43,6 +43,29 @@ public class Jogador {
         return this.cor;
     }
 
+    public String getCorName() {
+        switch (this.cor) {
+            case azul:
+                return "Azul";
+            case amarelo:
+                return "Amarelo";
+            case vermelho:
+                return "Vermelho";
+            case verde:
+                return "Verde";
+            case branco:
+                return "Branco";
+            case preto:
+                return "Preto";
+            default:
+                return "???";
+        }
+    }
+
+    public String getSlug() {
+        return getCorName().toLowerCase();
+    }
+
     public void addCarta(Carta carta) {
         this.cartas.add(carta);
     }
@@ -64,7 +87,7 @@ public class Jogador {
         return this.dominios;
     }
 
-    public void addObjetivo(Objetivo objetivo) {
+    public void setObjetivo(Objetivo objetivo) {
         this.objetivo = objetivo;
         objetivo.setDono(this);
     }
@@ -73,6 +96,7 @@ public class Jogador {
         return this.objetivo;
     }
 
+    /*
     public void addExercitos(int n, Pais p) {
         int n_max_exercito = 10;
 
@@ -90,4 +114,5 @@ public class Jogador {
             p.exercitos -= n;
         }
     }
+    */
 }

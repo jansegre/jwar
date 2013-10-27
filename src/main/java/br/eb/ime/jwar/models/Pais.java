@@ -24,17 +24,23 @@ import java.util.Set;
 
 public class Pais {
 
+    protected String slug;
     protected String nome;
     protected Set<Pais> fronteiras;
     protected int exercitos;
     protected Continente continente;
     protected Jogador dono;
 
-    public Pais(String nome_) {
-        nome = nome_;
-        fronteiras = new HashSet<>();
-        exercitos = 1;
-        continente = null;
+    public Pais(String nome) {
+        this(nome, nome.replaceAll("\\s", "").toLowerCase());
+    }
+
+    public Pais(String nome, String slug) {
+        this.slug = slug;
+        this.nome = nome;
+        this.fronteiras = new HashSet<>();
+        this.exercitos = 1;
+        this.continente = null;
     }
 
     public void setContinente(Continente continente) {
@@ -45,6 +51,10 @@ public class Pais {
         return nome;
     }
 
+    public String getSlug() {
+        return slug;
+    }
+
     // CHAMAR ESTE METODO PARA VERIFICAR SE UM ATAQUE EH POSSIVEL
     public Set<Pais> getFronteiras() {
         return fronteiras;
@@ -53,6 +63,10 @@ public class Pais {
     // METODO PARA MUDAR O NUMERO DE EXERCITOS DE UM PAIS
     public int getExercitos() {
         return exercitos;
+    }
+
+    public void setExercitos(int numExercitos) {
+        exercitos = numExercitos;
     }
 
     // METODO PARA MUDAR O DONO DO PAIS,

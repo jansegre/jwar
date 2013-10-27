@@ -21,51 +21,53 @@ import br.eb.ime.jwar.models.Continente;
 import br.eb.ime.jwar.models.Jogador;
 import br.eb.ime.jwar.models.Jogador.Cor;
 import br.eb.ime.jwar.models.Pais;
+import br.eb.ime.jwar.models.Tabuleiro;
+import br.eb.ime.jwar.models.objetivos.ConquistarMundo;
 
 import java.util.*;
 
 public class Jogo {
 
-    public List<Jogador> jogadores;
     public Set<Continente> continentes;
+    private Tabuleiro tabuleiro;
 
     public Jogo(List<Cor> cores, Set<Continente> continentes) {
-        this.continentes = continentes;
+        List<Jogador> jogadores = new LinkedList<>();
         int numJogadores = cores.size();
-        for (Cor cor : cores) {
+        for (Cor cor : cores)
             jogadores.add(new Jogador(cor));
-        }
-        this.distribuirPaises(numJogadores);
+        tabuleiro = new Tabuleiro(continentes, jogadores);
+        distribuirPaises();
+        distribuirObjetivos();
     }
 
     //distribuir países
-    private boolean distribuirPaises(int numJogadores) {
-        int paisesPorJogador;
-        paisesPorJogador = 42 / numJogadores;
-        List paises = new ArrayList();
+    private void distribuirPaises() {
 
         //popular lista
-        Iterator iteratorContinentes = continentes.iterator();
-        while (iteratorContinentes.hasNext()) {
-            Iterator iteratorPaises = continentes.iterator().next().getPaises().iterator();
-            while (iteratorPaises.hasNext()) {
-                iteratorPaises.next();
-            }
-        }
-
-        //shuffle
+        List<Pais> paises = new ArrayList<>();
+        for (Pais pais : tabuleiro.getPaises())
+            paises.add(pais);
         Collections.shuffle(paises);
 
         //distribuir
-        for (int i = 0, j = 0; i < 42 && j < numJogadores; i++) {
-            //atribuir pais ao jogador (setDono no pais feito junto)
-            jogadores.get(j).addDominio((Pais) paises.get(i));
-            if ((i + 1) % paisesPorJogador == 0) {
-                j++;
+        Iterator<Pais> paisIterator = paises.iterator();
+        while (paisIterator.hasNext()) {
+            for (Jogador jogador : tabuleiro.getJogadores()) {
+                if (!paisIterator.hasNext()) {
+                    System.err.println("jogador em desvantagem");
+                } else {
+                    paisIterator.next().setDono(jogador);
+                }
             }
         }
-        return true;
+    }
 
+    private void distribuirObjetivos() {
+        //TODO mais objetivos
+        for (Jogador jogador : tabuleiro.getJogadores()) {
+            jogador.setObjetivo(new ConquistarMundo());
+        }
     }
 
     //mudar dono do país
@@ -77,25 +79,57 @@ public class Jogo {
         donoNovo.addDominio(pais);
     }
 
+    // retorna null se ninguém venceu ainda
+    public Jogador vencedor() {
+        for (Jogador jogador : tabuleiro.getJogadores())
+            if (jogador.getObjetivo().satisfeito(tabuleiro))
+                return jogador;
+        return null;
+    }
 
-    public void jogarDados(int n_dados) {
-        Random gerador = new Random();
+    private static Random gerador = new Random();
 
-        for (int i = 0; i < n_dados; i++) {
-            int aux = gerador.nextInt(6) + 1;
-            System.out.print(aux + " ");
-        }
+    public List<Integer> jogarDados(int numDados) {
+        List<Integer> dados = new ArrayList<>(numDados);
+        //gerador.setSeed();??
+        while (numDados-- > 0)
+            dados.add(gerador.nextInt(6) + 1);
+        return dados;
+    }
 
-        System.out.print("\n");
+    // retorna true se o ataque é estritamente maior
+    public boolean comparaDados(List<Integer> ataque, List<Integer> defesa) {
+        int somaAtaque = 0, somaDefesa = 0;
+        for (int i : ataque)
+            somaAtaque += i;
+        for (int i : defesa)
+            somaDefesa += i;
+        return somaAtaque > somaDefesa;
     }
 
     public void alterarExercitos(int n, Jogador jogador, Pais pais) {
-        if (n > 0) {
-            jogador.addExercitos(n, pais);
-        } else {
-            jogador.removeExercitos(n, pais);
-        }
-
+        //TODO: verificar jogador
+        pais.setExercitos(pais.getExercitos() + n);
     }
 
+    public String showExercitos() {
+        String out = "";
+        for (Pais pais : tabuleiro.getPaises()) {
+            out += pais.getSlug() + ": " + pais.getDono().getSlug()
+                    + " [" + pais.getExercitos() + "]" + System.lineSeparator();
+        }
+        return out;
+    }
+
+    public String showFronteiras() {
+        String out = "";
+        for (Pais pais : tabuleiro.getPaises()) {
+            out += pais.getSlug() + ":";
+            for (Pais vizinho : pais.getFronteiras()) {
+                out += " " + vizinho.getSlug();
+            }
+            out += "\n";
+        }
+        return out;
+    }
 }

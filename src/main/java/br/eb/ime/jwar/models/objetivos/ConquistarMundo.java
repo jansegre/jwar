@@ -15,17 +15,19 @@
  * along with this program.
  *
  */
+package br.eb.ime.jwar.models.objetivos;
 
-package br.eb.ime.jwar.models;
+import br.eb.ime.jwar.models.Objetivo;
+import br.eb.ime.jwar.models.Pais;
+import br.eb.ime.jwar.models.Tabuleiro;
 
-public abstract class Objetivo {
+public class ConquistarMundo extends Objetivo {
 
-    protected Jogador dono;
-
-    // deve analisar o tabuleiro e dizer se o dono completou o objetivo
-    public abstract boolean satisfeito(Tabuleiro tabuleiro);
-
-    public void setDono(Jogador jogador) {
-        this.dono = jogador;
+    @Override
+    public boolean satisfeito(Tabuleiro tabuleiro) {
+        for (Pais pais : tabuleiro.getPaises())
+            if (pais.getDono() != dono)
+                return false;
+        return true;
     }
 }

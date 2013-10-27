@@ -19,9 +19,56 @@
 package br.eb.ime.jwar.models;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class Tabuleiro {
+
+    private final Set<Continente> continentes;
+    private final List<Jogador> jogadores;
+
+    public Tabuleiro(Set<Continente> continentes, List<Jogador> jogadores) {
+        this.continentes = continentes;
+        this.jogadores = jogadores;
+    }
+
+    public List<Jogador> getJogadores() {
+        return jogadores;
+    }
+
+    public Iterable<Continente> getContinentes() {
+        return continentes;
+    }
+
+    public Iterable<Pais> getPaises() {
+        return new Iterable<Pais>() {
+            @Override
+            public Iterator<Pais> iterator() {
+                return new Iterator<Pais>() {
+                    Iterator<Continente> continenteIterator = continentes.iterator();
+                    Iterator<Pais> paisIterator = continenteIterator.next().getPaises().iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return continenteIterator.hasNext() || paisIterator.hasNext();
+                    }
+
+                    @Override
+                    public Pais next() {
+                        if (!paisIterator.hasNext())
+                            paisIterator = continenteIterator.next().getPaises().iterator();
+                        return paisIterator.next();
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
+    }
 
     public static Set<Continente> mundoWarS() {
         Set<Continente> continentes = new HashSet<>();
