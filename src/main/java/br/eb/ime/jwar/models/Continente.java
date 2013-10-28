@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Continente {
-    final protected String slug;
+    final protected String codigo;
     final protected String nome;
     final protected int bonus;
     protected Set<Pais> paises;
@@ -32,8 +32,8 @@ public class Continente {
         System.err.println("DEPRECATED: Continente(String nome, int bonus, Pais... paises)");
     }
 
-    public Continente(String slug, String nome, int bonus, Pais... paises) {
-        this.slug = slug;
+    public Continente(String codigo, String nome, int bonus, Pais... paises) {
+        this.codigo = codigo;
         this.nome = nome;
         this.bonus = bonus;
         this.paises = new HashSet<>(paises.length);
@@ -43,8 +43,8 @@ public class Continente {
         }
     }
 
-    public String getSlug() {
-        return slug;
+    public String getCodigo() {
+        return codigo;
     }
 
     public String getNome() {
@@ -53,5 +53,16 @@ public class Continente {
 
     public Set<Pais> getPaises() {
         return paises;
+    }
+
+    public String toString() {
+        return nome;
+    }
+
+    public String showSummary() {
+        String out = this + " " + codigo + ": ";
+        for (Pais pais : paises)
+            out += " " + pais.getCodigo();
+        return out;
     }
 }

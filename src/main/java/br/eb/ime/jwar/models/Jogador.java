@@ -17,14 +17,15 @@
  */
 package br.eb.ime.jwar.models;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Jogador {
 
-    protected final Cor cor;
-    protected List<Pais> dominios;
-    protected List<Carta> cartas;
-    protected Objetivo objetivo;
+    private final Cor cor;
+    private List<Carta> cartas;
+    private Objetivo objetivo;
+    private Tabuleiro tabuleiro;
 
     public enum Cor {
         azul,
@@ -36,7 +37,17 @@ public class Jogador {
     }
 
     public Jogador(Cor cor) {
+        this.cartas = new LinkedList<>();
         this.cor = cor;
+        this.tabuleiro = null;
+    }
+
+    public void setTabuleiro(Tabuleiro tabuleiro) {
+        this.tabuleiro = tabuleiro;
+    }
+
+    public Tabuleiro getTabuleiro() {
+        return tabuleiro;
     }
 
     public Cor getCor() {
@@ -44,7 +55,7 @@ public class Jogador {
     }
 
     public String getCorName() {
-        switch (this.cor) {
+        switch (getCor()) {
             case azul:
                 return "Azul";
             case amarelo:
@@ -62,29 +73,12 @@ public class Jogador {
         }
     }
 
-    public String getSlug() {
-        return getCorName().toLowerCase();
-    }
-
     public void addCarta(Carta carta) {
         this.cartas.add(carta);
     }
 
     public List<Carta> getCartas() {
         return this.cartas;
-    }
-
-    public void addDominio(Pais pais) {
-        this.dominios.add(pais);
-        pais.setDono(this);
-    }
-
-    public void removeDominio(Pais pais) {
-        this.dominios.remove(pais);
-    }
-
-    public List<Pais> getDominios() {
-        return this.dominios;
     }
 
     public void setObjetivo(Objetivo objetivo) {
@@ -96,23 +90,7 @@ public class Jogador {
         return this.objetivo;
     }
 
-    /*
-    public void addExercitos(int n, Pais p) {
-        int n_max_exercito = 10;
-
-        if (p.exercitos + n > n_max_exercito) {
-            p.exercitos = n_max_exercito;
-        } else {
-            p.exercitos += n;
-        }
+    public String toString() {
+        return getCorName();
     }
-
-    public void removeExercitos(int n, Pais p) {
-        if (p.exercitos < n) {
-            p.exercitos = 0;
-        } else {
-            p.exercitos -= n;
-        }
-    }
-    */
 }

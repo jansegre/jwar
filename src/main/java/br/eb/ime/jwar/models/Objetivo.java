@@ -22,10 +22,13 @@ public abstract class Objetivo {
 
     protected Jogador dono;
 
-    // deve analisar o tabuleiro e dizer se o dono completou o objetivo
-    public abstract boolean satisfeito(Tabuleiro tabuleiro);
+    public abstract boolean satisfeito();
 
     public void setDono(Jogador jogador) {
         this.dono = jogador;
+    }
+
+    protected Tabuleiro getTabuleiro() {
+        return dono.getTabuleiro();
     }
 }

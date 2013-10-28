@@ -28,17 +28,50 @@ import java.util.*;
 
 public class Jogo {
 
-    public Set<Continente> continentes;
     private Tabuleiro tabuleiro;
+    private Jogador atual;
+    private int rodadas;
+
 
     public Jogo(List<Cor> cores, Set<Continente> continentes) {
+        if (cores.size() < 2)
+            throw new IllegalArgumentException("cores must have at least 2 elements");
+
+        rodadas = 0;
+
+        // jogadores
         List<Jogador> jogadores = new LinkedList<>();
         int numJogadores = cores.size();
         for (Cor cor : cores)
             jogadores.add(new Jogador(cor));
+        Collections.shuffle(jogadores); // ordem aleatória de jogadores
+        atual = jogadores.get(0);
+
+        // tabuleiro
         tabuleiro = new Tabuleiro(continentes, jogadores);
         distribuirPaises();
         distribuirObjetivos();
+    }
+
+    public Jogador jogadorAtual() {
+        return atual;
+    }
+
+    public void avancaJogador() {
+        List<Jogador> jogadores = tabuleiro.getJogadores();
+        int i = jogadores.indexOf(atual) + 1;
+        atual = jogadores.get(i % jogadores.size());
+        if (i == jogadores.size())
+            avancaRodada();
+    }
+
+    public int getRodadas() {
+        return rodadas;
+    }
+
+    public void avancaRodada() {
+        //TODO: fazer as coisas que precisam quando a rodada avança, ex.: distribuir novos exércitos
+        rodadas++;
     }
 
     //distribuir países
@@ -55,7 +88,7 @@ public class Jogo {
         while (paisIterator.hasNext()) {
             for (Jogador jogador : tabuleiro.getJogadores()) {
                 if (!paisIterator.hasNext()) {
-                    System.err.println("jogador " + jogador.getSlug() + " em desvantagem");
+                    System.err.println("Jogador " + jogador + " em desvantagem");
                 } else {
                     paisIterator.next().setDono(jogador);
                 }
@@ -70,19 +103,10 @@ public class Jogo {
         }
     }
 
-    //mudar dono do país
-    public void mudarDono(Jogador donoNovo, Pais pais) {
-        Jogador donoAntigo = pais.getDono();
-        if (null != donoAntigo) {
-            donoAntigo.removeDominio(pais);
-        }
-        donoNovo.addDominio(pais);
-    }
-
     // retorna null se ninguém venceu ainda
     public Jogador vencedor() {
         for (Jogador jogador : tabuleiro.getJogadores())
-            if (jogador.getObjetivo().satisfeito(tabuleiro))
+            if (jogador.getObjetivo().satisfeito())
                 return jogador;
         return null;
     }
@@ -107,25 +131,19 @@ public class Jogo {
         return somaAtaque > somaDefesa;
     }
 
-    public void alterarExercitos(int n, Jogador jogador, Pais pais) {
-        //TODO: verificar jogador
-        pais.setExercitos(pais.getExercitos() + n);
-    }
-
     public String showExercitos() {
         String out = "";
-        for (Pais pais : tabuleiro.getPaises()) {
+        for (Pais pais : tabuleiro.getPaises())
             out += pais.showShortSummary() + System.lineSeparator();
-        }
         return out;
     }
 
     public String showFronteiras() {
         String out = "";
         for (Pais pais : tabuleiro.getPaises()) {
-            out += pais.getSlug() + ":";
+            out += pais.getCodigo() + ":";
             for (Pais vizinho : pais.getFronteiras())
-                out += " " + vizinho.getSlug();
+                out += " " + vizinho.getCodigo();
             out += System.lineSeparator();
         }
         return out;
@@ -133,12 +151,8 @@ public class Jogo {
 
     public String showContinentes() {
         String out = "";
-        for (Continente continente : tabuleiro.getContinentes()) {
-            out += continente.getSlug() + ": ";
-            for (Pais pais : continente.getPaises())
-                out += " " + pais.getSlug();
-            out += System.lineSeparator();
-        }
+        for (Continente continente : tabuleiro.getContinentes())
+            out += continente.showSummary() + System.lineSeparator();
         return out;
     }
 

@@ -21,11 +21,9 @@ package br.eb.ime.jwar.models;
 public class Carta {
 
     final protected Pais pais;
-
     final protected Simbolo simbolo;
 
     public enum Simbolo {
-
         quadrado,
         circulo,
         triangulo
@@ -40,9 +38,22 @@ public class Carta {
         return this.pais;
     }
 
+
     public Simbolo getSimbolo() {
         return this.simbolo;
     }
 
+    public String getSimboloString() {
+        switch (this.simbolo) {
+            case quadrado:
+                return "▢";
+            case circulo:
+                return "◯";
+            case triangulo:
+                return "△";
+            default:
+                return "?";
+        }
+    }
 
 }

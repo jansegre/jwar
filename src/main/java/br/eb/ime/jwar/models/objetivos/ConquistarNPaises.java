@@ -19,7 +19,6 @@ package br.eb.ime.jwar.models.objetivos;
 
 import br.eb.ime.jwar.models.Objetivo;
 import br.eb.ime.jwar.models.Pais;
-import br.eb.ime.jwar.models.Tabuleiro;
 
 public class ConquistarNPaises extends Objetivo {
 
@@ -30,9 +29,9 @@ public class ConquistarNPaises extends Objetivo {
     }
 
     @Override
-    public boolean satisfeito(Tabuleiro tabuleiro) {
+    public boolean satisfeito() {
         int count = 0;
-        for (Pais pais : tabuleiro.getPaises())
+        for (Pais pais : getTabuleiro().getPaises())
             if (pais.getDono() == dono)
                 count++;
         return count >= nPaises;

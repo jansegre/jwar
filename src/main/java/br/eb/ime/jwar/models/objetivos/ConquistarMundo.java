@@ -19,13 +19,12 @@ package br.eb.ime.jwar.models.objetivos;
 
 import br.eb.ime.jwar.models.Objetivo;
 import br.eb.ime.jwar.models.Pais;
-import br.eb.ime.jwar.models.Tabuleiro;
 
 public class ConquistarMundo extends Objetivo {
 
     @Override
-    public boolean satisfeito(Tabuleiro tabuleiro) {
-        for (Pais pais : tabuleiro.getPaises())
+    public boolean satisfeito() {
+        for (Pais pais : getTabuleiro().getPaises())
             if (pais.getDono() != dono)
                 return false;
         return true;

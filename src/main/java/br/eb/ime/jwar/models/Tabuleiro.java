@@ -28,15 +28,18 @@ public class Tabuleiro {
 
     public Tabuleiro(Set<Continente> continentes, List<Jogador> jogadores) {
         this.continentes = continentes;
+
         this.jogadores = jogadores;
+        for (Jogador jogador : jogadores)
+            jogador.setTabuleiro(this);
+
         this.paisMap = new HashMap<>();
-        for (Pais pais : getPaises()) {
-            this.paisMap.put(pais.getSlug(), pais);
-        }
+        for (Pais pais : getPaises())
+            this.paisMap.put(pais.getCodigo().toUpperCase(), pais);
     }
 
     public Pais getPaisBySlug(String slug) {
-        return paisMap.get(slug);
+        return paisMap.get(slug.toUpperCase());
     }
 
     public List<Jogador> getJogadores() {
@@ -197,76 +200,75 @@ public class Tabuleiro {
         Set<Continente> continentes = new HashSet<>();
 
         // Países
+        Pais alaska = new Pais("AL", "Alaska");
+        Pais northwestTerritory = new Pais("NT", "Northwest Territory");
+        Pais greenland = new Pais("GR", "Greenland");
+        Pais alberta = new Pais("AB", "Alberta");
+        Pais ontario = new Pais("ON", "Ontario");
+        Pais quebec = new Pais("QU", "Quebec");
+        Pais westernUS = new Pais("WU", "Western United States");
+        Pais easternUS = new Pais("EU", "Eastern United States");
+        Pais centralAmerica = new Pais("CA", "Central America");
 
-        Pais alaska = new Pais("Alaska");
-        Pais northwestTerritory = new Pais("Northwest Territory");
-        Pais greenland = new Pais("Greenland");
-        Pais alberta = new Pais("Alberta");
-        Pais ontario = new Pais("Ontario");
-        Pais quebec = new Pais("Quebec");
-        Pais westernUnitedStates = new Pais("Western United States");
-        Pais esternUnitedStates = new Pais("Estern United States");
-        Pais centralAmerica = new Pais("Central America");
+        Pais venezuela = new Pais("VE", "Venezuela");
+        Pais peru = new Pais("PE", "Peru");
+        Pais brasil = new Pais("BR", "Brasil");
+        Pais argentina = new Pais("AR", "Argentina");
 
-        Pais venezuela = new Pais("Venezuela");
-        Pais peru = new Pais("Peru");
-        Pais brasil = new Pais("Brasil");
-        Pais argentina = new Pais("Argentina");
+        Pais eastAfrica = new Pais("EF", "East Africa");
+        Pais egypt = new Pais("EG", "Egypt");
+        Pais northAfrica = new Pais("NA", "North Africa");
+        Pais congo = new Pais("CO", "Congo");
+        Pais southAfrica = new Pais("SA", "South Africa");
+        Pais madagascar = new Pais("MA", "Madagascar");
 
-        Pais eastAfrica = new Pais("East Africa");
-        Pais egypt = new Pais("Egypt");
-        Pais northAfrica = new Pais("North Africa");
-        Pais congo = new Pais("Congo");
-        Pais southAfrica = new Pais("South Africa");
-        Pais madagascar = new Pais("Madagascar");
+        Pais scandinavia = new Pais("SC", "Scandinavia");
+        Pais iceland = new Pais("IC", "Iceland");
+        Pais ukraine = new Pais("UK", "Ukraine");
+        Pais northenEurope = new Pais("NE", "Northen Europe");
+        Pais granBritain = new Pais("GB", "Gran Britain");
+        Pais westernEurope = new Pais("WE", "Western Europe");
+        Pais southernEurope = new Pais("SE", "Southern Europe");
 
-        Pais scandinavia = new Pais("Scandinavia");
-        Pais iceland = new Pais("Iceland");
-        Pais ukraine = new Pais("Ukraine");
-        Pais northenEurope = new Pais("Northen Europe");
-        Pais granBritain = new Pais("Gran Britain");
-        Pais westernEurope = new Pais("Western Europe");
-        Pais southernEurope = new Pais("Southern Europe");
+        Pais ural = new Pais("UR", "Ural");
+        Pais afghanistan = new Pais("AF", "Afghanistan");
+        Pais middleEast = new Pais("ME", "Middle East");
+        Pais yakutsk = new Pais("YA", "Yakutsk");
+        Pais irkutsk = new Pais("IR", "Irkutsk");
+        Pais kamchatka = new Pais("KA", "Kamchatka");
+        Pais mongolia = new Pais("MO", "Mongolia");
+        Pais siberia = new Pais("SB", "Siberia");
+        Pais india = new Pais("IN", "Índia");
+        Pais siam = new Pais("SI", "Siam");
+        Pais china = new Pais("CH", "China");
+        Pais japan = new Pais("JA", "Japão");
 
-        Pais ural = new Pais("Ural");
-        Pais afghanistan = new Pais("Afghanistan");
-        Pais middleEast = new Pais("Middle East");
-        Pais yakutsk = new Pais("Yakutsk");
-        Pais irkutsk = new Pais("Irkutsk");
-        Pais kamchatka = new Pais("Kamchatka");
-        Pais mongolia = new Pais("Mongolia");
-        Pais siberia = new Pais("Siberia");
-        Pais india = new Pais("Índia");
-        Pais siam = new Pais("Siam");
-        Pais china = new Pais("China");
-        Pais japan = new Pais("Japãn");
-
-        Pais indonesia = new Pais("Indonesia");
-        Pais easternAustralia = new Pais("Eastern Australia");
-        Pais newGuine = new Pais("New Guiné");
-        Pais weasternAustralia = new Pais("Weastern Australia");
+        Pais indonesia = new Pais("ID", "Indonesia");
+        Pais easternAustralia = new Pais("EA", "Eastern Australia");
+        Pais newGuine = new Pais("NG", "New Guiné");
+        Pais weasternAustralia = new Pais("WA", "Weastern Australia");
 
 
         // Continentes
 
-        continentes.add(new Continente("América do Norte", 5, alaska, northwestTerritory, greenland, alberta, ontario, quebec, westernUnitedStates, esternUnitedStates, centralAmerica));
-        continentes.add(new Continente("América do Sul", 2, venezuela, peru, brasil, argentina));
-        continentes.add(new Continente("África", 3, egypt, northAfrica, eastAfrica, congo, southAfrica, madagascar));
-        continentes.add(new Continente("Europa", 5, iceland, granBritain, ukraine, northenEurope, scandinavia, westernEurope, southernEurope));
-        continentes.add(new Continente("Ásia", 7, ural, afghanistan, middleEast, mongolia, india, siberia, irkutsk, yakutsk, india, kamchatka, china, japan));
-        continentes.add(new Continente("Oceania", 2, indonesia, newGuine, weasternAustralia, easternAustralia));
+        continentes.add(new Continente("NA", "América do Norte", 5, alaska, northwestTerritory, greenland, alberta, ontario, quebec, westernUS, easternUS, centralAmerica));
+        continentes.add(new Continente("SA", "América do Sul", 2, venezuela, peru, brasil, argentina));
+        continentes.add(new Continente("AF", "África", 3, eastAfrica, egypt, northAfrica, congo, southAfrica, madagascar));
+        continentes.add(new Continente("EU", "Europa", 5, scandinavia, iceland, ukraine, northenEurope, granBritain, westernEurope, southernEurope));
+        continentes.add(new Continente("AS", "Ásia", 7, ural, afghanistan, middleEast, yakutsk, irkutsk, kamchatka, mongolia, siberia, india, siam, china, japan));
+        continentes.add(new Continente("AU", "Australia", 2, indonesia, easternAustralia, newGuine, weasternAustralia));
 
         // Fronteiras
 
         alaska.addFronteira(kamchatka, northwestTerritory, alberta);
         northwestTerritory.addFronteira(alaska, alberta, ontario, greenland);
         greenland.addFronteira(northwestTerritory, quebec, iceland);
-        alberta.addFronteira(alaska, northwestTerritory, ontario, westernUnitedStates);
-        ontario.addFronteira(northwestTerritory, alberta, quebec, esternUnitedStates, westernUnitedStates);
-        quebec.addFronteira(greenland, esternUnitedStates, ontario);
-        westernUnitedStates.addFronteira(centralAmerica, ontario, alberta, esternUnitedStates);
-        esternUnitedStates.addFronteira(westernUnitedStates, centralAmerica, quebec, ontario);
-        centralAmerica.addFronteira(westernUnitedStates, esternUnitedStates, venezuela);
+        alberta.addFronteira(alaska, northwestTerritory, ontario, westernUS);
+        ontario.addFronteira(northwestTerritory, alberta, quebec, easternUS, westernUS);
+        quebec.addFronteira(greenland, easternUS, ontario);
+        westernUS.addFronteira(centralAmerica, ontario, alberta, easternUS);
+        easternUS.addFronteira(westernUS, centralAmerica, quebec, ontario);
+        centralAmerica.addFronteira(westernUS, easternUS, venezuela);
 
         venezuela.addFronteira(centralAmerica, peru, brasil);
         peru.addFronteira(argentina, brasil, venezuela);

@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class Pais {
 
-    protected String slug;
+    protected String codigo;
     protected String nome;
     protected Set<Pais> fronteiras;
     protected int exercitos;
@@ -36,8 +36,8 @@ public class Pais {
         System.err.println("DEPRECATED: Pais(String nome)");
     }
 
-    public Pais(String slug, String nome) {
-        this.slug = slug;
+    public Pais(String codigo, String nome) {
+        this.codigo = codigo;
         this.nome = nome;
         this.fronteiras = new HashSet<>();
         this.exercitos = 1;
@@ -52,8 +52,8 @@ public class Pais {
         return nome;
     }
 
-    public String getSlug() {
-        return slug;
+    public String getCodigo() {
+        return codigo;
     }
 
     // CHAMAR ESTE METODO PARA VERIFICAR SE UM ATAQUE EH POSSIVEL
@@ -90,14 +90,18 @@ public class Pais {
         return fronteiras.contains(pais);
     }
 
+    public String toString() {
+        return nome;
+    }
+
     public String showShortSummary() {
-        return slug + ": " + dono.getSlug() + " [" + exercitos + "]";
+        return this + " " + codigo + ": " + dono + " [" + exercitos + "]";
     }
 
     public String showSummary() {
         String out = showShortSummary();
         for (Pais fronteira : fronteiras)
-            out += " " + fronteira.getSlug();
+            out += " " + fronteira.getCodigo();
         return out;
     }
 }
