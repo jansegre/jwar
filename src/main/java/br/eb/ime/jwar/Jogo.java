@@ -55,7 +55,7 @@ public class Jogo {
         while (paisIterator.hasNext()) {
             for (Jogador jogador : tabuleiro.getJogadores()) {
                 if (!paisIterator.hasNext()) {
-                    System.err.println("jogador em desvantagem");
+                    System.err.println("jogador " + jogador.getSlug() + " em desvantagem");
                 } else {
                     paisIterator.next().setDono(jogador);
                 }
