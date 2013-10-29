@@ -31,6 +31,16 @@ public class Jogo {
     private Tabuleiro tabuleiro;
     private Jogador atual;
     private int rodadas;
+    private Estado estadoDoJogo;
+    
+     public enum Estado {
+        Reforcando_Territorios,
+        Escolhendo_Alvo,
+        Jogando_Dados,
+        Verificando_Resultado,
+        Fazendo_Tranferencias,
+        Trocando_Cartas
+    }
 
 
     public Jogo(List<Cor> cores, Set<Continente> continentes) {
