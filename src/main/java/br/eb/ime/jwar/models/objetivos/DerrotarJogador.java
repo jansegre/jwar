@@ -24,9 +24,18 @@ import br.eb.ime.jwar.models.Pais;
 public class DerrotarJogador extends Objetivo {
 
     private Jogador inimigo;
+    private Objetivo alternativo;
 
-    public DerrotarJogador(Jogador inimigo) {
+    // objetivo alternativo é usado no caso do inimigo ser o próprio dono
+    public DerrotarJogador(Jogador inimigo, Objetivo alternativo) {
         this.inimigo = inimigo;
+        this.alternativo = alternativo;
+    }
+
+    @Override
+    public void setDono(Jogador jogador) {
+        super.setDono(jogador);
+        this.alternativo.setDono(jogador);
     }
 
     public Jogador getInimigo() {
@@ -35,9 +44,13 @@ public class DerrotarJogador extends Objetivo {
 
     @Override
     public boolean satisfeito() {
+        if (inimigo == dono)
+            return alternativo.satisfeito();
+
         for (Pais pais : getTabuleiro().getPaises())
             if (pais.getDono() == inimigo)
                 return false;
+
         return true;
     }
 }
