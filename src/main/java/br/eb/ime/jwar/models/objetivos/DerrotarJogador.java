@@ -23,12 +23,12 @@ import br.eb.ime.jwar.models.Pais;
 
 public class DerrotarJogador extends Objetivo {
 
-    private Jogador inimigo;
+    private Jogador.Cor corInimigo;
     private Objetivo alternativo;
 
     // objetivo alternativo é usado no caso do inimigo ser o próprio dono
-    public DerrotarJogador(Jogador inimigo, Objetivo alternativo) {
-        this.inimigo = inimigo;
+    public DerrotarJogador(Jogador.Cor corInimigo, Objetivo alternativo) {
+        this.corInimigo = corInimigo;
         this.alternativo = alternativo;
     }
 
@@ -38,17 +38,17 @@ public class DerrotarJogador extends Objetivo {
         this.alternativo.setDono(jogador);
     }
 
-    public Jogador getInimigo() {
-        return inimigo;
+    public Jogador.Cor getCorInimigo() {
+        return corInimigo;
     }
 
     @Override
     public boolean satisfeito() {
-        if (inimigo == dono)
+        if (dono.getCor() == corInimigo)
             return alternativo.satisfeito();
 
         for (Pais pais : getTabuleiro().getPaises())
-            if (pais.getDono() == inimigo)
+            if (pais.getDono().getCor() == corInimigo)
                 return false;
 
         return true;
