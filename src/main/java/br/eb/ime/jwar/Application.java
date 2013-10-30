@@ -43,7 +43,6 @@ public class Application {
         System.out.println("Jogo iniciado. O jogador " + jogo.jogadorAtual() + " começa.");
         boolean quit = false;
         while (!quit) {
-            //TODO: extrair essa lógica daqui
             Jogador vencedor = jogo.vencedor();
             if (vencedor != null) {
                 System.out.println("Parabéns!! O jogador " + vencedor + " ganhou a partida.");

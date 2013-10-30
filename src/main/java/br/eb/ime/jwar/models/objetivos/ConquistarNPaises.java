@@ -23,16 +23,22 @@ import br.eb.ime.jwar.models.Pais;
 public class ConquistarNPaises extends Objetivo {
 
     private int nPaises;
+    private int minExercitos;
 
     public ConquistarNPaises(int nPaises) {
+        this(nPaises, 1);
+    }
+
+    public ConquistarNPaises(int nPaises, int minExercitos) {
         this.nPaises = nPaises;
+        this.minExercitos = minExercitos;
     }
 
     @Override
     public boolean satisfeito() {
         int count = 0;
         for (Pais pais : getTabuleiro().getPaises())
-            if (pais.getDono() == dono)
+            if (pais.getDono() == dono && pais.getExercitos() >= minExercitos)
                 count++;
         return count >= nPaises;
     }
