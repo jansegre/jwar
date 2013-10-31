@@ -146,7 +146,7 @@ public class Application {
                         System.out.println("O país defensor: " + defensor + ", também é seu.");
                         break;
                     } else if (!atacante.fazFronteira(defensor)) {
-                        System.out.println("Os países " + atacante + ", " + defensor + "não fazem fronteira.");
+                        System.out.println("Os países " + atacante + ", " + defensor + " não fazem fronteira.");
                         break;
                     }
                     int numDadosAtk = atacante.getExercitos() - 1;
