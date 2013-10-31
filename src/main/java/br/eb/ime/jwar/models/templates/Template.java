@@ -16,22 +16,24 @@
  *
  */
 
-package br.eb.ime.jwar.models.objetivos;
+package br.eb.ime.jwar.models.templates;
 
+import br.eb.ime.jwar.models.Continente;
 import br.eb.ime.jwar.models.Objetivo;
-import br.eb.ime.jwar.models.Pais;
 
-public class ConquistarMundo extends Objetivo {
+import java.util.List;
+import java.util.Set;
 
-    public ConquistarMundo() {
-        this.description = "conquistar o mundo (todos os territórios)";
+public abstract class Template {
+
+    protected Set<Continente> continentes;
+    protected List<Objetivo> objetivos;
+
+    public Set<Continente> getContinentes() {
+        return continentes;
     }
 
-    @Override
-    public boolean satisfeito() {
-        for (Pais pais : getTabuleiro().getPaises())
-            if (pais.getDono() != dono)
-                return false;
-        return true;
+    public List<Objetivo> getObjetivos() {
+        return objetivos;
     }
 }

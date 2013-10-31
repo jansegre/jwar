@@ -15,8 +15,11 @@
  * along with this program.
  *
  */
+
 package br.eb.ime.jwar.models;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,15 +29,6 @@ public class Jogador {
     private List<Carta> cartas;
     private Objetivo objetivo;
     private Tabuleiro tabuleiro;
-
-    public enum Cor {
-        azul,
-        amarelo,
-        vermelho,
-        verde,
-        branco,
-        preto
-    }
 
     public Jogador(Cor cor) {
         this.cartas = new LinkedList<>();
@@ -54,23 +48,12 @@ public class Jogador {
         return this.cor;
     }
 
-    public String getCorName() {
-        switch (getCor()) {
-            case azul:
-                return "Azul";
-            case amarelo:
-                return "Amarelo";
-            case vermelho:
-                return "Vermelho";
-            case verde:
-                return "Verde";
-            case branco:
-                return "Branco";
-            case preto:
-                return "Preto";
-            default:
-                return "???";
-        }
+    public Collection<Pais> getPaises() {
+        List<Pais> paises = new ArrayList<>();
+        for (Pais pais : tabuleiro.getPaises())
+            if (pais.getDono() == this)
+                paises.add(pais);
+        return paises;
     }
 
     public void addCarta(Carta carta) {
@@ -91,6 +74,6 @@ public class Jogador {
     }
 
     public String toString() {
-        return getCorName();
+        return cor.toString();
     }
 }

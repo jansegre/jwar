@@ -21,6 +21,9 @@ import br.eb.ime.jwar.models.Continente;
 import br.eb.ime.jwar.models.Objetivo;
 import br.eb.ime.jwar.models.Pais;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class ConquistarContinentes extends Objetivo {
@@ -28,13 +31,27 @@ public class ConquistarContinentes extends Objetivo {
     private List<Continente> continentes;
     private int minExtraContinentes;
 
-    public ConquistarContinentes(List<Continente> continentes) {
-        this(continentes, 0);
+    public ConquistarContinentes(Continente... continentes) {
+        this(0, continentes);
     }
 
-    public ConquistarContinentes(List<Continente> continentes, int minExtraContinentes) {
-        this.continentes = continentes;
+    public ConquistarContinentes(int minExtraContinentes, Continente... continentes) {
+        if (continentes.length == 0)
+            throw new IllegalArgumentException("`continentes` não pode ser vazio");
+
+        this.continentes = new ArrayList<>(Arrays.asList(continentes));
         this.minExtraContinentes = minExtraContinentes;
+
+        Iterator<Continente> iter = this.continentes.iterator();
+        Continente c = iter.next();
+        this.description = "conquistar os continentes da " + c.getNome();
+        while (iter.hasNext()) {
+            c = iter.next();
+            this.description += (iter.hasNext() || minExtraContinentes > 0 ? ", " : " e ") + c.getNome();
+        }
+
+        if (minExtraContinentes > 0)
+            this.description += " e mais " + minExtraContinentes + " de sua escolha";
     }
 
     @Override
@@ -50,7 +67,7 @@ public class ConquistarContinentes extends Objetivo {
             int count = 0;
 
             // iterar sobre os outros continentes
-            for (Continente continente : dono.getTabuleiro().getContinentes()) {
+            for (Continente continente : getTabuleiro().getContinentes()) {
                 if (continentes.contains(continente))
                     continue;
 

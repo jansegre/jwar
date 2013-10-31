@@ -16,22 +16,30 @@
  *
  */
 
-package br.eb.ime.jwar.models.objetivos;
+package br.eb.ime.jwar.models;
 
-import br.eb.ime.jwar.models.Objetivo;
-import br.eb.ime.jwar.models.Pais;
+public enum Cor {
 
-public class ConquistarMundo extends Objetivo {
+    AZUL,
+    AMARELO,
+    VERMELHO,
+    VERDE,
+    BRANCO,
+    PRETO;
 
-    public ConquistarMundo() {
-        this.description = "conquistar o mundo (todos os territórios)";
+    private String text;
+
+    static {
+        AZUL.text = "Azul";
+        AMARELO.text = "Amarelo";
+        VERMELHO.text = "Vermelho";
+        VERDE.text = "Verde";
+        BRANCO.text = "Branco";
+        PRETO.text = "Preto";
     }
 
     @Override
-    public boolean satisfeito() {
-        for (Pais pais : getTabuleiro().getPaises())
-            if (pais.getDono() != dono)
-                return false;
-        return true;
+    public String toString() {
+        return text;
     }
 }

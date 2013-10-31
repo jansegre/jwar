@@ -20,7 +20,13 @@ package br.eb.ime.jwar.models;
 
 public abstract class Objetivo {
 
+    protected String description;
+
     protected Jogador dono;
+
+    protected Objetivo() {
+        this.description = "sem descrição";
+    }
 
     public abstract boolean satisfeito();
 
@@ -30,5 +36,10 @@ public abstract class Objetivo {
 
     protected Tabuleiro getTabuleiro() {
         return dono.getTabuleiro();
+    }
+
+    @Override
+    public String toString() {
+        return description;
     }
 }

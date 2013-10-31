@@ -18,9 +18,10 @@
 
 package br.eb.ime.jwar;
 
+import br.eb.ime.jwar.models.Cor;
 import br.eb.ime.jwar.models.Jogador;
 import br.eb.ime.jwar.models.Pais;
-import br.eb.ime.jwar.models.Tabuleiro;
+import br.eb.ime.jwar.models.templates.RiskSecretMission;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,22 +31,29 @@ import java.util.List;
 
 public class Application {
     static public void main(String[] args) throws IOException {
-        List<Jogador.Cor> cores = new LinkedList<>();
-        cores.add(Jogador.Cor.azul);
-        cores.add(Jogador.Cor.vermelho);
-        cores.add(Jogador.Cor.amarelo);
-        cores.add(Jogador.Cor.preto);
-        Jogo jogo = new Jogo(cores, Tabuleiro.mundoRisk());
+        List<Cor> cores = new LinkedList<>();
+        cores.add(Cor.AZUL);
+        cores.add(Cor.VERMELHO);
+        cores.add(Cor.AMARELO);
+        cores.add(Cor.PRETO);
+        Jogo jogo = new Jogo(cores, new RiskSecretMission());
 
         String command[], input;
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-        System.out.println("Jogo iniciado. O jogador " + jogo.jogadorAtual() + " começa.");
+        System.out.print("Jogo iniciado. Estão jogando:");
+        for (Jogador jogador : jogo.getTabuleiro().getJogadores())
+            System.out.print(" " + jogador);
+        System.out.println();
+        System.out.println("O jogador " + jogo.jogadorAtual() + " começa.");
+
         boolean quit = false;
         while (!quit) {
             Jogador vencedor = jogo.vencedor();
             if (vencedor != null) {
                 System.out.println("Parabéns!! O jogador " + vencedor + " ganhou a partida.");
+                System.out.println("Seu objetivo era " + vencedor.getObjetivo());
+                System.out.println(jogo.showFronteiras());
                 break;
             }
             System.out.print("> ");
@@ -56,6 +64,11 @@ public class Application {
                 case "current":
                 case "atual":
                     System.out.println("Jogador atual: " + jogo.jogadorAtual());
+                    break;
+                case "obj":
+                case "objetivo":
+                case "mission":
+                    System.out.println("Seu objetivo é " + jogo.jogadorAtual().getObjetivo() + ".");
                     break;
                 case "ok":
                 case "avançar":

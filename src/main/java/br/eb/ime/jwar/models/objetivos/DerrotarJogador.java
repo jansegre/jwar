@@ -15,21 +15,27 @@
  * along with this program.
  *
  */
+
 package br.eb.ime.jwar.models.objetivos;
 
+import br.eb.ime.jwar.models.Cor;
 import br.eb.ime.jwar.models.Jogador;
 import br.eb.ime.jwar.models.Objetivo;
 import br.eb.ime.jwar.models.Pais;
 
+import java.util.Collection;
+
 public class DerrotarJogador extends Objetivo {
 
-    private Jogador.Cor corInimigo;
+    private Cor corInimigo;
     private Objetivo alternativo;
 
     // objetivo alternativo é usado no caso do inimigo ser o próprio dono
-    public DerrotarJogador(Jogador.Cor corInimigo, Objetivo alternativo) {
+    public DerrotarJogador(Cor corInimigo, Objetivo alternativo) {
         this.corInimigo = corInimigo;
         this.alternativo = alternativo;
+        this.description = "derrotar todos os exércitos do jogador " + corInimigo +
+                " se esse for você ou não estiver jogando então " + alternativo.toString();
     }
 
     @Override
@@ -38,16 +44,14 @@ public class DerrotarJogador extends Objetivo {
         this.alternativo.setDono(jogador);
     }
 
-    public Jogador.Cor getCorInimigo() {
-        return corInimigo;
-    }
-
     @Override
     public boolean satisfeito() {
-        if (dono.getCor() == corInimigo)
+        if (dono.getCor() == corInimigo || !getTabuleiro().getCores().contains(corInimigo)) {
             return alternativo.satisfeito();
+        }
 
-        for (Pais pais : getTabuleiro().getPaises())
+        Collection<Pais> paises = getTabuleiro().getPaises();
+        for (Pais pais : paises)
             if (pais.getDono().getCor() == corInimigo)
                 return false;
 

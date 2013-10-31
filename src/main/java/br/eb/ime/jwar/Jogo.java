@@ -17,12 +17,8 @@
  */
 package br.eb.ime.jwar;
 
-import br.eb.ime.jwar.models.Continente;
-import br.eb.ime.jwar.models.Jogador;
-import br.eb.ime.jwar.models.Jogador.Cor;
-import br.eb.ime.jwar.models.Pais;
-import br.eb.ime.jwar.models.Tabuleiro;
-import br.eb.ime.jwar.models.objetivos.ConquistarMundo;
+import br.eb.ime.jwar.models.*;
+import br.eb.ime.jwar.models.templates.Template;
 
 import java.util.*;
 
@@ -32,8 +28,8 @@ public class Jogo {
     private Jogador atual;
     private int rodadas;
     private Estado estadoDoJogo;
-    
-     public enum Estado {
+
+    public enum Estado {
         Reforcando_Territorios,
         Escolhendo_Alvo,
         Jogando_Dados,
@@ -43,7 +39,7 @@ public class Jogo {
     }
 
 
-    public Jogo(List<Cor> cores, Set<Continente> continentes) {
+    public Jogo(List<Cor> cores, Template template) {
         if (cores.size() < 2)
             throw new IllegalArgumentException("cores must have at least 2 elements");
 
@@ -58,9 +54,9 @@ public class Jogo {
         atual = jogadores.get(0);
 
         // tabuleiro
-        tabuleiro = new Tabuleiro(continentes, jogadores);
-        distribuirPaises();
-        distribuirObjetivos();
+        tabuleiro = new Tabuleiro(template.getContinentes(), jogadores);
+        distribuirPaises(tabuleiro.getPaises());
+        distribuirObjetivos(template.getObjetivos());
     }
 
     public Jogador jogadorAtual() {
@@ -85,32 +81,26 @@ public class Jogo {
     }
 
     //distribuir países
-    private void distribuirPaises() {
-
+    private void distribuirPaises(Collection<Pais> paisesInicias) {
         //popular lista
-        List<Pais> paises = new ArrayList<>();
-        for (Pais pais : tabuleiro.getPaises())
-            paises.add(pais);
+        List<Pais> paises = new ArrayList<>(paisesInicias);
         Collections.shuffle(paises);
 
         //distribuir
         Iterator<Pais> paisIterator = paises.iterator();
-        while (paisIterator.hasNext()) {
-            for (Jogador jogador : tabuleiro.getJogadores()) {
-                if (!paisIterator.hasNext()) {
-                    System.err.println("Jogador " + jogador + " em desvantagem");
-                } else {
+        while (paisIterator.hasNext())
+            for (Jogador jogador : tabuleiro.getJogadores())
+                if (paisIterator.hasNext())
                     paisIterator.next().setDono(jogador);
-                }
-            }
-        }
+                else
+                    System.err.println("Jogador " + jogador + " em desvantagem");
     }
 
-    private void distribuirObjetivos() {
-        //TODO mais objetivos
-        for (Jogador jogador : tabuleiro.getJogadores()) {
-            jogador.setObjetivo(new ConquistarMundo());
-        }
+    private void distribuirObjetivos(Collection<Objetivo> objetivosIniciais) {
+        LinkedList<Objetivo> objetivos = new LinkedList<>(objetivosIniciais);
+        Collections.shuffle(objetivos);
+        for (Jogador jogador : tabuleiro.getJogadores())
+            jogador.setObjetivo(objetivos.pop());
     }
 
     // retorna null se ninguém venceu ainda

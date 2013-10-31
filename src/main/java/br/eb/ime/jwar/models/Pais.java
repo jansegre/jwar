@@ -24,28 +24,23 @@ import java.util.Set;
 
 public class Pais {
 
-    protected String codigo;
-    protected String nome;
-    protected Set<Pais> fronteiras;
-    protected int exercitos;
-    protected Continente continente;
-    protected Jogador dono;
+    private final String codigo;
+    private final String nome;
+    private final Set<Pais> fronteiras;
+    private int exercitos;
+    private Jogador dono;
 
+    @Deprecated
     public Pais(String nome) {
-        this(nome.replaceAll("\\s", "").toLowerCase(), nome);
-        System.err.println("DEPRECATED: Pais(String nome)");
+        this(null, nome.replaceAll("\\s", "").toLowerCase(), nome);
     }
 
-    public Pais(String codigo, String nome) {
+    public Pais(Continente continente, String codigo, String nome) {
+        continente.addPais(this);
         this.codigo = codigo;
         this.nome = nome;
         this.fronteiras = new HashSet<>();
         this.exercitos = 1;
-        this.continente = null;
-    }
-
-    public void setContinente(Continente continente) {
-        this.continente = continente;
     }
 
     public String getNome() {
@@ -56,12 +51,10 @@ public class Pais {
         return codigo;
     }
 
-    // CHAMAR ESTE METODO PARA VERIFICAR SE UM ATAQUE EH POSSIVEL
     public Set<Pais> getFronteiras() {
         return fronteiras;
     }
 
-    // METODO PARA MUDAR O NUMERO DE EXERCITOS DE UM PAIS
     public int getExercitos() {
         return exercitos;
     }
@@ -70,9 +63,6 @@ public class Pais {
         exercitos = numExercitos;
     }
 
-    // METODO PARA MUDAR O DONO DO PAIS,
-    // DURANTE O JOGO QUANDO UM PAIS MUDAR DE DONO
-    // CHAMAR ESTE METODO
     public void setDono(Jogador jogador) {
         this.dono = jogador;
     }
@@ -81,7 +71,7 @@ public class Pais {
         return this.dono;
     }
 
-    // CHAMAR ESTE METODO APENAS NA CONSTRUCAO DO JOGO
+    //XXX: CHAMAR ESTE METODO APENAS NA CONSTRUCAO DO JOGO
     public void addFronteira(Pais... paises) {
         fronteiras.addAll(Arrays.asList(paises));
     }

@@ -18,6 +18,7 @@
 
 package br.eb.ime.jwar.models;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,20 +28,20 @@ public class Continente {
     final protected int bonus;
     protected Set<Pais> paises;
 
-    public Continente(String nome, int bonus, Pais... paises) {
-        this(nome.replaceAll("\\s", "").toLowerCase(), nome, bonus, paises);
-        System.err.println("DEPRECATED: Continente(String nome, int bonus, Pais... paises)");
+    @Deprecated
+    public Continente(String nome, int bonus) {
+        this(nome.replaceAll("\\s", "").toLowerCase(), nome, bonus);
     }
 
-    public Continente(String codigo, String nome, int bonus, Pais... paises) {
+    public Continente(String codigo, String nome, int bonus) {
         this.codigo = codigo;
         this.nome = nome;
         this.bonus = bonus;
-        this.paises = new HashSet<>(paises.length);
-        for (Pais pais : paises) {
-            this.paises.add(pais);
-            pais.setContinente(this);
-        }
+        this.paises = new HashSet<>();
+    }
+
+    void addPais(Pais... paises) {
+        this.paises.addAll(Arrays.asList(paises));
     }
 
     public String getCodigo() {
@@ -55,12 +56,16 @@ public class Continente {
         return paises;
     }
 
+    public int getBonus() {
+        return bonus;
+    }
+
     public String toString() {
         return nome;
     }
 
     public String showSummary() {
-        String out = this + " " + codigo + ": ";
+        String out = this + " " + codigo + "[" + bonus + "]:";
         for (Pais pais : paises)
             out += " " + pais.getCodigo();
         return out;

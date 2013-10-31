@@ -15,6 +15,7 @@
  * along with this program.
  *
  */
+
 package br.eb.ime.jwar.models.objetivos;
 
 import br.eb.ime.jwar.models.Objetivo;
@@ -32,6 +33,10 @@ public class ConquistarNPaises extends Objetivo {
     public ConquistarNPaises(int nPaises, int minExercitos) {
         this.nPaises = nPaises;
         this.minExercitos = minExercitos;
+        this.description = "conquistar " + nPaises
+                + " território" + (nPaises > 2 ? "s" : "");
+        if (minExercitos > 1)
+            this.description += " com pelo menos " + minExercitos + " exércitos cada";
     }
 
     @Override
