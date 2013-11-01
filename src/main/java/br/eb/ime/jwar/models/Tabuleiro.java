@@ -67,4 +67,6 @@ public class Tabuleiro {
     public Collection<Cor> getCores() {
         return cores;
     }
+    
+   
 }

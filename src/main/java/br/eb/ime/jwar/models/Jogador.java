@@ -59,6 +59,14 @@ public class Jogador {
     public void addCarta(Carta carta) {
         this.cartas.add(carta);
     }
+    
+    public void removeCarta(Carta carta)
+    {
+        if(this.cartas.contains(carta))
+        {
+            this.cartas.remove(carta);
+        }
+    }
 
     public List<Carta> getCartas() {
         return this.cartas;
