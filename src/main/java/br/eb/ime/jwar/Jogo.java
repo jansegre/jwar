@@ -19,6 +19,7 @@ package br.eb.ime.jwar;
 
 import br.eb.ime.jwar.models.*;
 import br.eb.ime.jwar.models.templates.Template;
+import br.eb.ime.jwar.models.Pais;
 
 import java.util.*;
 
@@ -30,6 +31,7 @@ public class Jogo {
     private Estado estadoDoJogo;
     private List<Carta> cartas;
     private int trocaAtual;
+    private int ExercitosParaReforcar;
 
     public enum Estado {
 
@@ -259,5 +261,58 @@ public class Jogo {
         }
         
         return nExercitos;
+    }
+    //Falta testar
+    public void reforcarTerritorios(Jogador player){
+        estadoDoJogo = Estado.Reforcando_Territorios;
+        boolean bandDominaContinente;
+        int qtdpaises = 0;
+        int totBonus = 0;
+        for (Continente continente : tabuleiro.getContinentes()){
+            bandDominaContinente = true;
+            for (Pais pais : continente.getPaises()){
+                if(pais.getDono() == player){
+                    qtdpaises++;
+                    continue;
+                }
+                if(bandDominaContinente){
+                    bandDominaContinente = false;
+                }
+            }
+            if (bandDominaContinente){
+                totBonus += continente.getBonus();
+            }
+        }
+        ExercitosParaReforcar = qtdpaises/2 + totBonus;
+    }
+    public void transfereExercito(Pais paisOrigem, Pais paisDestino, int nExercito) throws IllegalArgumentException{
+        if (nExercito>2){
+            throw new IllegalArgumentException("Can't transfer more than 2 army units");
+        }
+        if (nExercito>paisOrigem.getExercitos()){
+            throw new IllegalArgumentException("Can't leave a country without army units");
+        }
+        boolean bandFazFronteira = false;
+        //Checa se são vizinhos
+        if(paisDestino.getFronteiras().size() > paisOrigem.getFronteiras().size()){
+            for (Pais pais : paisOrigem.getFronteiras()){
+                if(pais == paisDestino){
+                    bandFazFronteira = true;
+                }
+            }
+        }
+        else {
+            for (Pais pais : paisDestino.getFronteiras()){
+                if(pais == paisOrigem){
+                    bandFazFronteira = true;
+                }
+            }
+        }
+        if (!bandFazFronteira){
+            throw new IllegalArgumentException("Must be neighbor countries!");
+        }
+        //Transação propriamente dita
+        paisDestino.setExercitos(paisDestino.getExercitos()+nExercito);
+        paisOrigem.setExercitos(paisOrigem.getExercitos()-nExercito);
     }
 }
