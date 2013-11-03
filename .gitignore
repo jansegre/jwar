@@ -48,3 +48,4 @@ manifest.mf
 /bower_components
 /target
 /out
+**/.DS_Store
