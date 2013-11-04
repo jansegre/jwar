@@ -11,7 +11,7 @@ Feito como trabalho da cadeira de Laboratório de Programação 2 do Instituo Mi
 
 ## Contribuindo
 
-Antes de contribuir leia esse README, se você está lendo já é um bom sinal.
+Antes de contribuir leia esse README, você está lendo já, é um bom sinal.
 
 Leia as regras para entender como o jogo funciona. Se você já conhece, leia as regras mesmo assim
 para relembra-lás, se você acha que lembra leia mesmo assim. Se você acabou de jogar uma partida de
