@@ -18,7 +18,6 @@
 
 package br.eb.ime.jwar.models.objetivos;
 
-import br.eb.ime.jwar.models.Objetivo;
 import br.eb.ime.jwar.models.Pais;
 
 public class ConquistarNPaises extends Objetivo {

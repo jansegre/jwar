@@ -16,21 +16,10 @@
  *
  */
 
-package br.eb.ime.jwar.models.objetivos;
+package br.eb.ime.jwar.excecoes;
 
-import br.eb.ime.jwar.models.Pais;
-
-public class ConquistarMundo extends Objetivo {
-
-    public ConquistarMundo() {
-        this.description = "conquistar o mundo (todos os territórios)";
-    }
-
-    @Override
-    public boolean satisfeito() {
-        for (Pais pais : getTabuleiro().getPaises())
-            if (pais.getDono() != dono)
-                return false;
-        return true;
+public class EntradaInvalida extends ExcecaoDoJogo {
+    public EntradaInvalida(String desc) {
+        super(desc);
     }
 }

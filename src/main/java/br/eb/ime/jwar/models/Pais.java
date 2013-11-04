@@ -63,6 +63,14 @@ public class Pais {
         exercitos = numExercitos;
     }
 
+    public void adicionaExercitos(int numExercitos) {
+        exercitos += numExercitos;
+    }
+
+    public void removeExercitos(int numExercitos) {
+        exercitos -= numExercitos;
+    }
+
     public void setDono(Jogador jogador) {
         this.dono = jogador;
     }

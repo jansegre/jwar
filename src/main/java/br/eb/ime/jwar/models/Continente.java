@@ -20,6 +20,7 @@ package br.eb.ime.jwar.models;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class Continente {
@@ -54,6 +55,19 @@ public class Continente {
 
     public Set<Pais> getPaises() {
         return paises;
+    }
+
+    // se não tiver dono retorna null
+    public Jogador getDono() {
+        // deve ter pelo menos 1 país por razões óbvias
+        Iterator<Pais> paisIterator = paises.iterator();
+        Jogador jogador = paisIterator.next().getDono();
+
+        while (paisIterator.hasNext())
+            if (paisIterator.next().getDono() != jogador)
+                return null;
+
+        return jogador;
     }
 
     public int getBonus() {

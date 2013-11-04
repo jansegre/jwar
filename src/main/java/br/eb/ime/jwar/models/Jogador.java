@@ -18,6 +18,8 @@
 
 package br.eb.ime.jwar.models;
 
+import br.eb.ime.jwar.models.objetivos.Objetivo;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -56,14 +58,28 @@ public class Jogador {
         return paises;
     }
 
+    public Collection<Continente> getContinentes() {
+        List<Continente> continentes = new ArrayList<>();
+        for (Continente continente : tabuleiro.getContinentes())
+            if (continente.getDono() == this)
+                continentes.add(continente);
+        return continentes;
+    }
+
+    public boolean ehDono(Pais pais) {
+        return pais.getDono() == this;
+    }
+
+    public boolean ehDono(Carta carta) {
+        return this.cartas.contains(carta);
+    }
+
     public void addCarta(Carta carta) {
         this.cartas.add(carta);
     }
-    
-    public void removeCarta(Carta carta)
-    {
-        if(this.cartas.contains(carta))
-        {
+
+    public void removeCarta(Carta carta) {
+        if (this.cartas.contains(carta)) {
             this.cartas.remove(carta);
         }
     }

@@ -20,7 +20,6 @@ package br.eb.ime.jwar.models.objetivos;
 
 import br.eb.ime.jwar.models.Cor;
 import br.eb.ime.jwar.models.Jogador;
-import br.eb.ime.jwar.models.Objetivo;
 import br.eb.ime.jwar.models.Pais;
 
 import java.util.Collection;

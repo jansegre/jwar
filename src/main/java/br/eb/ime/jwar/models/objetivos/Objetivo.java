@@ -18,19 +18,31 @@
 
 package br.eb.ime.jwar.models.objetivos;
 
-import br.eb.ime.jwar.models.Pais;
+import br.eb.ime.jwar.models.Jogador;
+import br.eb.ime.jwar.models.Tabuleiro;
 
-public class ConquistarMundo extends Objetivo {
+public abstract class Objetivo {
 
-    public ConquistarMundo() {
-        this.description = "conquistar o mundo (todos os territórios)";
+    protected String description;
+
+    protected Jogador dono;
+
+    protected Objetivo() {
+        this.description = "sem descrição";
+    }
+
+    public abstract boolean satisfeito();
+
+    public void setDono(Jogador jogador) {
+        this.dono = jogador;
+    }
+
+    protected Tabuleiro getTabuleiro() {
+        return dono.getTabuleiro();
     }
 
     @Override
-    public boolean satisfeito() {
-        for (Pais pais : getTabuleiro().getPaises())
-            if (pais.getDono() != dono)
-                return false;
-        return true;
+    public String toString() {
+        return description;
     }
 }

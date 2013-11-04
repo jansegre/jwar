@@ -18,8 +18,6 @@
 package br.eb.ime.jwar.models.objetivos;
 
 import br.eb.ime.jwar.models.Continente;
-import br.eb.ime.jwar.models.Objetivo;
-import br.eb.ime.jwar.models.Pais;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,9 +56,8 @@ public class ConquistarContinentes extends Objetivo {
     public boolean satisfeito() {
         // conferir se é dono dos continentes desejados
         for (Continente continente : continentes)
-            for (Pais pais : continente.getPaises())
-                if (pais.getDono() != dono)
-                    return false;
+            if (continente.getDono() != dono)
+                return false;
 
         // contar continentes extras
         if (minExtraContinentes > 0) {
@@ -71,14 +68,7 @@ public class ConquistarContinentes extends Objetivo {
                 if (continentes.contains(continente))
                     continue;
 
-                boolean owns = true;
-                for (Pais pais : continente.getPaises())
-                    if (pais.getDono() != dono) {
-                        owns = false;
-                        break;
-                    }
-
-                if (owns)
+                if (continente.getDono() == dono)
                     count++;
             }
 

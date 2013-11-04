@@ -140,4 +140,8 @@ public class WarS extends Template {
         // TODO: fazer objetivos
     }
 
+    @Override
+    public int exercitosPorTroca(int i) {
+        return 0;
+    }
 }

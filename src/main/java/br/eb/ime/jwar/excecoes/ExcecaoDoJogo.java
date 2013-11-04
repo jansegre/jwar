@@ -16,30 +16,10 @@
  *
  */
 
-package br.eb.ime.jwar.models;
+package br.eb.ime.jwar.excecoes;
 
-public abstract class Objetivo {
-
-    protected String description;
-
-    protected Jogador dono;
-
-    protected Objetivo() {
-        this.description = "sem descrição";
-    }
-
-    public abstract boolean satisfeito();
-
-    public void setDono(Jogador jogador) {
-        this.dono = jogador;
-    }
-
-    protected Tabuleiro getTabuleiro() {
-        return dono.getTabuleiro();
-    }
-
-    @Override
-    public String toString() {
-        return description;
+public abstract class ExcecaoDoJogo extends RuntimeException {
+    protected ExcecaoDoJogo(String desc) {
+        super(desc);
     }
 }

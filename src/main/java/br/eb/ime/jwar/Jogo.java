@@ -17,38 +17,45 @@
  */
 package br.eb.ime.jwar;
 
+import br.eb.ime.jwar.excecoes.EntradaInvalida;
+import br.eb.ime.jwar.excecoes.EstadoInvalido;
 import br.eb.ime.jwar.models.*;
+import br.eb.ime.jwar.models.objetivos.Objetivo;
 import br.eb.ime.jwar.models.templates.Template;
-import br.eb.ime.jwar.models.Pais;
 
 import java.util.*;
 
 public class Jogo {
 
+    private enum Estado {
+        REFORCANDO_TERRITORIOS,
+        ESCOLHENDO_ALVO,
+        JOGANDO_DADOS,
+        VERIFICANDO_RESULTADO,
+        FAZENDO_TRANFERENCIAS,
+        TROCANDO_CARTAS
+    }
+
+    private Template template;
+    private Estado estadoAtual;
     private Tabuleiro tabuleiro;
+    private LinkedList<Carta> cartas;
+    private LinkedList<Carta> cartasAparte;
     private Jogador atual;
     private int rodadas;
-    private Estado estadoDoJogo;
-    private List<Carta> cartas;
     private int trocaAtual;
-    private int ExercitosParaReforcar;
-
-    public enum Estado {
-
-        Reforcando_Territorios,
-        Escolhendo_Alvo,
-        Jogando_Dados,
-        Verificando_Resultado,
-        Fazendo_Tranferencias,
-        Trocando_Cartas
-    }
+    private int exercitosParaDistribuir;
 
     public Jogo(List<Cor> cores, Template template) {
         if (cores.size() < 2) {
-            throw new IllegalArgumentException("cores must have at least 2 elements");
+            throw new EntradaInvalida("cores must have at least 2 elements");
         }
 
+        this.template = template;
+
         rodadas = 0;
+        trocaAtual = 0;
+        estadoAtual = Estado.REFORCANDO_TERRITORIOS;
 
         // jogadores
         List<Jogador> jogadores = new LinkedList<>();
@@ -63,8 +70,12 @@ public class Jogo {
         tabuleiro = new Tabuleiro(template.getContinentes(), jogadores);
         distribuirPaises(tabuleiro.getPaises());
         distribuirObjetivos(template.getObjetivos());
-        criarCartas(tabuleiro.getPaises());
-        this.trocaAtual = 0;
+        criarCartas(template.getBaralho());
+    }
+
+    private void verificarEstado(Estado... estadosValidos) {
+        if (!Arrays.asList(estadosValidos).contains(estadoAtual))
+            throw new EstadoInvalido("A ação desejada não pode ser realizada no estado " + estadoAtual);
     }
 
     public Jogador jogadorAtual() {
@@ -72,6 +83,7 @@ public class Jogo {
     }
 
     public void avancaJogador() {
+        verificarEstado();
         List<Jogador> jogadores = tabuleiro.getJogadores();
         int i = jogadores.indexOf(atual) + 1;
         atual = jogadores.get(i % jogadores.size());
@@ -84,8 +96,7 @@ public class Jogo {
         return rodadas;
     }
 
-    public void avancaRodada() {
-        //TODO: fazer as coisas que precisam quando a rodada avança, ex.: distribuir novos exércitos
+    private void avancaRodada() {
         rodadas++;
     }
 
@@ -116,6 +127,13 @@ public class Jogo {
         }
     }
 
+    private void criarCartas(List<Carta> baralho) {
+        this.cartas = new LinkedList<>(baralho);
+        this.cartasAparte = new LinkedList<>();
+        // embaralhar as cartas
+        Collections.shuffle(this.cartas);
+    }
+
     // retorna null se ninguém venceu ainda
     public Jogador vencedor() {
         for (Jogador jogador : tabuleiro.getJogadores()) {
@@ -125,6 +143,7 @@ public class Jogo {
         }
         return null;
     }
+
     private static Random gerador = new Random();
 
     public List<Integer> jogarDados(int numDados) {
@@ -181,138 +200,87 @@ public class Jogo {
         return tabuleiro;
     }
 
-    private void criarCartas(Collection<Pais> paisesInicias) {
-        List<Pais> paises = new ArrayList<>(paisesInicias);
-        this.cartas = new ArrayList<>();
-
-        Collections.shuffle(paises);
-
-        //distribuir os simbolos
-        for (int i = 0; i < paises.size() / 3; i++) {
-            Carta auxiliar = new Carta(paises.get(i), Carta.Simbolo.circulo);
-            this.cartas.add(auxiliar);
+    public void darCarta() {
+        if (this.cartas.size() == 0) {
+            Collections.shuffle(this.cartasAparte);
+            LinkedList<Carta> tmp = this.cartas;
+            this.cartas = this.cartasAparte;
+            this.cartasAparte = tmp;
         }
-        for (int i = paises.size() / 3; i < paises.size() * 2 / 3; i++) {
-            Carta auxiliar = new Carta(paises.get(i), Carta.Simbolo.quadrado);
-            this.cartas.add(auxiliar);
-
-        }
-        for (int i = paises.size() * 2 / 3; i < paises.size(); i++) {
-            Carta auxiliar = new Carta(paises.get(i), Carta.Simbolo.triangulo);
-            this.cartas.add(auxiliar);
-        }
+        atual.addCarta(this.cartas.pop());
+        if (atual.getCartas().size() > 5) //TODO: parametrizar?
+            ;// o jogador deve descartar uma carta
     }
 
-    public void darCarta(Jogador jogador) {
-
-        Carta carta = this.cartas.remove(0);
-        jogador.addCarta(carta);
-        if (jogador.getCartas().size() > 5) {
-            // o jogador deve descartar uma carta
-        }
+    public void descartarCarta(Carta carta) {
+        this.cartasAparte.add(carta);
+        atual.removeCarta(carta);
     }
 
-    public void descartarCarta(Jogador jogador, Carta carta) {
-        this.cartas.add(carta);
-        jogador.removeCarta(carta);
-    }
+    public void fazerTrocaDeCartas(Carta carta1, Carta carta2, Carta carta3) {
 
-    public int fazerTrocaDeCartas(Jogador jogador, List<Carta> cartas) throws Exception {
-        if (cartas.size() != 3) {
-            throw new IllegalArgumentException("cartas must have three elements");
-        }
         // verificar se o usuario tem as cartas usadas
-        if(!jogador.getCartas().contains(cartas.get(0)) || !jogador.getCartas().contains(cartas.get(1)) || !jogador.getCartas().contains(cartas.get(2)))
-        {
-             throw new Exception("Invalid cartas for this user! He not has one or more these cartas");
+        if (!atual.ehDono(carta1) || !atual.ehDono(carta2) || !atual.ehDono(carta3)) {
+            throw new EntradaInvalida("Invalid cartas for this user! He not has one or more these cartas");
         }
-            
-            
-        // numero de exercitos ganho
-        int nExercitos = 0;
-        // verificar se as cartas tem simbolos iguais ou diferentes
-        if ((cartas.get(0).getSimbolo() == cartas.get(1).getSimbolo() && cartas.get(1).getSimbolo() == cartas.get(2).getSimbolo())
-                || (cartas.get(0).getSimbolo() != cartas.get(1).getSimbolo() && cartas.get(1).getSimbolo() != cartas.get(2).getSimbolo() && cartas.get(2).getSimbolo() != cartas.get(0).getSimbolo())) {
-            this.trocaAtual++;
-            if (this.trocaAtual <= 4) {
-                nExercitos += (this.trocaAtual * 2 + 2);
-            } else {
-                nExercitos += (this.trocaAtual * 5 - 10);
-            }
 
-            // verificar se o usuario tem os paises indicados nas cartas, e atribuir bonus
-            if (jogador.getPaises().contains(cartas.get(0).getPais())) {
-                nExercitos += 2;
-            }
+        // verificar se troca é possível
+        if (!Carta.compativeis(carta1, carta2, carta3))
+            throw new EntradaInvalida("Cartas incompatíveis para troca");
 
-            if (jogador.getPaises().contains(cartas.get(1).getPais())) {
-                nExercitos += 2;
-            }
-            if (jogador.getPaises().contains(cartas.get(2).getPais())) {
-                nExercitos += 2;
-            }
+        // contar quantos exércitos serão recebidos
+        this.trocaAtual++;
+        int nExercitos = this.template.exercitosPorTroca(this.trocaAtual);
+        for (Carta carta : Arrays.asList(carta1, carta2, carta3))
+            if (!carta.ehCuringa() && atual.ehDono(carta.getPais()))
+                nExercitos += 2; //TODO: parametrizar?
 
-            jogador.removeCarta(cartas.get(0));          
-            jogador.removeCarta(cartas.get(1));
-            jogador.removeCarta(cartas.get(2));
-            this.cartas.add(cartas.get(0));           
-            this.cartas.add(cartas.get(1));
-            this.cartas.add(cartas.get(2));
-        }
-        
-        return nExercitos;
+        // devolver as cartas ao baralho
+        atual.removeCarta(carta1);
+        atual.removeCarta(carta2);
+        atual.removeCarta(carta3);
+        this.cartasAparte.push(carta1);
+        this.cartasAparte.push(carta2);
+        this.cartasAparte.push(carta3);
     }
-    //Falta testar
-    public void reforcarTerritorios(Jogador player){
-        estadoDoJogo = Estado.Reforcando_Territorios;
-        boolean bandDominaContinente;
-        int qtdpaises = 0;
-        int totBonus = 0;
-        for (Continente continente : tabuleiro.getContinentes()){
-            bandDominaContinente = true;
-            for (Pais pais : continente.getPaises()){
-                if(pais.getDono() == player){
-                    qtdpaises++;
-                    continue;
-                }
-                if(bandDominaContinente){
-                    bandDominaContinente = false;
-                }
-            }
-            if (bandDominaContinente){
-                totBonus += continente.getBonus();
-            }
-        }
-        ExercitosParaReforcar = qtdpaises/2 + totBonus;
+
+    public void reforcarTerritorios() {
+        estadoAtual = Estado.REFORCANDO_TERRITORIOS;
+
+        int nExercitos = atual.getPaises().size() / 2;
+        for (Continente continente : atual.getContinentes())
+            nExercitos += continente.getBonus();
+
+        // acrescentar ou sobreescrever?
+        //exercitosParaDistribuir += nExercitos;
+        exercitosParaDistribuir = nExercitos;
     }
-    public void transfereExercito(Pais paisOrigem, Pais paisDestino, int nExercito) throws IllegalArgumentException{
-        if (nExercito>2){
-            throw new IllegalArgumentException("Can't transfer more than 2 army units");
-        }
-        if (nExercito>paisOrigem.getExercitos()){
-            throw new IllegalArgumentException("Can't leave a country without army units");
-        }
-        boolean bandFazFronteira = false;
-        //Checa se são vizinhos
-        if(paisDestino.getFronteiras().size() > paisOrigem.getFronteiras().size()){
-            for (Pais pais : paisOrigem.getFronteiras()){
-                if(pais == paisDestino){
-                    bandFazFronteira = true;
-                }
-            }
-        }
-        else {
-            for (Pais pais : paisDestino.getFronteiras()){
-                if(pais == paisOrigem){
-                    bandFazFronteira = true;
-                }
-            }
-        }
-        if (!bandFazFronteira){
-            throw new IllegalArgumentException("Must be neighbor countries!");
-        }
-        //Transação propriamente dita
-        paisDestino.setExercitos(paisDestino.getExercitos()+nExercito);
-        paisOrigem.setExercitos(paisOrigem.getExercitos()-nExercito);
+
+    public void transfereExercito(Pais paisOrigem, Pais paisDestino, int nExercito) {
+        //TODO: dar um jeito de fazer esse método por completo, é preciso algum jeito
+        //TODO  de comparar o estado antes de todas as transferências com o estado depois
+        //TODO  das transferencias (atual), pois um exército não pode ser deslocado mais
+        //TODO  de uma vez na mesma rodada, por exemplo, dados 3 paísese contíguos A, B e C:
+        //TODO      A(3) B(1) C(2)
+        //TODO  não é permitido que algum exército saia de B, então os exércitos de A ou C só podem diminuir
+        //TODO  o sistema atual permite que sejam feitas essas duas transferências:
+        //TODO      A(3) B(1) C(2) -> A(1) B(3) C(2) -> A(1) B(1) C(4)
+        //TODO  mesmo que o último estado não seja permitido.
+
+
+        //XXX: de onde veio essa regra??
+        //if (nExercito > 2)
+        //    throw new EntradaInvalida("Can't transfer more than 2 army units");
+
+        if (nExercito >= paisOrigem.getExercitos())
+            throw new EntradaInvalida("Can't leave a country without army units");
+
+        // Confere se são vizinhos
+        if (!paisDestino.fazFronteira(paisOrigem))
+            throw new EntradaInvalida("Must be neighbor countries!");
+
+        // Transação propriamente dita
+        paisOrigem.removeExercitos(nExercito);
+        paisDestino.adicionaExercitos(nExercito);
     }
 }

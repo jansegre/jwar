@@ -18,6 +18,7 @@
 
 package br.eb.ime.jwar.models.templates;
 
+import br.eb.ime.jwar.models.Carta;
 import br.eb.ime.jwar.models.Continente;
 import br.eb.ime.jwar.models.Cor;
 import br.eb.ime.jwar.models.Pais;
@@ -169,5 +170,30 @@ public class RiskSecretMission extends Template {
                 new DerrotarJogador(Cor.VERDE, new ConquistarNPaises(24)),
                 new DerrotarJogador(Cor.VERMELHO, new ConquistarNPaises(24))
         ));
+
+        // Baralho
+
+        baralho = new ArrayList<>();
+
+        // dois curingas
+        baralho.add(new Carta());
+        baralho.add(new Carta());
+
+        // e uma carta por país
+        Carta.Simbolo simbolo = Carta.Simbolo.QUADRADO;
+        for (Continente continente : continentes)
+            for (Pais pais : continente.getPaises()) {
+                baralho.add(new Carta(pais, simbolo));
+                simbolo = simbolo.getNext();
+            }
+
+    }
+
+    @Override
+    public int exercitosPorTroca(int i) {
+        if (i <= 4)
+            return 2 * (i + 1);
+        else
+            return 5 * (i - 2);
     }
 }

@@ -18,8 +18,9 @@
 
 package br.eb.ime.jwar.models.templates;
 
+import br.eb.ime.jwar.models.Carta;
 import br.eb.ime.jwar.models.Continente;
-import br.eb.ime.jwar.models.Objetivo;
+import br.eb.ime.jwar.models.objetivos.Objetivo;
 
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,7 @@ public abstract class Template {
 
     protected Set<Continente> continentes;
     protected List<Objetivo> objetivos;
+    protected List<Carta> baralho;
 
     public Set<Continente> getContinentes() {
         return continentes;
@@ -36,4 +38,10 @@ public abstract class Template {
     public List<Objetivo> getObjetivos() {
         return objetivos;
     }
+
+    public List<Carta> getBaralho() {
+        return baralho;
+    }
+
+    public abstract int exercitosPorTroca(int i);
 }
