@@ -31,28 +31,32 @@ public class Jogo {
              início •──┐
                        ▼
              ┌──────────────────────┐
-        ┌───►│ DISTRIBUICAO_INICIAL │ ◄─── próximo jogador
-        │    └─────────┬──────────┬─┘             │
-        │              │          └───────────────┘
-        │       segunda rodada
- próximo jogador       │
-        │              ▼
-        │   ┌────────────────────────┐        ┌──────────────────┐
-        │   │ REFORCANDO_TERRITORIOS │ ┌─────►│ ESPERANDO_DEFESA │
+             │ DISTRIBUICAO_INICIAL │ ◄─── próximo jogador
+             └─────────┬──────────┬─┘             │
+                       │          └───────────────┘
+                segunda rodada
+                       │
+                       ▼
+            ┌────────────────────────┐        ┌──────────────────┐
+        ┌─► │ REFORCANDO_TERRITORIOS │ ┌─────►│ ESPERANDO_DEFESA*│
         │   └──────────┬─────────────┘ │      └──┬────────────┬──┘
         │              │               │         │            │
-        │              ▼               │  defesa ganhou   ataque ganhou
+        │      exercitos colocados     │     território conquistado?
+ próximo jogador       │               │         │            │
+        │              ▼               │        não          sim
         │     ┌───────────────────┐    │         │            │
-        │     │ ESCOLHENDO_ATAQUE ├────┘         │            ▼
-        │     └────────┬──────────┘              │ ┌─────────────────────┐
-        │              │    ▲                    ├─┤ OCUPANDO_TERRITORIO │
- [receber carta]       │    └────────────────────┘ └──────────┬──────────┘
-        │              ▼                                      │
-        │     ┌────────────────────┐                  objetivo cumprido
-        └─────┤ DESLOCAR_EXERCITOS │                          │
-              └────────────────────┘                          └──■ fim
+        │     │ ESCOLHENDO_ATAQUE ├────┘   ┌─────┘            │
+        │     └────────┬──────────┘        │                  ▼
+        │              │      ▲            │ ┌─────────────────────┐
+        │           pronto    └────────────┴─┤ OCUPANDO_TERRITORIO │
+ [receber carta]       │                     └──────────┬──────────┘
+        │              ▼                                │
+        │     ┌────────────────────┐            objetivo alcançado?
+        └─────┤ DESLOCAR_EXERCITOS │                    │
+              └────────────────────┘                    └──■ fim
 
-
+   * esse estado existe para que o atacado
+     possa influencias nos dados de defesa
 
    Legenda:
 
@@ -120,6 +124,10 @@ public class Jogo {
 
     public Jogador jogadorAtual() {
         return atual;
+    }
+
+    public void OK() {
+        verificarEstado();
     }
 
     public void avancaJogador() {
