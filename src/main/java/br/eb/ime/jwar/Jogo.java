@@ -27,13 +27,40 @@ import java.util.*;
 
 public class Jogo {
 
+    /*
+                    ■──┐
+                       ▼
+             ┌──────────────────────┐
+        ┌───►│ DISTRIBUICAO_INICIAL │ ◄─── próximo jogador
+        │    └─────────┬──────────┬─┘             │
+        │              │          └───────────────┘
+        │       segunda rodada
+ próximo jogador       │
+        │              ▼
+        │   ┌────────────────────────┐
+        │   │ REFORCANDO_TERRITORIOS │
+        │   └──────────┬─────────────┘
+        │              │
+        │              ▼
+        │     ┌───────────────────┐         ┌──────────────────┐
+        │     │ ESCOLHENDO_ATAQUE ├────────►│ ESPERANDO_DEFESA │
+        │     └────────┬──────────┘         └────────┬─────────┘
+        │              │    ▲                        │
+ próximo jogador       │    └───────┬ defesa ganhou ─┴─ ataque ganhou ──┐
+        │              ▼            └┐                                  ▼
+        │     ┌────────────────────┐ │                       ┌─────────────────────┐
+        └─────┤ DESLOCAR_EXERCITOS │ └───────────────────────┤ OCUPANDO_TERRITORIO │
+              └────────────────────┘                         └─────────────────────┘
+
+     */
+
     private enum Estado {
+        DISTRIBUICAO_INICIAL,
         REFORCANDO_TERRITORIOS,
-        ESCOLHENDO_ALVO,
-        JOGANDO_DADOS,
-        VERIFICANDO_RESULTADO,
-        FAZENDO_TRANFERENCIAS,
-        TROCANDO_CARTAS
+        ESCOLHENDO_ATAQUE,
+        ESPERANDO_DEFESA,
+        OCUPANDO_TERRITORIO,
+        DESLOCAR_EXERCITOS
     }
 
     private Template template;
@@ -83,13 +110,19 @@ public class Jogo {
     }
 
     public void avancaJogador() {
-        verificarEstado();
+        verificarEstado(Estado.DISTRIBUICAO_INICIAL, Estado.DESLOCAR_EXERCITOS);
+
         List<Jogador> jogadores = tabuleiro.getJogadores();
         int i = jogadores.indexOf(atual) + 1;
         atual = jogadores.get(i % jogadores.size());
         if (i == jogadores.size()) {
             avancaRodada();
         }
+
+        if (rodadas < 1)
+            estadoAtual = Estado.DISTRIBUICAO_INICIAL;
+        else
+            estadoAtual = Estado.REFORCANDO_TERRITORIOS;
     }
 
     public int getRodadas() {
@@ -234,6 +267,7 @@ public class Jogo {
         for (Carta carta : Arrays.asList(carta1, carta2, carta3))
             if (!carta.ehCuringa() && atual.ehDono(carta.getPais()))
                 nExercitos += 2; //TODO: parametrizar?
+        exercitosParaDistribuir += nExercitos;
 
         // devolver as cartas ao baralho
         atual.removeCarta(carta1);

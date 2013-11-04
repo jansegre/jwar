@@ -48,7 +48,7 @@ public class Tabuleiro {
         }
     }
 
-    public Pais getPaisBySlug(String slug) {
+    public Pais getPaisByCodigo(String slug) {
         return paisMap.get(slug.toUpperCase());
     }
 
