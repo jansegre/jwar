@@ -32,4 +32,4 @@ uma IDE aprenda a usar o Maven e seja feliz.
 ## Licensa
 
 Este projeto está licenciado sob a [AGPL](http://www.gnu.org/licenses/agpl-3.0.html), uma cópia dessa
-se encontra no arquivo [LICENSE](LICENSE).
+se encontra no arquivo [LICENSE.md](LICENSE.md).
