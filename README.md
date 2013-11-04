@@ -11,7 +11,7 @@ Feito como trabalho da cadeira de Laboratório de Programação 2 do Instituo Mi
 
 ## Contribuindo
 
-Antes de contribuir leia esse README,. Se você está lendo  é um bom sina!
+Antes de contribuir leia esse README. Aparentemente você já está lendo, isso é um bom sinal.
 
 Leia as regras para entender como o jogo funciona. Se você já conhece, leia as regras mesmo assim
 para relembra-lás, se você acha que lembra leia mesmo assim. Se você acabou de jogar uma partida de
@@ -23,7 +23,7 @@ de Java e leia o código de novo, se ainda assim estiver difícil peça ajuda pr
 que se trata.
 
 Depois de entender as regras e o código que já foi escrito aprenda como fazer um _fork_ do projeto
-e faça-o (exceto se você for um dos privilegiados a ter acesso à esse repositório).
+e faça-o (exceto se você for um dos privilegiados a ter acesso a esse repositório).
 
 Esse projeto usa o [Maven](http://maven.apache.org/), não é necessário ter um conhecimento específico
 de Maven, apenas é necessário saber como importar um projeto desse tipo em sua IDE, se você não usar
@@ -31,5 +31,5 @@ uma IDE aprenda a usar o Maven e seja feliz.
 
 ## Licensa
 
-Esse código está licenciado sob a [AGPL](http://www.gnu.org/licenses/agpl-3.0.html), uma cópia dessa
+Este projeto está licenciado sob a [AGPL](http://www.gnu.org/licenses/agpl-3.0.html), uma cópia dessa
 se encontra no arquivo [LICENSE](LICENSE).
