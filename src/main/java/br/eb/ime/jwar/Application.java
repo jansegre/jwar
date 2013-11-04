@@ -152,6 +152,9 @@ public class Application {
                                 System.out.println(vizinho);
                         }
                         break;
+                    case "ref":
+                    case "reforçar":
+                    case "reforcar":
                     case "ex":
                     case "exercitos":
                         if (command.length != 3) {
@@ -159,9 +162,23 @@ public class Application {
                             System.out.println("      (define o numero de exercitos do brasil pra 20)");
                             break;
                         }
-                        Pais pais = getPaisByCodigo(command[1]);
-                        int n = parseInt(command[2]);
-                        pais.setExercitos(n);
+                        jogo.reforcarTerritorio(
+                                getPaisByCodigo(command[1]),
+                                parseInt(command[2]));
+                        break;
+                    case "mov":
+                    case "move":
+                    case "mover":
+                    case "deslocar":
+                        if (command.length != 4) {
+                            System.out.println("Erro! exemplo: mov BR VE 5");
+                            System.out.println("      (move 5 exércitos do brasil para venezuela");
+                            break;
+                        }
+                        jogo.deslocarExercitos(
+                                getPaisByCodigo(command[1]),
+                                getPaisByCodigo(command[2]),
+                                parseInt(command[3]));
                         break;
                     case "atk":
                     case "attack":

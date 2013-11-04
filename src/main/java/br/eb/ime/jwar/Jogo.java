@@ -28,7 +28,7 @@ import java.util.*;
 public class Jogo {
 
     /*
-                    ■──┐
+             início •──┐
                        ▼
              ┌──────────────────────┐
         ┌───►│ DISTRIBUICAO_INICIAL │ ◄─── próximo jogador
@@ -37,22 +37,30 @@ public class Jogo {
         │       segunda rodada
  próximo jogador       │
         │              ▼
-        │   ┌────────────────────────┐
-        │   │ REFORCANDO_TERRITORIOS │
-        │   └──────────┬─────────────┘
-        │              │
-        │              ▼
-        │     ┌───────────────────┐         ┌──────────────────┐
-        │     │ ESCOLHENDO_ATAQUE ├────────►│ ESPERANDO_DEFESA │
-        │     └────────┬──────────┘         └────────┬─────────┘
-        │              │    ▲                        │
- próximo jogador       │    └───────┬ defesa ganhou ─┴─ ataque ganhou ──┐
-        │              ▼            └┐                                  ▼
-        │     ┌────────────────────┐ │                       ┌─────────────────────┐
-        └─────┤ DESLOCAR_EXERCITOS │ └───────────────────────┤ OCUPANDO_TERRITORIO │
-              └────────────────────┘                         └─────────────────────┘
+        │   ┌────────────────────────┐        ┌──────────────────┐
+        │   │ REFORCANDO_TERRITORIOS │ ┌─────►│ ESPERANDO_DEFESA │
+        │   └──────────┬─────────────┘ │      └──┬────────────┬──┘
+        │              │               │         │            │
+        │              ▼               │  defesa ganhou   ataque ganhou
+        │     ┌───────────────────┐    │         │            │
+        │     │ ESCOLHENDO_ATAQUE ├────┘         │            ▼
+        │     └────────┬──────────┘              │ ┌─────────────────────┐
+        │              │    ▲                    ├─┤ OCUPANDO_TERRITORIO │
+ [receber carta]       │    └────────────────────┘ └──────────┬──────────┘
+        │              ▼                                      │
+        │     ┌────────────────────┐                  objetivo cumprido
+        └─────┤ DESLOCAR_EXERCITOS │                          │
+              └────────────────────┘                          └──■ fim
 
-     */
+
+
+   Legenda:
+
+   ┌────────┐       │              │          • início
+   │ ESTADO │   transição   [ação opcional]
+   └────────┘       │              │          ■ fim
+                    ▼
+    */
 
     private enum Estado {
         DISTRIBUICAO_INICIAL,
@@ -72,6 +80,7 @@ public class Jogo {
     private int rodadas;
     private int trocaAtual;
     private int exercitosParaDistribuir;
+    private boolean conquistouExercito;
 
     public Jogo(List<Cor> cores, Template template) {
         if (cores.size() < 2) {
@@ -82,7 +91,7 @@ public class Jogo {
 
         rodadas = 0;
         trocaAtual = 0;
-        estadoAtual = Estado.REFORCANDO_TERRITORIOS;
+        exercitosParaDistribuir = 0;
 
         // jogadores
         List<Jogador> jogadores = new LinkedList<>();
@@ -98,6 +107,10 @@ public class Jogo {
         distribuirPaises(tabuleiro.getPaises());
         distribuirObjetivos(template.getObjetivos());
         criarCartas(template.getBaralho());
+
+        // começar o jogo
+        estadoAtual = Estado.DISTRIBUICAO_INICIAL;
+        calcularReforcos();
     }
 
     private void verificarEstado(Estado... estadosValidos) {
@@ -111,18 +124,21 @@ public class Jogo {
 
     public void avancaJogador() {
         verificarEstado(Estado.DISTRIBUICAO_INICIAL, Estado.DESLOCAR_EXERCITOS);
+        if (exercitosParaDistribuir > 0)
+            throw new EstadoInvalido("Ainda restam: " + exercitosParaDistribuir + " exércitos para serem distribuídos.");
 
         List<Jogador> jogadores = tabuleiro.getJogadores();
         int i = jogadores.indexOf(atual) + 1;
         atual = jogadores.get(i % jogadores.size());
-        if (i == jogadores.size()) {
+        if (i == jogadores.size())
             avancaRodada();
-        }
 
         if (rodadas < 1)
             estadoAtual = Estado.DISTRIBUICAO_INICIAL;
         else
             estadoAtual = Estado.REFORCANDO_TERRITORIOS;
+
+        calcularReforcos();
     }
 
     public int getRodadas() {
@@ -133,13 +149,13 @@ public class Jogo {
         rodadas++;
     }
 
-    //distribuir países
+    // distribuir países
     private void distribuirPaises(Collection<Pais> paisesInicias) {
         //popular lista
         List<Pais> paises = new ArrayList<>(paisesInicias);
         Collections.shuffle(paises);
 
-        //distribuir
+        // distribuir
         Iterator<Pais> paisIterator = paises.iterator();
         while (paisIterator.hasNext()) {
             for (Jogador jogador : tabuleiro.getJogadores()) {
@@ -278,7 +294,15 @@ public class Jogo {
         this.cartasAparte.push(carta3);
     }
 
-    public void reforcarTerritorios() {
+    public void reforcarTerritorio(Pais pais, int nExercitos) {
+        if (nExercitos > exercitosParaDistribuir)
+            throw new EstadoInvalido("Você não possui tantos exércitos assim");
+
+        exercitosParaDistribuir -= nExercitos;
+        pais.adicionaExercitos(nExercitos);
+    }
+
+    public void calcularReforcos() {
         estadoAtual = Estado.REFORCANDO_TERRITORIOS;
 
         int nExercitos = atual.getPaises().size() / 2;
@@ -290,7 +314,7 @@ public class Jogo {
         exercitosParaDistribuir = nExercitos;
     }
 
-    public void transfereExercito(Pais paisOrigem, Pais paisDestino, int nExercito) {
+    public void deslocarExercitos(Pais paisOrigem, Pais paisDestino, int nExercito) {
         //TODO: dar um jeito de fazer esse método por completo, é preciso algum jeito
         //TODO  de comparar o estado antes de todas as transferências com o estado depois
         //TODO  das transferencias (atual), pois um exército não pode ser deslocado mais
