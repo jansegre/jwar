@@ -313,6 +313,18 @@ public class Jogo {
         //exercitosParaDistribuir += nExercitos;
         exercitosParaDistribuir = nExercitos;
     }
+    
+    // método para reforcar um determinado pais
+    public void ReforcarPais(Pais pais, int exercitos)
+    {
+        if(exercitos > this.exercitosParaDistribuir || this.exercitosParaDistribuir == 0)
+        {
+            throw new EntradaInvalida("Paises cannot be reinforced.");
+        }
+        
+        pais.adicionaExercitos(exercitos);
+        this.exercitosParaDistribuir-=exercitos;
+    }
 
     public void deslocarExercitos(Pais paisOrigem, Pais paisDestino, int nExercito) {
         //TODO: dar um jeito de fazer esse método por completo, é preciso algum jeito
