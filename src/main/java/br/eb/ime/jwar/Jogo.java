@@ -196,8 +196,7 @@ public class Jogo {
     private static Random gerador = new Random();
 
     public List<Integer> jogarDados(int numDados) {
-        List<Integer> dados = new ArrayList<>(numDados);
-        //gerador.setSeed();??
+        List<Integer> dados = new ArrayList<>(3);
         while (numDados-- > 0) {
             dados.add(gerador.nextInt(6) + 1);
         }
@@ -209,12 +208,13 @@ public class Jogo {
     public List<Integer> comparaDados(List<Integer> ataque, List<Integer> defesa) {
         Collections.sort(ataque);
         Collections.sort(defesa);
+        int min = Math.min(ataque.size(), defesa.size());
         
         List<Integer> listaVitorias;
         listaVitorias = new ArrayList<>();
         int vitoriaAtaque = 0, vitoriaDefesa = 0;
         
-        for(int i = 0; i<3; i++){
+        for(int i = 0; i<min; i++){
             if(ataque.get(i)>defesa.get(i)){
                 vitoriaAtaque++;
             }
