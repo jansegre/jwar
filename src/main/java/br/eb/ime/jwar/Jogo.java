@@ -207,14 +207,24 @@ public class Jogo {
     // retorna uma lista com 2 inteiros: 
     //1° = número de vitórias do ataque e 2° = número de vitórias da defesa
     public List<Integer> comparaDados(List<Integer> ataque, List<Integer> defesa) {
-        int somaAtaque = 0, somaDefesa = 0;
-        for (int i : ataque) {
-            somaAtaque += i;
+        Collections.sort(ataque);
+        Collections.sort(defesa);
+        
+        List<Integer> listaVitorias;
+        listaVitorias = new ArrayList<>();
+        int vitoriaAtaque = 0, vitoriaDefesa = 0;
+        
+        for(int i = 0; i<3; i++){
+            if(ataque.get(i)>defesa.get(i)){
+                vitoriaAtaque++;
+            }
+            else
+                vitoriaDefesa++;
         }
-        for (int i : defesa) {
-            somaDefesa += i;
-        }
-        return null;
+        listaVitorias.add(vitoriaAtaque);
+        listaVitorias.add(vitoriaDefesa);
+        
+        return listaVitorias;
     }
 
     public String showExercitos() {
