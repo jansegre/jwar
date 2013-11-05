@@ -198,11 +198,12 @@ public class Jogo {
     }
 
     public List<Integer> jogarDados(int numDados) {
-        List<Integer> dados = new ArrayList<>(numDados);
 
         gerador = new Random();
 
-        while (numDados-- > 0) {
+        List<Integer> dados = new ArrayList<>(3);
+
+	while (numDados-- > 0) {
             dados.add(gerador.nextInt(6) + 1);
         }
 
