@@ -25,6 +25,7 @@ import br.eb.ime.jwar.models.Pais;
 import br.eb.ime.jwar.models.objetivos.ConquistarContinentes;
 import br.eb.ime.jwar.models.objetivos.ConquistarNPaises;
 import br.eb.ime.jwar.models.objetivos.DerrotarJogador;
+import br.eb.ime.jwar.models.objetivos.Objetivo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -154,7 +155,7 @@ public class RiskSecretMission extends Template {
 
         // Objetivos
 
-        objetivos = new ArrayList<>(Arrays.asList(
+        objetivos = new ArrayList<Objetivo>(Arrays.asList(
                 new ConquistarContinentes(1, europe, australia),
                 new ConquistarContinentes(1, europe, southAmerica),
                 new ConquistarContinentes(northAmerica, africa),

@@ -50,7 +50,7 @@ public final class Jogo {
         │              │      ▲            │ ┌─────────────────────┐
         │           pronto    └────────────┴─┤ OCUPANDO_TERRITORIO │
  [receber carta]       │                     └──────────┬──────────┘
-        │              ▼                                │
+     pronto            ▼                                │
         │     ┌────────────────────┐            objetivo alcançado?
         └─────┤ DESLOCAR_EXERCITOS │                    │
               └────────────────────┘                    └──■ fim
@@ -229,19 +229,6 @@ public final class Jogo {
             dados.add(gerador.nextInt(6) + 1);
         }
         return dados;
-    }
-
-    // retorna uma lista com 2 inteiros: 
-    //1° = número de vitórias do ataque e 2° = número de vitórias da defesa
-    public List<Integer> comparaDados(List<Integer> ataque, List<Integer> defesa) {
-        int somaAtaque = 0, somaDefesa = 0;
-        for (int i : ataque) {
-            somaAtaque += i;
-        }
-        for (int i : defesa) {
-            somaDefesa += i;
-        }
-        return null;
     }
 
     public String showExercitos() {
