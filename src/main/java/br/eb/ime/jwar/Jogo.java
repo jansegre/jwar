@@ -68,7 +68,8 @@ public class Jogo {
         ESCOLHENDO_ATAQUE,
         ESPERANDO_DEFESA,
         OCUPANDO_TERRITORIO,
-        DESLOCAR_EXERCITOS
+        DESLOCAR_EXERCITOS,
+        JOGANDO_DADOS
     }
 
     private Template template;
@@ -76,6 +77,9 @@ public class Jogo {
     private Tabuleiro tabuleiro;
     private LinkedList<Carta> cartas;
     private LinkedList<Carta> cartasAparte;
+    private List<Integer> dadosAtacante = new ArrayList<Integer>();
+    private List<Integer> dadosDefensor = new ArrayList<Integer>();
+    private Random gerador;
     private Jogador atual;
     private int rodadas;
     private int trocaAtual;
@@ -193,28 +197,49 @@ public class Jogo {
         return null;
     }
 
-    private static Random gerador = new Random();
-
     public List<Integer> jogarDados(int numDados) {
         List<Integer> dados = new ArrayList<>(numDados);
-        //gerador.setSeed();??
+
+        gerador = new Random();
+
         while (numDados-- > 0) {
             dados.add(gerador.nextInt(6) + 1);
         }
+
         return dados;
+    }
+
+    public void jogarDadosDefensor(int n){
+	dadosDefensor = jogarDados(n);
+    }
+
+    public void jogarDadosAtacante(int n){
+	dadosAtacante = jogarDados(n);
     }
 
     // retorna uma lista com 2 inteiros: 
     //1° = número de vitórias do ataque e 2° = número de vitórias da defesa
-    public List<Integer> comparaDados(List<Integer> ataque, List<Integer> defesa) {
-        int somaAtaque = 0, somaDefesa = 0;
-        for (int i : ataque) {
-            somaAtaque += i;
-        }
-        for (int i : defesa) {
-            somaDefesa += i;
-        }
-        return null;
+    //ta ao contrário
+    public int[] comparaDados() {
+	int resul[] = new int[2];
+
+	resul[0] = 0;
+	resul[1] = 0;
+	
+	estadoAtual = Estado.JOGANDO_DADOS;
+
+	Collections.sort(dadosAtacante, Collections.reverseOrder());
+	Collections.sort(dadosDefensor, Collections.reverseOrder());
+
+	Iterator<Integer> atcIt = dadosAtacante.iterator();
+	Iterator<Integer> dfIt = dadosDefensor.iterator();
+
+	while(atcIt.hasNext() && dfIt.hasNext()){
+		if(atcIt.next() > dfIt.next()) resul[1]++;
+		else resul[0]++;
+	}
+
+	return resul;
     }
 
     public String showExercitos() {
