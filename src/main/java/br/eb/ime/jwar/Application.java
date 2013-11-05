@@ -19,10 +19,7 @@
 package br.eb.ime.jwar;
 
 import br.eb.ime.jwar.excecoes.ExcecaoDoJogo;
-import br.eb.ime.jwar.models.Continente;
-import br.eb.ime.jwar.models.Cor;
-import br.eb.ime.jwar.models.Jogador;
-import br.eb.ime.jwar.models.Pais;
+import br.eb.ime.jwar.models.*;
 import br.eb.ime.jwar.models.templates.RiskSecretMission;
 
 import java.io.BufferedReader;
@@ -73,6 +70,7 @@ public class Application {
             System.out.print(" " + jogador);
         System.out.println();
         System.out.println("O jogador " + jogo.jogadorAtual() + " começa.");
+        System.out.println("Exércitos para distribuir: " + jogo.getExercitosParaDistribuir());
 
         boolean quit = false;
         while (!quit) {
@@ -98,14 +96,38 @@ public class Application {
                     case "mission":
                         System.out.println("Seu objetivo é " + jogo.jogadorAtual().getObjetivo() + ".");
                         break;
+                    case "ca":
+                    case "cards":
+                    case "cartas":
+                        List<Carta> cartas = jogo.jogadorAtual().getCartas();
+                        int cn = cartas.size();
+                        if (cn == 0) {
+                            System.out.println("Nenhuma carta ainda.");
+                            break;
+                        }
+                        for (int i = 0; i < cn; ++i)
+                            System.out.println(i + ": " + cartas.get(i));
+                        break;
+                    case "trk":
+                    case "troca":
+                        if (command.length != 4) {
+                            System.out.println("Erro! Exemplo: troca 0 1 5");
+                            break;
+                        }
+                        int i = parseInt(command[1]);
+                        int j = parseInt(command[2]);
+                        int k = parseInt(command[3]);
+                        List<Carta> cartas1 = jogo.jogadorAtual().getCartas();
+                        jogo.fazerTrocaDeCartas(cartas1.get(i), cartas1.get(j), cartas1.get(k));
+                        break;
                     case "ok":
                     case "avançar":
                     case "avancar":
                     case "pronto":
                     case "proximo":
                     case "próximo":
-                        jogo.avancaJogador();
-                        System.out.println("Vez do jogador " + jogo.jogadorAtual());
+                        jogo.OK();
+                        //System.out.println("Vez do jogador " + jogo.jogadorAtual());
                         break;
                     case "cont":
                     case "continentes":
@@ -157,14 +179,34 @@ public class Application {
                     case "reforcar":
                     case "ex":
                     case "exercitos":
-                        if (command.length != 3) {
+                        if (command.length == 1) {
+                            System.out.println("Exércitos para distribuir: " + jogo.getExercitosParaDistribuir());
+                        } else if (command.length == 3) {
+                            switch (jogo.reforcarTerritorio(
+                                    getPaisByCodigo(command[1]),
+                                    parseInt(command[2]))) {
+                                case REFORCANDO_TERRITORIOS:
+                                    System.out.println("Fim da etapa inicial, agora ataques são possíveis!");
+                                    // no break
+                                case DISTRIBUICAO_INICIAL:
+                                    System.out.println("Vez do jogador " + jogo.jogadorAtual());
+                                    // no break
+                                case NIL:
+                                    System.out.println("Exércitos para distribuir: " + jogo.getExercitosParaDistribuir());
+                                    break;
+                                case ESCOLHENDO_ATAQUE:
+                                    System.out.println("Você agora está em modo de ataque.");
+                                    break;
+                                default:
+                                    System.out.println("Algo errado ocorreu");
+                                    break;
+                            }
+                        } else {
                             System.out.println("Erro! exemplo: ex BR 20");
                             System.out.println("      (define o numero de exercitos do brasil pra 20)");
                             break;
                         }
-                        jogo.reforcarTerritorio(
-                                getPaisByCodigo(command[1]),
-                                parseInt(command[2]));
+
                         break;
                     case "mov":
                     case "move":

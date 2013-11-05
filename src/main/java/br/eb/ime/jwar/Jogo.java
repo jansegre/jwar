@@ -66,7 +66,8 @@ public class Jogo {
                     ▼
     */
 
-    private enum Estado {
+    public enum Estado {
+        NIL, // para usar em não mudanças
         DISTRIBUICAO_INICIAL,
         REFORCANDO_TERRITORIOS,
         ESCOLHENDO_ATAQUE,
@@ -96,13 +97,12 @@ public class Jogo {
         rodadas = 0;
         trocaAtual = 0;
         exercitosParaDistribuir = 0;
+        conquistouExercito = false;
 
         // jogadores
         List<Jogador> jogadores = new LinkedList<>();
-        int numJogadores = cores.size();
-        for (Cor cor : cores) {
+        for (Cor cor : cores)
             jogadores.add(new Jogador(cor));
-        }
         Collections.shuffle(jogadores); // ordem aleatória de jogadores
         atual = jogadores.get(0);
 
@@ -126,14 +126,29 @@ public class Jogo {
         return atual;
     }
 
-    public void OK() {
-        verificarEstado();
+    public Estado OK() {
+        verificarEstado(Estado.ESCOLHENDO_ATAQUE, Estado.DESLOCAR_EXERCITOS, Estado.REFORCANDO_TERRITORIOS);
+        switch (estadoAtual) {
+            case ESCOLHENDO_ATAQUE:
+                return estadoAtual = Estado.DESLOCAR_EXERCITOS;
+            case DESLOCAR_EXERCITOS:
+                return avancaJogador();
+            case REFORCANDO_TERRITORIOS:
+                if (exercitosParaDistribuir > 0)
+                    throw new EstadoInvalido("Ainda restam: " + exercitosParaDistribuir + " exércitos para serem distribuídos.");
+                return estadoAtual = Estado.ESCOLHENDO_ATAQUE;
+            default:
+                return Estado.NIL;
+        }
     }
 
-    public void avancaJogador() {
-        verificarEstado(Estado.DISTRIBUICAO_INICIAL, Estado.DESLOCAR_EXERCITOS);
-        if (exercitosParaDistribuir > 0)
-            throw new EstadoInvalido("Ainda restam: " + exercitosParaDistribuir + " exércitos para serem distribuídos.");
+    public Estado getEstadoAtual() {
+        return estadoAtual;
+    }
+
+    private Estado avancaJogador() {
+        if (conquistouExercito)
+            darCarta();
 
         List<Jogador> jogadores = tabuleiro.getJogadores();
         int i = jogadores.indexOf(atual) + 1;
@@ -141,12 +156,11 @@ public class Jogo {
         if (i == jogadores.size())
             avancaRodada();
 
-        if (rodadas < 1)
-            estadoAtual = Estado.DISTRIBUICAO_INICIAL;
-        else
-            estadoAtual = Estado.REFORCANDO_TERRITORIOS;
-
         calcularReforcos();
+        if (rodadas < 1)
+            return estadoAtual = Estado.DISTRIBUICAO_INICIAL;
+        else
+            return estadoAtual = Estado.REFORCANDO_TERRITORIOS;
     }
 
     public int getRodadas() {
@@ -170,7 +184,7 @@ public class Jogo {
                 if (paisIterator.hasNext()) {
                     paisIterator.next().setDono(jogador);
                 } else {
-                    System.err.println("Jogador " + jogador + " em desvantagem");
+                    //System.err.println("Jogador " + jogador + " em desvantagem");
                 }
             }
         }
@@ -265,16 +279,10 @@ public class Jogo {
             this.cartasAparte = tmp;
         }
         atual.addCarta(this.cartas.pop());
-        if (atual.getCartas().size() > 5) //TODO: parametrizar?
-            ;// o jogador deve descartar uma carta
-    }
-
-    public void descartarCarta(Carta carta) {
-        this.cartasAparte.add(carta);
-        atual.removeCarta(carta);
     }
 
     public void fazerTrocaDeCartas(Carta carta1, Carta carta2, Carta carta3) {
+        verificarEstado(Estado.REFORCANDO_TERRITORIOS);
 
         // verificar se o usuario tem as cartas usadas
         if (!atual.ehDono(carta1) || !atual.ehDono(carta2) || !atual.ehDono(carta3)) {
@@ -302,17 +310,35 @@ public class Jogo {
         this.cartasAparte.push(carta3);
     }
 
-    public void reforcarTerritorio(Pais pais, int nExercitos) {
+    // retorna o estado novo se ele mudar, se não retorna NIL
+    public Estado reforcarTerritorio(Pais pais, int nExercitos) {
+        verificarEstado(Estado.REFORCANDO_TERRITORIOS, Estado.DISTRIBUICAO_INICIAL);
+
+        if (atual.getCartas().size() >= 5)
+            throw new EstadoInvalido("Você deve fazer uma troca primeiro.");
+
         if (nExercitos > exercitosParaDistribuir)
             throw new EstadoInvalido("Você não possui tantos exércitos assim");
 
         exercitosParaDistribuir -= nExercitos;
         pais.adicionaExercitos(nExercitos);
+
+        if (exercitosParaDistribuir == 0) {
+            if (estadoAtual == Estado.DISTRIBUICAO_INICIAL)
+                return avancaJogador();
+            else
+                return estadoAtual = Estado.ESCOLHENDO_ATAQUE;
+        } else {
+            return Estado.NIL;
+        }
     }
 
-    public void calcularReforcos() {
-        estadoAtual = Estado.REFORCANDO_TERRITORIOS;
+    public int getExercitosParaDistribuir() {
+        verificarEstado(Estado.REFORCANDO_TERRITORIOS, Estado.DISTRIBUICAO_INICIAL);
+        return exercitosParaDistribuir;
+    }
 
+    private void calcularReforcos() {
         int nExercitos = atual.getPaises().size() / 2;
         for (Continente continente : atual.getContinentes())
             nExercitos += continente.getBonus();
@@ -323,6 +349,8 @@ public class Jogo {
     }
 
     public void deslocarExercitos(Pais paisOrigem, Pais paisDestino, int nExercito) {
+        verificarEstado(Estado.DESLOCAR_EXERCITOS);
+
         //TODO: dar um jeito de fazer esse método por completo, é preciso algum jeito
         //TODO  de comparar o estado antes de todas as transferências com o estado depois
         //TODO  das transferencias (atual), pois um exército não pode ser deslocado mais
@@ -332,7 +360,6 @@ public class Jogo {
         //TODO  o sistema atual permite que sejam feitas essas duas transferências:
         //TODO      A(3) B(1) C(2) -> A(1) B(3) C(2) -> A(1) B(1) C(4)
         //TODO  mesmo que o último estado não seja permitido.
-
 
         //XXX: de onde veio essa regra??
         //if (nExercito > 2)
