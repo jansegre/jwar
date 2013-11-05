@@ -226,8 +226,9 @@ public class Jogo {
         return dados;
     }
 
-    // retorna true se o ataque é estritamente maior
-    public boolean comparaDados(List<Integer> ataque, List<Integer> defesa) {
+    // retorna uma lista com 2 inteiros: 
+    //1° = número de vitórias do ataque e 2° = número de vitórias da defesa
+    public List<Integer> comparaDados(List<Integer> ataque, List<Integer> defesa) {
         int somaAtaque = 0, somaDefesa = 0;
         for (int i : ataque) {
             somaAtaque += i;
@@ -235,7 +236,7 @@ public class Jogo {
         for (int i : defesa) {
             somaDefesa += i;
         }
-        return somaAtaque > somaDefesa;
+        return null;
     }
 
     public String showExercitos() {
@@ -347,6 +348,18 @@ public class Jogo {
         //exercitosParaDistribuir += nExercitos;
         exercitosParaDistribuir = nExercitos;
     }
+    
+    // método para reforcar um determinado pais
+    public void reforcarPais(Pais pais, int exercitos)
+    {
+        if(exercitos > this.exercitosParaDistribuir || this.exercitosParaDistribuir == 0)
+        {
+            throw new EntradaInvalida("Paises cannot be reinforced.");
+        }
+        
+        pais.adicionaExercitos(exercitos);
+        this.exercitosParaDistribuir-=exercitos;
+    }
 
     public void deslocarExercitos(Pais paisOrigem, Pais paisDestino, int nExercito) {
         verificarEstado(Estado.DESLOCAR_EXERCITOS);
@@ -375,5 +388,45 @@ public class Jogo {
         // Transação propriamente dita
         paisOrigem.removeExercitos(nExercito);
         paisDestino.adicionaExercitos(nExercito);
+    }
+    
+    public boolean escolherAlvo(Pais atacante, Pais defensor){
+        if((atacante.getDono()== atual)&&(atacante.fazFronteira(defensor))&&(atacante.getExercitos()>1)){
+            estadoAtual = Estado.ESCOLHENDO_ATAQUE;
+            return true;
+        }
+        else{
+            throw new EntradaInvalida("You can't atack from this country\n");
+        }
+    }
+    
+    public void efetivarAtaque(Pais atacante, Pais defensor){
+        List<Integer> listaVitorias;
+        int dadosAtaque, dadosDefesa;
+        
+        dadosAtaque = atacante.getExercitos()-1;
+        dadosDefesa = defensor.getExercitos();
+        
+        if(dadosAtaque>3){
+            dadosAtaque = 3;
+        }
+        if(dadosDefesa>3){
+            dadosDefesa = 3;
+        }
+        
+        if(this.escolherAlvo(atacante, defensor)){
+            listaVitorias = comparaDados(jogarDados(dadosAtaque), jogarDados(dadosDefesa));
+                    
+            //muda numero de exércitos dos países
+            defensor.removeExercitos(listaVitorias.get(0));
+            atacante.removeExercitos(listaVitorias.get(1));
+            //muda dono do país defensor se for o caso
+            if(defensor.getExercitos()==0){
+                defensor.setDono(atual);
+                //por default, coloca apenas um exercito no pais novo
+                defensor.adicionaExercitos(1);
+                atacante.removeExercitos(1);
+            }
+        }
     }
 }
