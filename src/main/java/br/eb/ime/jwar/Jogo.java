@@ -392,8 +392,8 @@ public class Jogo {
     }
     
     public void efetivarAtaque(Pais atacante, Pais defensor){
-        List<Integer> listaVitorias;
-        int dadosAtaque, dadosDefesa;
+        int[] listaVitorias;
+        /*int dadosAtaque, dadosDefesa;
         
         dadosAtaque = atacante.getExercitos()-1;
         dadosDefesa = defensor.getExercitos();
@@ -404,13 +404,14 @@ public class Jogo {
         if(dadosDefesa>3){
             dadosDefesa = 3;
         }
+        */
         
         if(this.escolherAlvo(atacante, defensor)){
-            listaVitorias = comparaDados(jogarDados(dadosAtaque), jogarDados(dadosDefesa));
+            listaVitorias = comparaDados();
                     
             //muda numero de exércitos dos países
-            defensor.removeExercitos(listaVitorias.get(0));
-            atacante.removeExercitos(listaVitorias.get(1));
+            defensor.removeExercitos(listaVitorias[1]);
+            atacante.removeExercitos(listaVitorias[0]);
             //muda dono do país defensor se for o caso
             if(defensor.getExercitos()==0){
                 defensor.setDono(atual);
