@@ -77,15 +77,16 @@ public class Application {
             Jogador vencedor = jogo.vencedor();
             if (vencedor != null) {
                 System.out.println("Parabéns!! O jogador " + vencedor + " ganhou a partida.");
-                System.out.println("Seu objetivo era " + vencedor.getObjetivo());
-                System.out.println(jogo.showFronteiras());
+                System.out.println("Seu objetivo era " + vencedor.getObjetivo() + ".");
                 break;
             }
             System.out.print("> ");
             try {
                 input = reader.readLine();
                 command = input.split("\\s");
-                if (command.length > 0) switch (command[0]) {
+                if (command.length <= 0)
+                    continue;
+                switch (command[0]) {
                     case "cur":
                     case "current":
                     case "atual":
@@ -126,8 +127,22 @@ public class Application {
                     case "pronto":
                     case "proximo":
                     case "próximo":
-                        jogo.OK();
-                        //System.out.println("Vez do jogador " + jogo.jogadorAtual());
+                        switch (jogo.OK()) {
+                            case DESLOCAR_EXERCITOS:
+                                System.out.println("Agora você pode deslocar seus exércitos.");
+                                break;
+                            case ESCOLHENDO_ATAQUE:
+                                System.out.println("Agora você pode efetuar ataques.");
+                                break;
+                            case DISTRIBUICAO_INICIAL:
+                            case REFORCANDO_TERRITORIOS:
+                                System.out.println("Vez do jogador " + jogo.jogadorAtual());
+                                System.out.println("Exércitos para distribuir: " + jogo.getExercitosParaDistribuir());
+                                break;
+                            default:
+                                System.out.println("Algo errado não está certo.");
+                                break;
+                        }
                         break;
                     case "cont":
                     case "continentes":
@@ -150,16 +165,27 @@ public class Application {
                     case "my":
                     case "meu":
                     case "meus":
-                        for (Continente continente : jogo.jogadorAtual().getContinentes())
-                            System.out.println("* " + continente.showSummary());
-                        for (Pais pais : jogo.jogadorAtual().getPaises())
-                            System.out.println(pais.showSummary());
+                        int count;
+                        count = jogo.jogadorAtual().getContinentes().size();
+                        if (count > 0) {
+                            System.out.println("Você possui " + count + " continentes.");
+                            for (Continente continente : jogo.jogadorAtual().getContinentes())
+                                System.out.println("* " + continente.showSummary());
+                        }
+                        count = jogo.jogadorAtual().getPaises().size();
+                        if (count > 0) {
+                            System.out.println("Você possui " + count + " países.");
+                            for (Pais pais : jogo.jogadorAtual().getPaises())
+                                System.out.println(pais.showSummary());
+                        }
                         break;
+                    case "ne":
                     case "nei":
                     case "neighbors":
+                    case "vz":
                     case "viz":
                     case "vizinhos":
-                        if (command.length == 0) {
+                        if (command.length == 1) {
                             // Set é usado pois as entradas não se repetem
                             Set<Pais> vizinhos = new HashSet<>();
                             for (Pais pais : jogo.jogadorAtual().getPaises())
@@ -168,10 +194,13 @@ public class Application {
                             // loop nos vizinhos, agora é garantido que não há repetições
                             for (Pais vizinho : vizinhos)
                                 System.out.println(vizinho.showSummary());
-                        } else {
+                        } else if (command.length == 2) {
                             Pais pais = getPaisByCodigo(command[1]);
                             for (Pais vizinho : pais.getFronteiras())
-                                System.out.println(vizinho);
+                                System.out.println(vizinho.showSummary());
+                        } else {
+                            System.out.println("Erro! Exemplo: viz br");
+                            break;
                         }
                         break;
                     case "ref":
@@ -182,7 +211,7 @@ public class Application {
                         if (command.length == 1) {
                             System.out.println("Exércitos para distribuir: " + jogo.getExercitosParaDistribuir());
                         } else if (command.length == 3) {
-                            switch (jogo.reforcarTerritorio(
+                            switch (jogo.reforcarPais(
                                     getPaisByCodigo(command[1]),
                                     parseInt(command[2]))) {
                                 case REFORCANDO_TERRITORIOS:
@@ -208,11 +237,12 @@ public class Application {
                         }
 
                         break;
+                    case "mv":
                     case "mov":
                     case "move":
                     case "mover":
                     case "deslocar":
-                        if (command.length != 4) {
+                        if (command.length != 4 && command.length != 3) {
                             System.out.println("Erro! exemplo: mov BR VE 5");
                             System.out.println("      (move 5 exércitos do brasil para venezuela");
                             break;
@@ -220,7 +250,7 @@ public class Application {
                         jogo.deslocarExercitos(
                                 getPaisByCodigo(command[1]),
                                 getPaisByCodigo(command[2]),
-                                parseInt(command[3]));
+                                command.length == 3 ? 1 : parseInt(command[3]));
                         break;
                     case "atk":
                     case "attack":
@@ -233,27 +263,9 @@ public class Application {
                         }
                         Pais atacante = getPaisByCodigo(command[1]);
                         Pais defensor = getPaisByCodigo(command[2]);
-                        //TODO: a seguinte parte contém lógica não deveria estar aqui
-                        if (atacante.getDono() != jogo.jogadorAtual()) {
-                            System.out.println("O país atacante: " + atacante + ", não é seu.");
-                            break;
-                        } else if (atacante.getDono() == defensor.getDono()) {
-                            System.out.println("O país defensor: " + defensor + ", também é seu.");
-                            break;
-                        } else if (!atacante.fazFronteira(defensor)) {
-                            System.out.println("Os países " + atacante + ", " + defensor + " não fazem fronteira.");
-                            break;
-                        }
-                        int numDadosAtk = atacante.getExercitos() - 1;
-                        if (numDadosAtk > 3) numDadosAtk = 3;
-                        if (numDadosAtk <= 0) {
-                            System.out.println(atacante.getCodigo() + "Não pode atacar, deve possuir pelo menos 2 exércitos");
-                            break;
-                        }
-                        int numDadosDef = defensor.getExercitos();
-                        if (numDadosDef > 3) numDadosDef = 3;
-                        List<Integer> dadosAtk = jogo.jogarDados(numDadosAtk);
-                        List<Integer> dadosDef = jogo.jogarDados(numDadosDef);
+
+                        List<Integer> dadosAtk = jogo.atacarPais(atacante, defensor);
+                        List<Integer> dadosDef = jogo.defenderPais();
                         System.out.print("dados ataque: ");
                         for (int d : dadosAtk)
                             System.out.print(" " + d);
@@ -262,22 +274,23 @@ public class Application {
                         for (int d : dadosDef)
                             System.out.print(" " + d);
                         System.out.println();
-                        if (jogo.comparaDados(dadosAtk, dadosDef)) {
-                            System.out.println(atacante.getCodigo() + " ganhou a batalha");
-                            int defEx = defensor.getExercitos();
-                            if (defEx > 1) {
-                                defensor.setExercitos(defEx - 1);
-                            } else {
-                                atacante.setExercitos(atacante.getExercitos() - 1);
-                                defensor.setExercitos(1);
-                                defensor.setDono(atacante.getDono());
-                            }
-                        } else {
-                            System.out.println(defensor.getCodigo() + " ganhou a batalha");
-                            atacante.setExercitos(atacante.getExercitos() - 1);
-                        }
+                        System.out.println("casualidades de ataque: " + jogo.getCasualidadesAtaque());
+                        System.out.println("casualidades de defesa: " + jogo.getCasualidadesDefesa());
+                        if (jogo.getEstadoAtual() == Jogo.Estado.OCUPANDO_TERRITORIO)
+                            System.out.println("Território conquistado, ocupe-o com 'ocupar'.");
                         System.out.println(atacante.showShortSummary());
                         System.out.println(defensor.showShortSummary());
+                        break;
+                    case "oc":
+                    case "ocupar":
+                    case "occupy":
+                        if (command.length > 2) {
+                            System.out.println("Erro! exemplo: oc 2");
+                            System.out.println("      (ocupa o país com 2 exércitos)");
+                            break;
+                        }
+                        int oc = command.length > 1 ? parseInt(command[1]) : 1;
+                        jogo.ocuparPais(oc);
                         break;
                     case "q":
                     case "quit":
