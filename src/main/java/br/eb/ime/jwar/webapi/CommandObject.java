@@ -20,5 +20,6 @@ package br.eb.ime.jwar.webapi;
 
 public class CommandObject {
     public String command;
+    public String output;
     public String user;
 }

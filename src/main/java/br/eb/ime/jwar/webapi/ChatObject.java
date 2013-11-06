@@ -25,11 +25,16 @@ public class ChatObject {
     public String type;
 
     public ChatObject() {
+        this.type = "system";
+    }
+
+    public ChatObject(String message) {
+        this();
+        this.message = message;
     }
 
     public ChatObject(String user, String message) {
-        super();
+        this(message);
         this.user = user;
-        this.message = message;
     }
 }

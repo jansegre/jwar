@@ -35,6 +35,9 @@ public class ApiServer extends SocketIOServer {
     public ApiServer(Configuration config) {
         super(config);
 
+        // Criar um jogo, por enquanto igual ao em Application
+        jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO), new RiskSecretMission());
+
         // Servir um chat para facilitar a comunicação da galera
         final SocketIONamespace chatServer = this.addNamespace("/chat");
         chatServer.addJsonObjectListener(ChatObject.class, new DataListener<ChatObject>() {
@@ -72,19 +75,7 @@ public class ApiServer extends SocketIOServer {
                 client.sendJsonObject(new StateObject(jogo, true));
             }
         });
-        apiServer.addJsonObjectListener(CommandObject.class, new DataListener<CommandObject>() {
-            @Override
-            public void onData(SocketIOClient client, CommandObject data, AckRequest ackSender) {
-                //TODO: check if sender is the correct player
-                System.out.println("command received: " + data.command);
-
-                // update everyone's state
-                apiServer.getBroadcastOperations().sendJsonObject(new StateObject(jogo));
-            }
-        });
-
-        // Criar um jogo, por enquanto igual ao em Application
-        jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO), new RiskSecretMission());
+        apiServer.addJsonObjectListener(CommandObject.class, new CommandListener(jogo, apiServer));
     }
 
     public static ApiServer newConfiguredApiServer() {

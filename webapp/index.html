@@ -451,6 +451,10 @@ body {
   apiSocket.on('message', function (data) {
     console.log(data);
 
+    if (data.output) {
+      return;
+    }
+
     // load the map if recently connected
     if (data.welcome)
       loadMap(data.mapfile);
