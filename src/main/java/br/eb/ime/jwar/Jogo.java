@@ -23,6 +23,7 @@ import br.eb.ime.jwar.models.*;
 import br.eb.ime.jwar.models.objetivos.Objetivo;
 import br.eb.ime.jwar.models.templates.Template;
 
+import java.lang.Integer;
 import java.util.*;
 
 public final class Jogo {
@@ -87,6 +88,7 @@ public final class Jogo {
     private int exercitosParaDistribuir;
     private boolean conquistouExercito;
     private boolean jogoComecou;
+    private Map<Pais, Integer> exercitosMovidos;
 
     public Jogo(List<Cor> cores, Template template) {
         if (cores.size() < 2)
@@ -378,7 +380,12 @@ public final class Jogo {
 
         // Transação propriamente dita
         paisOrigem.removeExercitos(nExercito);
-        paisDestino.adicionaExercitos(nExercito);
+        exercitosMovidos.put(paisDestino, nExercito);
+    }
+    private void deslocaExercitos(){
+        for(Pais paisDestino: exercitosMovidos.keySet()){
+            paisDestino.adicionaExercitos(exercitosMovidos.remove(paisDestino));
+        }
     }
 
     private static final int maxDados = 3;
