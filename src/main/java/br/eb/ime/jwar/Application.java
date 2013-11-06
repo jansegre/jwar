@@ -99,12 +99,12 @@ public class Application {
                             break;
                         }
                         for (int i = 0; i < cn; ++i)
-                            System.out.println(i + ": " + cartas.get(i));
+                            System.out.println(i+1 + " : " + cartas.get(i));
                         break;
                     case "trk":
                     case "troca":
                         if (command.length != 4) {
-                            System.out.println("Erro! Exemplo: troca 0 1 5");
+                            System.out.println("Erro! Exemplo: troca 1 2 5");
                             break;
                         }
                         int i = parseInt(command[1]);
@@ -266,8 +266,8 @@ public class Application {
                         for (int d : dadosDef)
                             System.out.print(" " + d);
                         System.out.println();
-                        System.out.println("casualidades de ataque: " + jogo.getCasualidadesAtaque());
-                        System.out.println("casualidades de defesa: " + jogo.getCasualidadesDefesa());
+                        System.out.println("Exércitos perdidos pelo ataque: " + jogo.getCasualidadesAtaque());
+                        System.out.println("Exércitos perdidos pela defesa: " + jogo.getCasualidadesDefesa());
                         if (jogo.getEstadoAtual() == Jogo.Estado.OCUPANDO_TERRITORIO)
                             System.out.println("Território conquistado, ocupe-o com 'ocupar'.");
                         System.out.println(atacante.showShortSummary());
