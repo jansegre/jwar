@@ -256,14 +256,15 @@ public abstract class JogoTextual {
 
                     List<Integer> dadosAtk = jogo.atacarPais(atacante, defensor);
                     List<Integer> dadosDef = jogo.defenderPais();
-                    output("Dados de ataque: ");
+                    String buf;
+                    buf = "Dados de ataque: ";
                     for (int d : dadosAtk)
-                        output(" " + d);
-                    output();
-                    System.out.print("Dados de defesa: ");
+                        buf += " " + d;
+                    output(buf);
+                    buf = "Dados de defesa: ";
                     for (int d : dadosDef)
-                        System.out.print(" " + d);
-                    output();
+                        buf += " " + d;
+                    output(buf);
                     output("Exércitos perdidos pelo ataque: " + jogo.getCasualidadesAtaque());
                     output("Exércitos perdidos pela defesa: " + jogo.getCasualidadesDefesa());
                     if (jogo.getEstadoAtual() == Jogo.Estado.OCUPANDO_TERRITORIO)
@@ -281,6 +282,7 @@ public abstract class JogoTextual {
                     }
                     int oc = command.length > 1 ? parseInt(command[1]) : 1;
                     jogo.ocuparPais(oc);
+                    output("País ocupado com " + oc + "exército" + (oc > 1 ?  "s" : ""));
                     break;
                 case "q":
                 case "quit":

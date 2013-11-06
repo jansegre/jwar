@@ -32,6 +32,7 @@ public class CommandListener extends JogoTextual implements DataListener<Command
     public CommandListener(Jogo jogo, SocketIONamespace server) {
         super(jogo);
         this.server = server;
+        this.out = "";
     }
 
     @Override
@@ -52,6 +53,7 @@ public class CommandListener extends JogoTextual implements DataListener<Command
         CommandObject cmd = new CommandObject();
         cmd.output = out;
         server.getBroadcastOperations().sendJsonObject(cmd);
+        out = "";
     }
 
     @Override

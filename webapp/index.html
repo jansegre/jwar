@@ -2,7 +2,7 @@
 <!-- vim: et sw=2 ts=2 sts=2
   -->
 <meta charset="utf-8">
-  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="">
 <meta name="author" content="">
 <!--<link rel="shortcut icon" href="ico/favicon.png">-->
@@ -37,16 +37,7 @@ body {
     margin-bottom: -4px;
 }
 
-.country-label {
-    display: block;
-    fill: #eee;
-    font-family: "Open Sans";
-    font-size: 12px;
-    font-weight: 300;
-    text-anchor: right;
-    filter: url(#shadow);
-}
-
+.country-circle { fill: none }
 .owner-azul     { fill: blue }
 .owner-amarelo  { fill: yellow }
 .owner-vermelho { fill: red }
@@ -54,16 +45,17 @@ body {
 .owner-branco   { fill: white }
 .owner-preto    { fill: black }
 
-.country-label.moving {
-    filter: none;
-    /*stroke: #111;*/
-    stroke-opacity: .8;
-    stroke-width: .2px;
-    stroke-linejoin: round;
+.country-label:hover, .country-circle:hover, .country:hover {
+    cursor: pointer;
 }
 
-.country-label:hover, .country:hover {
-    cursor: pointer;
+.country-label {
+    display: block;
+    fill: #aaa;
+    font-family: "Open Sans";
+    font-size: 14px;
+    font-weight: 300;
+    text-anchor: middle;
 }
 
 .country {
@@ -133,6 +125,10 @@ body {
 .country.SA.c3  { fill: #19b512; }
 
 /* chat styles */
+.chat, .console {
+  padding: 10px;
+}
+
 .chat-user {
   font-weight: bold;
 }
@@ -146,8 +142,8 @@ body {
 }
 
 @media (min-width: 768px) {
-  .chat-form .form-group {
-    width: 500px;
+  .chat-form .form-group, .command-form .form-group {
+    width: 300px;
   }
 }
 
@@ -204,25 +200,41 @@ body {
   <!--
   <div class="well map"></div>
   -->
-  <div class="panel panel-default well hide map-screen">
-    <div class="panel-body map"></div>
-    <div class="panel-footer">
-      <span class="label label-default selected-country">&nbsp;</span>
+  <div class="row">
+    <div class="panel panel-default well hide map-screen">
+      <div class="panel-body map"></div>
+      <div class="panel-footer">
+        <span class="label label-default selected-country">&nbsp;</span>
+      </div>
     </div>
   </div>
 
   <!-- chat -->
-  <div class="chat well">
-    <!--<h4>Chat</h4>-->
-    <div class="console">
-    </div>
-
-    <form class="form-inline chat-form" role="form">
-      <div class="form-group">
-        <input class="msg form-control" type="text" placeholder="Digite sua mensagem...">
+  <div class="row well">
+    <div class="command col-md-6">
+      <!--<h4>Chat</h4>-->
+      <div class="console">
       </div>
-      <input type="submit" class="btn btn-default" value="Enviar">
-    </form>
+
+      <form class="form-inline command-form" role="form">
+        <div class="form-group">
+          <input class="cmd form-control" type="text" placeholder="Digite um comando...">
+        </div>
+        <input type="submit" class="btn btn-default" value="Enviar">
+      </form>
+    </div>
+    <div class="chat col-md-6">
+      <!--<h4>Chat</h4>-->
+      <div class="console">
+      </div>
+
+      <form class="form-inline chat-form" role="form">
+        <div class="form-group">
+          <input class="msg form-control" type="text" placeholder="Digite sua mensagem...">
+        </div>
+        <input type="submit" class="btn btn-default" value="Enviar">
+      </form>
+    </div>
   </div>
 
 </div> <!-- /container -->
@@ -248,29 +260,24 @@ body {
   var defs = svg.append("defs")
   var selected_country = d3.select(".selected-country");
 
-  var filter = defs.append("filter").attr("id", "shadow");
-  //filter.append("feGaussianBlur").attr("stdDeviation", .5);
-  //filter.append("feGaussianBlur")
-  //  .attr("in", "SourceAlpha")
+  //var filter = defs.append("filter").attr("id", "shadow");
+  //filter.append("feMorphology")
+  //  .attr("in", "SourceGraphic")
+  //  .attr("radius", 1.0)
+  //  .attr("operator", "dilate")
   //  .attr("result", "dilated");
-  //  .attr("stdDeviation", 1)
-  filter.append("feMorphology")
-    .attr("in", "SourceGraphic")
-    .attr("radius", 1.0)
-    .attr("operator", "dilate")
-    .attr("result", "dilated");
-  filter.append("feColorMatrix")
-    .attr("in", "dilated")
-    .attr("result", "textbg")
-    .attr("type", "matrix")
-    .attr("values",
-      "-0.4 -0.3 -0.3 0   1   " +
-      "-0.3 -0.4 -0.3 0   1   " +
-      "-0.3 -0.3 -0.4 0   1   " +
-      " 0    0    0   1   0   ");
-  var merge = filter.append("feMerge")
-  merge.append("feMergeNode").attr("in", "textbg");
-  merge.append("feMergeNode").attr("in", "SourceGraphic");
+  //filter.append("feColorMatrix")
+  //  .attr("in", "dilated")
+  //  .attr("result", "textbg")
+  //  .attr("type", "matrix")
+  //  .attr("values",
+  //    "-0.4 -0.3 -0.3 0   1   " +
+  //    "-0.3 -0.4 -0.3 0   1   " +
+  //    "-0.3 -0.3 -0.4 0   1   " +
+  //    " 0    0    0   1   0   ");
+  //var merge = filter.append("feMerge")
+  //merge.append("feMergeNode").attr("in", "textbg");
+  //merge.append("feMergeNode").attr("in", "SourceGraphic");
 
   // Possible projections
   var projections = [
@@ -358,20 +365,21 @@ body {
       var p = projection.rotate();
       _lr = [p[0] - λ(m[0]) , p[1] - φ(m[1])];
       // optimizations
-      svg.selectAll(".country-label").classed("moving", true);
+      //svg.selectAll(".country-label").classed("moving", true);
     })
     // do a delta rotation
     .on("drag", function() {
       var m = d3.mouse(this);
       var r = [λ(m[0]) + _lr[0], 0];
-      //var r = [λ(m[0]) + window.lr[0], φ(m[1]) + window.lr[1]];
+      //var r = [λ(m[0]) + _lr[0], φ(m[1]) + _lr[1]];
       projection.rotate(r);
       svg.selectAll(".country,.graticule").attr("d", path);
       svg.selectAll(".country-label").attr("transform", transform);
+      svg.selectAll(".country-circle").attr("transform", transform);
     })
     // clean up optimizations
     .on("dragend", function() {
-      svg.selectAll(".country-label").classed("moving", false);
+      //svg.selectAll(".country-label").classed("moving", false);
     })
   );
 
@@ -400,6 +408,15 @@ body {
         .attr("d", path);
         //.style("fill", function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); });
 
+      svg.selectAll(".country-circle")
+        .data(labels)
+        .enter().append("circle")
+        .attr("class", "country-circle")
+        .attr("id", function(d) { return d.properties.CC })
+        .attr("transform", transform)
+        .attr("r", "9")
+        .attr("data-country", function(d) { return d.properties.CC })
+
       svg.selectAll(".country-label")
         .data(labels)
         .enter().append("text")
@@ -410,10 +427,10 @@ body {
         .attr("data-country", function(d) { return d.properties.CC })
         ;//.text(function(d) { return d.properties.NAME; });
 
-      svg.selectAll(".country,.country-label")
+      svg.selectAll(".country,.country-label,.country-circle")
         .on("click", function(d,i) {
           selected_country
-          .html(d.properties.NAME);
+          .html(d.properties.CC + ": " + d.properties.NAME);
         });
     });
     screen.classed("hide", false);
@@ -452,6 +469,9 @@ body {
     console.log(data);
 
     if (data.output) {
+      var cmd_log = $('<div>');
+      cmd_log.append($("<pre>").addClass("console-log").text(data.output));
+      $('.command .console').append(cmd_log);
       return;
     }
 
@@ -463,9 +483,12 @@ body {
     setTimeout(function() {
       data.tabuleiro.continentes.forEach(function (cont) {
         cont.paises.forEach(function (pais) {
-          d3.select("#" + pais.codigo)
-            .attr("class", "country-label owner-" + pais.corDono.toLowerCase())
-            .text(pais.nome + " [" + pais.exercitos + "]");
+          d3.select("#" + pais.codigo + ".country-circle")
+            .attr("r", pais.exercitos >= 10 ? "11" : "8")
+            .attr("class", "country-circle owner-" + pais.corDono.toLowerCase())
+          d3.select("#" + pais.codigo + ".country-label")
+            .text(pais.exercitos);
+            //.text(pais.nome + " [" + pais.exercitos + "]");
         });
       });
     }, 500); // hack to wait for countries to load
@@ -492,6 +515,19 @@ body {
       message: message
     });
     //chatSocket.emit('chatevent', {user: user, message: message});
+  });
+
+  $(".command-form").on('submit', function (e) {
+    e.preventDefault();
+
+    // get the message and clear the form
+    var command = $('.command-form .cmd').val();
+    $('.command-form .cmd').val('');
+
+    apiSocket.json.send({
+        '@class': _ns + 'CommandObject',
+        command: command
+    });
   });
 })();
 </script>
