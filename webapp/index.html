@@ -11,6 +11,7 @@
 
 <!-- Bootstrap core CSS -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/gh-fork-ribbon.css" rel="stylesheet">
 <link href="//fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet">
 
 <!-- Custom styles for this template -->
@@ -53,6 +54,11 @@ body {
 
 .country-label:hover, .country-circle:hover, .country:hover {
     cursor: pointer;
+}
+
+.country:hover {
+  strike-width: 2px;
+  opacity: 0.8;
 }
 
 .country-label {
@@ -131,8 +137,11 @@ body {
 .country.SA.c3  { fill: #19b512; }
 
 /* chat styles */
-.chat, .console {
+
+.chat, .command {
   padding: 10px;
+  max-height: 400px;
+  overflow-y: scroll;
 }
 
 .chat-user {
@@ -194,7 +203,7 @@ body {
         -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><i class="glyphicon glyphicon-remove"></i> Quit</a></li>
+        <li><a href="#" class="fullscreen-btn"><i class="glyphicon glyphicon-fullscreen"></i></a></li>
       </ul>
     </div>
   </div>
@@ -243,11 +252,20 @@ body {
     </div>
   </div>
 
+  <!-- for the future: http://lab.hakim.se/forkit-js/ -->
+
 </div> <!-- /container -->
+
+<div class="github-fork-ribbon-wrapper right-bottom">
+  <div class="github-fork-ribbon">
+    <a href="https://github.com/jansegre/jwar">Fork me on GitHub</a>
+  </div>
+</div>
 
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="js/jquery-2.0.3.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/screenfull.min.js"></script>
 <script src="js/d3.v3.min.js"></script>
 <script src="js/d3.geo.projection.v0.min.js"></script>
 <script src="js/topojson.v1.min.js"></script>
@@ -255,6 +273,13 @@ body {
 <script>
 (function(){
   var width = 1000, height = 500;
+
+  // full screen button
+  var page = $("jwar")[0];
+  $(".fullscreen-btn").click(function () {
+    if (screenfull.enabled)
+      screenfull.toggle(page);
+  });
 
   var map = d3.select(".map");
   var screen = d3.select(".map-screen");
