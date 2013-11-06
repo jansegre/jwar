@@ -100,6 +100,7 @@ public final class Jogo {
         this.exercitosParaDistribuir = 0;
         this.conquistouExercito = false;
         this.jogoComecou = false;
+        this.exercitosMovidos = new HashMap<>();
 
         // jogadores
         List<Jogador> jogadores = new LinkedList<>();
@@ -136,7 +137,7 @@ public final class Jogo {
             case ESCOLHENDO_ATAQUE:
                 return estadoAtual = Estado.DESLOCAR_EXERCITOS;
             case DESLOCAR_EXERCITOS:
-                //efetuarDeslocamentos();
+                aplicarDeslocamentos();
                 return avancaJogador();
             case REFORCANDO_TERRITORIOS:
                 if (exercitosParaDistribuir > 0)
@@ -351,18 +352,6 @@ public final class Jogo {
     public void deslocarExercitos(Pais paisOrigem, Pais paisDestino, int nExercito) {
         verificarEstado(Estado.DESLOCAR_EXERCITOS);
 
-        //TODO: dar um jeito de fazer esse método por completo, é preciso algum jeito
-        //TODO  de comparar o estado antes de todas as transferências com o estado depois
-        //TODO  das transferencias (atual), pois um exército não pode ser deslocado mais
-        //TODO  de uma vez na mesma rodada, por exemplo, dados 3 paísese contíguos A, B e C:
-        //TODO      A(3) B(1) C(2)
-        //TODO  não é permitido que algum exército saia de B, então os exércitos de A ou C só podem diminuir
-        //TODO  o sistema atual permite que sejam feitas essas duas transferências:
-        //TODO      A(3) B(1) C(2) -> A(1) B(3) C(2) -> A(1) B(1) C(4)
-        //TODO  mesmo que o último estado não seja permitido.
-        //TODO  hint: Map<Pais, int> exercitosParaSomar
-
-
         //XXX: de onde veio essa regra??
         //if (nExercito > 2)
         //    throw new EntradaInvalida("Can't transfer more than 2 army units");
@@ -382,10 +371,12 @@ public final class Jogo {
         paisOrigem.removeExercitos(nExercito);
         exercitosMovidos.put(paisDestino, nExercito);
     }
-    private void deslocaExercitos(){
-        for(Pais paisDestino: exercitosMovidos.keySet()){
-            paisDestino.adicionaExercitos(exercitosMovidos.remove(paisDestino));
-        }
+
+    private void aplicarDeslocamentos(){
+        for (Pais paisDestino: exercitosMovidos.keySet())
+            paisDestino.adicionaExercitos(exercitosMovidos.get(paisDestino));
+        // clear após o loop, modificar o set durante o loop é pedir pra dar merda
+        exercitosMovidos.clear();
     }
 
     private static final int maxDados = 3;
