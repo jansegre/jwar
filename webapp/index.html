@@ -203,6 +203,7 @@ body {
         -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
+        <li><a href="#" class="globe-btn"><i class="glyphicon glyphicon-globe"></i></a></li>
         <li><a href="#" class="fullscreen-btn"><i class="glyphicon glyphicon-fullscreen"></i></a></li>
       </ul>
     </div>
@@ -353,23 +354,32 @@ body {
       .precision(.1)
   ]
 
-  var projection = projections[4];
+  var path, transform, projection;
 
-  var color = d3.scale.category20();
+  function updateMap() {
+    svg.selectAll(".country,.graticule").attr("d", path);
+    svg.selectAll(".country-label").attr("transform", transform);
+    svg.selectAll(".country-circle")
+      .attr("transform", circleTransform)
+      .attr("class", function(d) { return "country-circle" + (path(d) ? "" : " hide");});
+  }
+
+  function setupProjection(p) {
+    projection = p;
+    var color = d3.scale.category20();
+    path = d3.geo.path().projection(projection);
+    //var transform = function(d) { return "translate(" + path.centroid(d) + ")"; }
+    transform = function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; }
+    updateMap();
+  }
+
   var graticule = d3.geo.graticule();
-  var path = d3.geo.path().projection(projection);
-  //var transform = function(d) { return "translate(" + path.centroid(d) + ")"; }
-  var transform = function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; }
-
   svg.append("path")
     .datum(graticule)
-    .attr("class", "graticule")
-    .attr("d", path);
-
+    .attr("class", "graticule");
   svg.append("path")
     .datum(graticule.outline)
-    .attr("class", "outline")
-    .attr("d", path);
+    .attr("class", "outline");
 
   // helper functions to transform
   // screen positions on rotation coordinates
@@ -388,9 +398,16 @@ body {
     //if (d3.event.defaultPrevented) return; // click suppressed
   });
 
-  var dragthis;
-  var _lr;
-  map.call(d3.behavior.drag()
+  var _lr, _ortho = false;
+  $(".globe-btn").click(function() {
+    //mapdrag.translate(0, 0, 0);//FIXME: reset draggin
+    if (_ortho)
+      setupProjection(projections[4]);
+    else
+      setupProjection(projections[7]);
+    _ortho = !_ortho;
+  });
+  var mapdrag = d3.behavior.drag()
     // remember rotation
     .on("dragstart", function() {
       var m = d3.mouse(this);
@@ -401,19 +418,23 @@ body {
     })
     // do a delta rotation
     .on("drag", function() {
-      var m = d3.mouse(this);
-      var r = [λ(m[0]) + _lr[0], 0];
-      //var r = [λ(m[0]) + _lr[0], φ(m[1]) + _lr[1]];
+      var r, m = d3.mouse(this);
+      if (_ortho)
+        r = [λ(m[0]) + _lr[0], φ(m[1]) + _lr[1]];
+      else
+        r = [λ(m[0]) + _lr[0], 0];
       projection.rotate(r);
-      svg.selectAll(".country,.graticule").attr("d", path);
-      svg.selectAll(".country-label").attr("transform", transform);
-      svg.selectAll(".country-circle").attr("transform", circleTransform);
+      updateMap();
     })
     // clean up optimizations
     .on("dragend", function() {
       //svg.selectAll(".country-label").classed("moving", false);
-    })
-  );
+    });
+
+  map.call(mapdrag);
+
+  // load the projections
+  setupProjection(projections[4]);
 
   var packsize = 40;
   var pack = d3.layout.pack().size([packsize, packsize]);
@@ -472,7 +493,7 @@ body {
       svg.selectAll(".country-circle")
         .data(labels)
         .enter().append("g")
-        .attr("class", "country-circle")
+        .attr("class", function(d) { return "country-circle" + (path(d) ? "" : " hide");})
         .attr("id", function(d) { return d.properties.CC })
         //.attr("transform", transform)
         //.attr("transform", function(d) { return "rotate(25) " + transform(d); })
