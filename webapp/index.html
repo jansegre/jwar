@@ -45,6 +45,12 @@ body {
 .owner-branco   { fill: white }
 .owner-preto    { fill: black }
 
+.country-circle circle {
+    stroke: #002;
+    stroke-opacity: .5;
+    stroke-width: .5px;
+}
+
 .country-label:hover, .country-circle:hover, .country:hover {
     cursor: pointer;
 }
@@ -257,6 +263,7 @@ body {
     .attr("preserveAspectRatio", "xMinYMin meet");
     //.attr("width", "100%")
     //.attr("height", height);
+  window.svg = svg;//DEBUG
   var defs = svg.append("defs")
   var selected_country = d3.select(".selected-country");
 
@@ -375,13 +382,29 @@ body {
       projection.rotate(r);
       svg.selectAll(".country,.graticule").attr("d", path);
       svg.selectAll(".country-label").attr("transform", transform);
-      svg.selectAll(".country-circle").attr("transform", transform);
+      svg.selectAll(".country-circle").attr("transform", circleTransform);
     })
     // clean up optimizations
     .on("dragend", function() {
       //svg.selectAll(".country-label").classed("moving", false);
     })
   );
+
+  var packsize = 40;
+  var pack = d3.layout.pack().size([packsize, packsize]);
+  function armyList(armies) {
+    var l = {children:[]};
+    while (armies > 5) {
+      l.children.push({value: 5});
+      armies -= 5;
+    }
+    while (armies > 0) {
+      l.children.push({value: 1});
+      armies--;
+    }
+    window.nodes = pack.nodes(l);
+    return pack.nodes(l).filter(function(d) { return !d.children; });
+  }
 
   var cont_sizes = {
     AF: 6,
@@ -391,6 +414,10 @@ body {
     NA: 9,
     SA: 4,
     AN: 1
+  }
+
+  function circleTransform(d) {
+    return transform(d) + " rotate(" + (d.rotation = (d.rotation || (Math.random() * 360))) + ")";
   }
 
   function loadMap(mapfile) {
@@ -408,13 +435,23 @@ body {
         .attr("d", path);
         //.style("fill", function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); });
 
+      //svg.selectAll(".country-circle")
+      //  .data(labels)
+      //  .enter().append("circle")
+      //  .attr("class", "country-circle")
+      //  .attr("id", function(d) { return d.properties.CC })
+      //  .attr("transform", transform)
+      //  .attr("r", "9")
+      //  .attr("data-country", function(d) { return d.properties.CC })
+
       svg.selectAll(".country-circle")
         .data(labels)
-        .enter().append("circle")
+        .enter().append("g")
         .attr("class", "country-circle")
         .attr("id", function(d) { return d.properties.CC })
-        .attr("transform", transform)
-        .attr("r", "9")
+        //.attr("transform", transform)
+        //.attr("transform", function(d) { return "rotate(25) " + transform(d); })
+        .attr("transform", circleTransform)
         .attr("data-country", function(d) { return d.properties.CC })
 
       svg.selectAll(".country-label")
@@ -483,11 +520,24 @@ body {
     setTimeout(function() {
       data.tabuleiro.continentes.forEach(function (cont) {
         cont.paises.forEach(function (pais) {
-          d3.select("#" + pais.codigo + ".country-circle")
-            .attr("r", pais.exercitos >= 10 ? "11" : "8")
-            .attr("class", "country-circle owner-" + pais.corDono.toLowerCase())
-          d3.select("#" + pais.codigo + ".country-label")
-            .text(pais.exercitos);
+          var colorclass = "owner-" + (pais.corDono || "").toLowerCase();
+          var circles = svg.select("#" + pais.codigo + ".country-circle")
+            .selectAll("circle")
+            .data(armyList(pais.exercitos))
+            .attr("r", function(d) { return d.value + 3.5; })
+            .attr("cx", function(d) { return d.x - packsize / 2; })
+            .attr("cy", function(d) { return d.y - packsize / 2; })
+          window.circles = circles
+          circles.enter()
+            .append("circle")
+            .attr("r", function(d) { return d.value + 3.5; })
+            .attr("cx", function(d) { return d.x - packsize / 2; })
+            .attr("cy", function(d) { return d.y - packsize / 2; })
+            .attr("class", colorclass)
+          circles.exit()
+            .remove()
+          //d3.select("#" + pais.codigo + ".country-label")
+            //.text(pais.exercitos);
             //.text(pais.nome + " [" + pais.exercitos + "]");
         });
       });
