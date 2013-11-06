@@ -496,7 +496,7 @@ body {
         });
       svg.selectAll(".country,.country-label,.country-circle")
         .on("click", function(d,i) {
-          $(".command .cmd").val(($(".command .cmd").val() || "") + "" + d.properties.CC);
+          $(".command .cmd").val(($(".command .cmd").val() || "") + " " + d.properties.CC);
         });
     });
     screen.classed("hide", false);
