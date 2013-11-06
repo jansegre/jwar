@@ -114,8 +114,9 @@ public final class Jogo {
 
         // começar o jogo
         estadoAtual = Estado.REFORCANDO_TERRITORIOS;
-        jogoComecou = true;
+        //jogoComecou = true;
         //estadoAtual = Estado.DISTRIBUICAO_INICIAL;
+        estadoAtual = Estado.DISTRIBUICAO_INICIAL;
         calcularReforcos();
     }
 
@@ -354,6 +355,7 @@ public final class Jogo {
         //TODO      A(3) B(1) C(2) -> A(1) B(3) C(2) -> A(1) B(1) C(4)
         //TODO  mesmo que o último estado não seja permitido.
         //TODO  hint: Map<Pais, int> exercitosParaSomar
+
 
         //XXX: de onde veio essa regra??
         //if (nExercito > 2)
