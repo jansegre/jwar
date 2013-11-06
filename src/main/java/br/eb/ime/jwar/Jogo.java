@@ -311,9 +311,10 @@ public final class Jogo {
     public Estado reforcarPais(Pais pais, int nExercitos) {
         verificarEstado(Estado.REFORCANDO_TERRITORIOS, Estado.DISTRIBUICAO_INICIAL);
 
+        if (pais.getDono() != atual)
+            throw new EstadoInvalido("Esse país não é seu.");
         if (atual.getCartas().size() >= 5)
             throw new EstadoInvalido("Você deve fazer uma troca primeiro.");
-
         if (nExercitos > exercitosParaDistribuir)
             throw new EstadoInvalido("Você não possui tantos exércitos assim");
 
