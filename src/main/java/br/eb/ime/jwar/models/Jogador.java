@@ -19,6 +19,7 @@
 package br.eb.ime.jwar.models;
 
 import br.eb.ime.jwar.models.objetivos.Objetivo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +31,7 @@ public class Jogador {
     private final Cor cor;
     private List<Carta> cartas;
     private Objetivo objetivo;
+    @JsonIgnore
     private Tabuleiro tabuleiro;
 
     public Jogador(Cor cor) {
@@ -50,6 +52,7 @@ public class Jogador {
         return this.cor;
     }
 
+    @JsonIgnore
     public Collection<Pais> getPaises() {
         List<Pais> paises = new ArrayList<>();
         for (Pais pais : tabuleiro.getPaises())
@@ -58,6 +61,7 @@ public class Jogador {
         return paises;
     }
 
+    @JsonIgnore
     public Collection<Continente> getContinentes() {
         List<Continente> continentes = new ArrayList<>();
         for (Continente continente : tabuleiro.getContinentes())

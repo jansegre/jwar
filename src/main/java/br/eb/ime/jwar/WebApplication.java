@@ -56,6 +56,7 @@ public class WebApplication {
         } else {
             port = 8080;
         }
+        System.out.println("File server on port " + port);
         new WebApplication(port).run();
     }
 }

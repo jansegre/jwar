@@ -18,6 +18,7 @@
 package br.eb.ime.jwar.models.objetivos;
 
 import br.eb.ime.jwar.models.Continente;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,8 +27,9 @@ import java.util.List;
 
 public class ConquistarContinentes extends Objetivo {
 
-    private List<Continente> continentes;
-    private int minExtraContinentes;
+    @JsonIgnore
+    private final List<Continente> continentes;
+    private final int minExtraContinentes;
 
     public ConquistarContinentes(Continente... continentes) {
         this(0, continentes);

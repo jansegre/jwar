@@ -18,18 +18,7 @@
 
 package br.eb.ime.jwar.webapi;
 
-public class ChatObject {
-
+public class CommandObject {
+    public String command;
     public String user;
-    public String message;
-    public String type;
-
-    public ChatObject() {
-    }
-
-    public ChatObject(String user, String message) {
-        super();
-        this.user = user;
-        this.message = message;
-    }
 }

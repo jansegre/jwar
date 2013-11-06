@@ -26,8 +26,8 @@ import java.util.Collection;
 
 public class DerrotarJogador extends Objetivo {
 
-    private Cor corInimigo;
-    private Objetivo alternativo;
+    final private Cor corInimigo;
+    final private Objetivo alternativo;
 
     // objetivo alternativo é usado no caso do inimigo ser o próprio dono
     public DerrotarJogador(Cor corInimigo, Objetivo alternativo) {

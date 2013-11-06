@@ -113,9 +113,8 @@ public final class Jogo {
         criarCartas(template.getBaralho());
 
         // começar o jogo
-        estadoAtual = Estado.REFORCANDO_TERRITORIOS;
+        //estadoAtual = Estado.REFORCANDO_TERRITORIOS;
         //jogoComecou = true;
-        //estadoAtual = Estado.DISTRIBUICAO_INICIAL;
         estadoAtual = Estado.DISTRIBUICAO_INICIAL;
         calcularReforcos();
     }
@@ -170,6 +169,10 @@ public final class Jogo {
 
     public int getRodadas() {
         return rodadas;
+    }
+
+    public Template getTemplate() {
+        return template;
     }
 
     private void avancaRodada() {

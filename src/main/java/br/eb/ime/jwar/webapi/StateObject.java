@@ -18,18 +18,21 @@
 
 package br.eb.ime.jwar.webapi;
 
-public class ChatObject {
+import br.eb.ime.jwar.Jogo;
+import br.eb.ime.jwar.models.Tabuleiro;
 
-    public String user;
-    public String message;
-    public String type;
+public class StateObject {
+    public Tabuleiro tabuleiro;
+    public String mapfile;
+    public boolean welcome;
 
-    public ChatObject() {
+    public StateObject(Jogo jogo, boolean welcome) {
+        this.tabuleiro = jogo.getTabuleiro();
+        this.mapfile = jogo.getTemplate().getMapfile();
+        this.welcome = welcome;
     }
 
-    public ChatObject(String user, String message) {
-        super();
-        this.user = user;
-        this.message = message;
+    public StateObject(Jogo jogo) {
+        this(jogo, false);
     }
 }

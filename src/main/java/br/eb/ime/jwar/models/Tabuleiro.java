@@ -18,6 +18,8 @@
 
 package br.eb.ime.jwar.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.*;
 
 public class Tabuleiro {
@@ -60,6 +62,7 @@ public class Tabuleiro {
         return continentes;
     }
 
+    @JsonIgnore
     public Collection<Pais> getPaises() {
         return paisMap.values();
     }

@@ -17,12 +17,20 @@
  */
 package br.eb.ime.jwar.webapi;
 
+import br.eb.ime.jwar.Jogo;
+import br.eb.ime.jwar.models.Cor;
+import br.eb.ime.jwar.models.templates.RiskSecretMission;
 import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 
+import java.util.Arrays;
+
 public class ApiServer extends SocketIOServer {
+
+    //TODO: permitir multiplos jogos simultâneos
+    Jogo jogo;
 
     public ApiServer(Configuration config) {
         super(config);
@@ -33,7 +41,7 @@ public class ApiServer extends SocketIOServer {
             @Override
             public void onData(SocketIOClient client, ChatObject msg, AckRequest ackRequest) {
                 // broadcast messages to all clients
-                msg.setType("message");
+                msg.type = "message";
                 chatServer.getBroadcastOperations().sendJsonObject(msg);
             }
         });
@@ -41,8 +49,8 @@ public class ApiServer extends SocketIOServer {
             @Override
             public void onConnect(SocketIOClient socketIOClient) {
                 ChatObject msg = new ChatObject();
-                msg.setMessage("Alguém se conectou.");
-                msg.setType("connect");
+                msg.message = "Alguém se conectou.";
+                msg.type = "connect";
                 chatServer.getBroadcastOperations().sendJsonObject(msg);
             }
         });
@@ -50,11 +58,33 @@ public class ApiServer extends SocketIOServer {
             @Override
             public void onDisconnect(SocketIOClient socketIOClient) {
                 ChatObject msg = new ChatObject();
-                msg.setMessage("Alguém se desconectou.");
-                msg.setType("disconnect");
+                msg.message = "Alguém se desconectou.";
+                msg.type = "disconnect";
                 chatServer.getBroadcastOperations().sendJsonObject(msg);
             }
         });
+
+        // Servidor da api em si
+        final SocketIONamespace apiServer = this.addNamespace("/api");
+        apiServer.addConnectListener(new ConnectListener() {
+            @Override
+            public void onConnect(SocketIOClient client) {
+                client.sendJsonObject(new StateObject(jogo, true));
+            }
+        });
+        apiServer.addJsonObjectListener(CommandObject.class, new DataListener<CommandObject>() {
+            @Override
+            public void onData(SocketIOClient client, CommandObject data, AckRequest ackSender) {
+                //TODO: check if sender is the correct player
+                System.out.println("command received: " + data.command);
+
+                // update everyone's state
+                apiServer.getBroadcastOperations().sendJsonObject(new StateObject(jogo));
+            }
+        });
+
+        // Criar um jogo, por enquanto igual ao em Application
+        jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO), new RiskSecretMission());
     }
 
     public static ApiServer newConfiguredApiServer() {

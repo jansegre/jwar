@@ -18,10 +18,16 @@
 
 package br.eb.ime.jwar.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
 public class Pais {
 
     private final String codigo;
@@ -51,8 +57,16 @@ public class Pais {
         return codigo;
     }
 
+    @JsonIgnore
     public Set<Pais> getFronteiras() {
         return fronteiras;
+    }
+
+    public Set<String> getCodigoFronteiras() {
+        Set<String> codigoFronteiras = new HashSet<>();
+        for (Pais fronteira : fronteiras)
+            codigoFronteiras.add(fronteira.codigo);
+        return codigoFronteiras;
     }
 
     public int getExercitos() {
@@ -75,8 +89,13 @@ public class Pais {
         this.dono = jogador;
     }
 
+    @JsonIgnore
     public Jogador getDono() {
         return this.dono;
+    }
+
+    public Cor getCorDono() {
+        return this.dono.getCor();
     }
 
     //XXX: CHAMAR ESTE METODO APENAS NA CONSTRUCAO DO JOGO

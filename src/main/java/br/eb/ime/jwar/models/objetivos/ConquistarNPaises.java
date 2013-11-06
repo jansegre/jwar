@@ -22,8 +22,8 @@ import br.eb.ime.jwar.models.Pais;
 
 public class ConquistarNPaises extends Objetivo {
 
-    private int nPaises;
-    private int minExercitos;
+    private final int nPaises;
+    private final int minExercitos;
 
     public ConquistarNPaises(int nPaises) {
         this(nPaises, 1);

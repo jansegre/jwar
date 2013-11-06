@@ -25,10 +25,7 @@ import br.eb.ime.jwar.models.templates.RiskSecretMission;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Application {
     static private class ApplicationException extends ExcecaoDoJogo {
@@ -55,12 +52,7 @@ public class Application {
     }
 
     static public void main(String[] args) {
-        List<Cor> cores = new LinkedList<>();
-        cores.add(Cor.AZUL);
-        cores.add(Cor.VERMELHO);
-        cores.add(Cor.AMARELO);
-        cores.add(Cor.PRETO);
-        jogo = new Jogo(cores, new RiskSecretMission());
+        jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO), new RiskSecretMission());
 
         String command[], input;
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
