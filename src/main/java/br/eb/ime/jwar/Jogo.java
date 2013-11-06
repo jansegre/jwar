@@ -89,6 +89,8 @@ public final class Jogo {
     private boolean conquistouExercito;
     private boolean jogoComecou;
     private Map<Pais, Integer> exercitosMovidos;
+    private Map<Continente, Integer> exercitosNoContinente;
+
 
     public Jogo(List<Cor> cores, Template template) {
         if (cores.size() < 2)
@@ -101,6 +103,7 @@ public final class Jogo {
         this.conquistouExercito = false;
         this.jogoComecou = false;
         this.exercitosMovidos = new HashMap<>();
+        this.exercitosNoContinente = new HashMap<>();
 
         // jogadores
         List<Jogador> jogadores = new LinkedList<>();
@@ -310,6 +313,14 @@ public final class Jogo {
         this.cartasAparte.push(carta3);
     }
 
+    //TODO: fazer isso de um jeito melhor, guardar no país, seilá
+    private Continente getContinente(Pais pais) {
+        for (Continente continente : tabuleiro.getContinentes())
+            if (continente.getPaises().contains(pais))
+                return continente;
+        return null;
+    }
+
     // retorna o estado novo se ele mudar, se não retorna NIL
     public Estado reforcarPais(Pais pais, int nExercitos) {
         verificarEstado(Estado.REFORCANDO_TERRITORIOS, Estado.DISTRIBUICAO_INICIAL);
@@ -318,12 +329,31 @@ public final class Jogo {
             throw new EstadoInvalido("Esse país não é seu.");
         if (atual.getCartas().size() >= 5)
             throw new EstadoInvalido("Você deve fazer uma troca primeiro.");
-        if (nExercitos > exercitosParaDistribuir)
-            throw new EstadoInvalido("Você não possui tantos exércitos assim");
 
-        exercitosParaDistribuir -= nExercitos;
-        pais.adicionaExercitos(nExercitos);
+        Continente cont = getContinente(pais);
+        if (exercitosNoContinente.containsKey(cont)) {
+            int n = exercitosNoContinente.get(cont);
+            if (nExercitos > n + exercitosParaDistribuir)
+                throw new EstadoInvalido("Você não possui tantos exércitos assim");
 
+            if (nExercitos >= n) {
+                exercitosNoContinente.remove(cont);
+                exercitosParaDistribuir -= (nExercitos - n);
+                pais.adicionaExercitos(nExercitos);
+            } else {
+                exercitosNoContinente.put(cont, n - nExercitos);
+                pais.adicionaExercitos(nExercitos);
+            }
+        } else {
+            if (nExercitos > exercitosParaDistribuir)
+                throw new EstadoInvalido("Você não possui tantos exércitos assim");
+
+            exercitosParaDistribuir -= nExercitos;
+            pais.adicionaExercitos(nExercitos);
+        }
+
+        // sempre irá remover primeiro do exercitosNoContinente, então se
+        // o exercitosParaDistribuir chegar em 0 é por que terminou de distribuir
         if (exercitosParaDistribuir == 0) {
             if (estadoAtual == Estado.DISTRIBUICAO_INICIAL)
                 return avancaJogador();
@@ -340,12 +370,9 @@ public final class Jogo {
     }
 
     private void calcularReforcos() {
-        //TODO: dar um jeito de forçar com que os bônus de continente sejam colocados apenas em continentes
-        //TODO  hint: talvez possível com um Map<Continente, int> nExercitosPorContinente
         int nExercitos = atual.getPaises().size() / 2;
         for (Continente continente : atual.getContinentes())
-            nExercitos += continente.getBonus();
-
+            exercitosNoContinente.put(continente, continente.getBonus());
         exercitosParaDistribuir = nExercitos;
     }
 
