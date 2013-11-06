@@ -39,7 +39,10 @@ public abstract class JogoTextual {
     public Pais getPaisByCodigo(String codigo) {
         Pais pais = jogo.getTabuleiro().getPaisByCodigo(codigo);
         if (pais == null)
-            throw new EntradaInvalida("País de código " + codigo + " não encontrado");
+            if (codigo.equalsIgnoreCase("AN"))//XXX: EASTEREGG
+                throw new EntradaInvalida("Os penguins desse país se recusam a participar da guerra.");
+            else
+                throw new EntradaInvalida("País de código " + codigo + " não encontrado");
         return pais;
     }
 
