@@ -127,6 +127,8 @@ public class Jogo {
     }
 
     public void avancaJogador() {
+        
+        
         verificarEstado(Estado.DISTRIBUICAO_INICIAL, Estado.DESLOCAR_EXERCITOS);
         if (exercitosParaDistribuir > 0)
             throw new EstadoInvalido("Ainda restam: " + exercitosParaDistribuir + " exércitos para serem distribuídos.");
@@ -141,8 +143,7 @@ public class Jogo {
             estadoAtual = Estado.DISTRIBUICAO_INICIAL;
         else
             estadoAtual = Estado.REFORCANDO_TERRITORIOS;
-
-        calcularReforcos();
+        
     }
 
     public int getRodadas() {
@@ -212,15 +213,35 @@ public class Jogo {
 
     public void jogarDadosDefensor(int n){
 	dadosDefensor = jogarDados(n);
+        Collections.sort(dadosDefensor, Collections.reverseOrder());
+        Collections.sort(dadosDefensor, Collections.reverseOrder());
+        Collections.sort(dadosDefensor, Collections.reverseOrder());
+        Iterator<Integer> dfIt = dadosDefensor.iterator();
+        System.out.println("Dados defensores");
+        while(dfIt.hasNext())
+        {
+            System.out.print(dfIt.next() + " ");
+        }
+        System.out.println("");
     }
 
     public void jogarDadosAtacante(int n){
 	dadosAtacante = jogarDados(n);
+        Collections.sort(dadosAtacante, Collections.reverseOrder());
+        Collections.sort(dadosAtacante, Collections.reverseOrder());
+        Collections.sort(dadosAtacante, Collections.reverseOrder());
+        Iterator<Integer> atcIt = dadosAtacante.iterator();
+        System.out.println("Dados atacante");
+        while(atcIt.hasNext())
+        {
+            System.out.print(atcIt.next() + " ");
+        }
+         System.out.println("");
     }
 
     // retorna uma lista com 2 inteiros: 
-    //1° = número de vitórias do ataque e 2° = número de vitórias da defesa
-    //ta ao contrário
+    //1° = número de vitórias da defesa e 2° = número de vitórias do ataque
+    
     public int[] comparaDados() {
 	int resul[] = new int[2];
 
@@ -228,9 +249,6 @@ public class Jogo {
 	resul[1] = 0;
 	
 	estadoAtual = Estado.JOGANDO_DADOS;
-
-	Collections.sort(dadosAtacante, Collections.reverseOrder());
-	Collections.sort(dadosDefensor, Collections.reverseOrder());
 
 	Iterator<Integer> atcIt = dadosAtacante.iterator();
 	Iterator<Integer> dfIt = dadosDefensor.iterator();
@@ -330,7 +348,10 @@ public class Jogo {
     }
 
     public void calcularReforcos() {
-        estadoAtual = Estado.REFORCANDO_TERRITORIOS;
+        if (rodadas < 1)
+            estadoAtual = Estado.DISTRIBUICAO_INICIAL;
+        else
+            estadoAtual = Estado.REFORCANDO_TERRITORIOS;
 
         int nExercitos = atual.getPaises().size() / 2;
         for (Continente continente : atual.getContinentes())
@@ -338,9 +359,10 @@ public class Jogo {
 
         // acrescentar ou sobreescrever?
         //exercitosParaDistribuir += nExercitos;
-        exercitosParaDistribuir = nExercitos;
+        exercitosParaDistribuir += nExercitos;
     }
     
+    /*
     // método para reforcar um determinado pais
     public void reforcarPais(Pais pais, int exercitos)
     {
@@ -351,8 +373,13 @@ public class Jogo {
         
         pais.adicionaExercitos(exercitos);
         this.exercitosParaDistribuir-=exercitos;
-    }
+    }*/
 
+    public void deslocarExercitos()
+    {
+        estadoAtual = Estado.DESLOCAR_EXERCITOS;
+    }
+    
     public void deslocarExercitos(Pais paisOrigem, Pais paisDestino, int nExercito) {
         //TODO: dar um jeito de fazer esse método por completo, é preciso algum jeito
         //TODO  de comparar o estado antes de todas as transferências com o estado depois
@@ -368,7 +395,11 @@ public class Jogo {
         //XXX: de onde veio essa regra??
         //if (nExercito > 2)
         //    throw new EntradaInvalida("Can't transfer more than 2 army units");
-
+        if(rodadas == 0)
+        {
+            throw new EntradaInvalida("Can't move armys in the first round.");
+        }
+        
         if (nExercito >= paisOrigem.getExercitos())
             throw new EntradaInvalida("Can't leave a country without army units");
 
@@ -377,12 +408,13 @@ public class Jogo {
             throw new EntradaInvalida("Must be neighbor countries!");
 
         // Transação propriamente dita
+        estadoAtual = Estado.DESLOCAR_EXERCITOS;
         paisOrigem.removeExercitos(nExercito);
         paisDestino.adicionaExercitos(nExercito);
     }
     
     public boolean escolherAlvo(Pais atacante, Pais defensor){
-        if((atacante.getDono()== atual)&&(atacante.fazFronteira(defensor))&&(atacante.getExercitos()>1)){
+        if((atacante.getDono()== atual)&&(atacante.fazFronteira(defensor))&&(atacante.getExercitos()>1)&&(atacante.getDono()!=defensor.getDono())){
             estadoAtual = Estado.ESCOLHENDO_ATAQUE;
             return true;
         }
@@ -394,9 +426,13 @@ public class Jogo {
     public void efetivarAtaque(Pais atacante, Pais defensor){
         int[] listaVitorias;
         int dadosAtaque, dadosDefesa;
+        if(rodadas == 0)
+        {
+            throw new EntradaInvalida("Can't atack in the first round.");
+        }
         
         if(this.escolherAlvo(atacante, defensor)){
-            listaVitorias = comparaDados();
+            
             
             dadosAtaque = atacante.getExercitos()-1;
             dadosDefesa = defensor.getExercitos();
@@ -409,14 +445,21 @@ public class Jogo {
             }
 
             jogarDadosAtacante(dadosAtaque);
+            estadoAtual = Estado.ESPERANDO_DEFESA;
             jogarDadosDefensor(dadosDefesa);
+            
+            listaVitorias = comparaDados();
                     
             //muda numero de exércitos dos países
             defensor.removeExercitos(listaVitorias[1]);
+            System.out.println("Defesa perde " + listaVitorias[1] + " exércitos!");
             atacante.removeExercitos(listaVitorias[0]);
+            System.out.println("Ataque perde " + listaVitorias[0] + " exércitos!");
             
             //muda dono do país defensor se for o caso
             if(defensor.getExercitos()==0){
+                estadoAtual = Estado.OCUPANDO_TERRITORIO;
+                System.out.println("Ataque conquista o território!");
                 defensor.setDono(atual);
                 //por default, coloca apenas um exercito no pais novo
                 defensor.adicionaExercitos(1);

@@ -105,6 +105,7 @@ public class Application {
                     case "proximo":
                     case "próximo":
                         jogo.avancaJogador();
+                        jogo.calcularReforcos();
                         System.out.println("Vez do jogador " + jogo.jogadorAtual());
                         break;
                     case "cont":
@@ -170,11 +171,17 @@ public class Application {
                     case "move":
                     case "mover":
                     case "deslocar":
+                         if(command.length == 1)
+                        {
+                            jogo.deslocarExercitos();
+                            break;
+                        }
                         if (command.length != 4) {
                             System.out.println("Erro! exemplo: mov BR VE 5");
                             System.out.println("      (move 5 exércitos do brasil para venezuela");
                             break;
                         }
+                       
                         jogo.deslocarExercitos(
                                 getPaisByCodigo(command[1]),
                                 getPaisByCodigo(command[2]),
@@ -192,6 +199,7 @@ public class Application {
                         Pais atacante = getPaisByCodigo(command[1]);
                         Pais defensor = getPaisByCodigo(command[2]);
                         //TODO: a seguinte parte contém lógica não deveria estar aqui
+                        /*
                         if (atacante.getDono() != jogo.jogadorAtual()) {
                             System.out.println("O país atacante: " + atacante + ", não é seu.");
                             break;
@@ -220,7 +228,7 @@ public class Application {
                         for (int d : dadosDef)
                             System.out.print(" " + d);
                         System.out.println();
-                        if (jogo.comparaDados(dadosAtk, dadosDef)) {
+                        if (jogo.comparaDados()) {
                             System.out.println(atacante.getCodigo() + " ganhou a batalha");
                             int defEx = defensor.getExercitos();
                             if (defEx > 1) {
@@ -234,6 +242,8 @@ public class Application {
                             System.out.println(defensor.getCodigo() + " ganhou a batalha");
                             atacante.setExercitos(atacante.getExercitos() - 1);
                         }
+                        */
+                        jogo.efetivarAtaque(atacante, defensor);
                         System.out.println(atacante.showShortSummary());
                         System.out.println(defensor.showShortSummary());
                         break;
