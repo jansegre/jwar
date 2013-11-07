@@ -229,7 +229,6 @@ public abstract class JogoTextual {
                         output("      (define o numero de exercitos do brasil pra 20)");
                         break;
                     }
-
                     break;
                 case "mv":
                 case "mov":
@@ -245,6 +244,7 @@ public abstract class JogoTextual {
                             getPaisByCodigo(command[1]),
                             getPaisByCodigo(command[2]),
                             command.length == 3 ? 1 : parseInt(command[3]));
+                    output("Exércitos movidos.");
                     break;
                 case "atk":
                 case "attack":

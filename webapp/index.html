@@ -256,6 +256,25 @@ body {
   </div>
 </header>
 
+<!-- Modal -->
+<div class="modal fade" id="winModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+        <h4 class="modal-title" id="myModalLabel">Parabéns!</h4>
+      </div>
+      <div class="modal-body">
+        <p class="lead">O Jogador <span class="winner">--</span> ganhou o jogo!</p>
+        <p>Seu objetivo era <span class="mission">--</span>.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div class="container jwar">
 
   <!-- Main component for a primary marketing message or call to action -->
@@ -267,7 +286,7 @@ body {
       <div class="panel-body map"></div>
       <div class="panel-footer">
         <div class="pull-left">
-          <span class="label label-special current-player"></span>
+          <span class="label label-special current-player" data-container="body" data-toggle="popover" data-placement="top" data-content="" data-original-title=""></span>
           <span class="label label-special current-state"></span>
           <span style="display:none" class="occupy">
             <span class="btn btn-default" data-armies="3">3</span>
@@ -623,6 +642,8 @@ body {
     sendCommand("pronto");
   });
 
+  $(".current-player").popover();
+
   // API communication
   var _ns = 'br.eb.ime.jwar.webapi.';
   var user = 'Usuário ' + Math.floor((Math.random()*1000)+1);
@@ -662,8 +683,17 @@ body {
       return;
     }
 
+    if (data.vencedor) {
+      $('#winModal .winner').text(data.vencedor.nome);
+      $('#winModal .mission').text(data.vencedor.objetivo.description);
+      $('#winModal').modal('show');
+    } else {
+      $('#winModal').modal('hide');
+    }
+
     current_player
       .attr("class", current_player.attr("class").replace(/\bowner-.*\b/) + " owner-" + data.atual.cor.toLowerCase())
+      .attr("data-content", data.atual.objetivo.description)
       .text(data.atual.nome);
 
     game_state = data.estado;

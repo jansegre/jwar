@@ -125,34 +125,34 @@ public class RiskSecretMission extends Template {
         congo.addFronteira(northAfrica, southAfrica, eastAfrica);
         southAfrica.addFronteira(congo, eastAfrica, madagascar);
         madagascar.addFronteira(southAfrica, eastAfrica);
-        eastAfrica.addFronteira(madagascar, southAfrica, congo, northAfrica, egypt);
+        eastAfrica.addFronteira(madagascar, southAfrica, congo, northAfrica, egypt, middleEast);
         egypt.addFronteira(northAfrica, eastAfrica, middleEast, southernEurope, westernEurope);
 
         westernEurope.addFronteira(egypt, northAfrica, granBritain, northenEurope, southernEurope);
         granBritain.addFronteira(iceland, scandinavia, westernEurope, northenEurope);
         iceland.addFronteira(greenland, granBritain);
-        scandinavia.addFronteira(ukraine, granBritain);
-        northenEurope.addFronteira(granBritain, ukraine, southernEurope, westernEurope);
+        scandinavia.addFronteira(ukraine, granBritain, northenEurope);
+        northenEurope.addFronteira(granBritain, ukraine, southernEurope, westernEurope, scandinavia);
         southernEurope.addFronteira(ukraine, northenEurope, westernEurope, middleEast, egypt);
         ukraine.addFronteira(scandinavia, northenEurope, southernEurope, ural, afghanistan, middleEast);
 
-        middleEast.addFronteira(egypt, southernEurope, ukraine, afghanistan, india);
+        middleEast.addFronteira(egypt, southernEurope, ukraine, afghanistan, india, eastAfrica);
         ural.addFronteira(afghanistan, ukraine, siberia, china);
         afghanistan.addFronteira(ukraine, ural, india, china, middleEast);
         siberia.addFronteira(ural, china, mongolia, irkutsk, yakutsk);
         yakutsk.addFronteira(siberia, irkutsk, kamchatka);
-        irkutsk.addFronteira(siberia, yakutsk, china, mongolia);
+        irkutsk.addFronteira(siberia, yakutsk, china, mongolia, kamchatka);
         japan.addFronteira(kamchatka, china);
-        kamchatka.addFronteira(yakutsk, irkutsk, mongolia, japan, alaska);
+        kamchatka.addFronteira(yakutsk, irkutsk, mongolia, japan, alaska, irkutsk);
         mongolia.addFronteira(siberia, irkutsk, kamchatka, china);
-        china.addFronteira(ural, afghanistan, india, siam, japan, mongolia, siberia);
-        india.addFronteira(middleEast, afghanistan, china, siam, indonesia);
-        siam.addFronteira(india, china, newGuine);
+        china.addFronteira(ural, afghanistan, india, siam, japan, mongolia, siberia, irkutsk);
+        india.addFronteira(middleEast, afghanistan, china, siam);
+        siam.addFronteira(india, china, newGuine, indonesia);
 
-        indonesia.addFronteira(india, weasternAustralia);
-        easternAustralia.addFronteira(indonesia, weasternAustralia, newGuine);
-        newGuine.addFronteira(easternAustralia, weasternAustralia, siam);
-        weasternAustralia.addFronteira(easternAustralia, newGuine);
+        indonesia.addFronteira(weasternAustralia, siam, newGuine);
+        easternAustralia.addFronteira(weasternAustralia, newGuine);
+        newGuine.addFronteira(easternAustralia, weasternAustralia, indonesia);
+        weasternAustralia.addFronteira(easternAustralia, newGuine, indonesia);
 
         // Objetivos
 

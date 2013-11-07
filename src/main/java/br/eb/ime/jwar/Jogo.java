@@ -172,6 +172,11 @@ public final class Jogo {
         if (i == jogadores.size())
             avancaRodada();
 
+        // pular jogador se seus países tiverem acabado
+        // XXX cuidado com loops infinitos!
+        if (jogadorAtual().getPaises().size() == 0)
+            return avancaJogador();
+
         calcularReforcos();
         conquistouExercito = false;
         if (jogoComecou)
@@ -361,7 +366,7 @@ public final class Jogo {
 
         // sempre irá remover primeiro do exercitosNoContinente, então se
         // o exercitosParaDistribuir chegar em 0 é por que terminou de distribuir
-        if (exercitosParaDistribuir == 0) {
+        if (totalReforcos() == 0) {
             if (estadoAtual == Estado.DISTRIBUICAO_INICIAL)
                 return avancaJogador();
             else
@@ -388,6 +393,8 @@ public final class Jogo {
         for (Continente continente : atual.getContinentes())
             exercitosNoContinente.put(continente, continente.getBonus());
         exercitosParaDistribuir = nExercitos;
+        if (totalReforcos() == 0)
+            estadoAtual = Estado.ESCOLHENDO_ATAQUE;
     }
 
     public void deslocarExercitos(Pais paisOrigem, Pais paisDestino, int nExercito) {
@@ -410,7 +417,10 @@ public final class Jogo {
 
         // Transação propriamente dita
         paisOrigem.removeExercitos(nExercito);
-        exercitosMovidos.put(paisDestino, nExercito);
+        int preExistentes = 0;
+        if (exercitosMovidos.containsKey(paisDestino))
+            preExistentes = exercitosMovidos.get(paisDestino);
+        exercitosMovidos.put(paisDestino, preExistentes + nExercito);
     }
 
     private void aplicarDeslocamentos() {
