@@ -18,10 +18,12 @@
 
 package br.eb.ime.jwar.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
 
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.NONE)
 public class Tabuleiro {
 
     private final Set<Continente> continentes;
@@ -54,15 +56,17 @@ public class Tabuleiro {
         return paisMap.get(slug.toUpperCase());
     }
 
+    @JsonProperty
     public List<Jogador> getJogadores() {
         return jogadores;
     }
 
+    @JsonProperty
     public Collection<Continente> getContinentes() {
         return continentes;
     }
 
-    @JsonIgnore
+    @JsonProperty
     public Collection<Pais> getPaises() {
         return paisMap.values();
     }

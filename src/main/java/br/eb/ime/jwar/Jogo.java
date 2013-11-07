@@ -23,7 +23,6 @@ import br.eb.ime.jwar.models.*;
 import br.eb.ime.jwar.models.objetivos.Objetivo;
 import br.eb.ime.jwar.models.templates.Template;
 
-import java.lang.Integer;
 import java.util.*;
 
 public final class Jogo {
@@ -399,8 +398,8 @@ public final class Jogo {
         exercitosMovidos.put(paisDestino, nExercito);
     }
 
-    private void aplicarDeslocamentos(){
-        for (Pais paisDestino: exercitosMovidos.keySet())
+    private void aplicarDeslocamentos() {
+        for (Pais paisDestino : exercitosMovidos.keySet())
             paisDestino.adicionaExercitos(exercitosMovidos.get(paisDestino));
         // clear após o loop, modificar o set durante o loop é pedir pra dar merda
         exercitosMovidos.clear();

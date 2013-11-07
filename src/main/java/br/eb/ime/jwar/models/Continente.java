@@ -18,11 +18,15 @@
 
 package br.eb.ime.jwar.models;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.NONE)
 public class Continente {
     final protected String codigo;
     final protected String nome;
@@ -45,10 +49,12 @@ public class Continente {
         this.paises.addAll(Arrays.asList(paises));
     }
 
+    @JsonProperty
     public String getCodigo() {
         return codigo;
     }
 
+    @JsonProperty
     public String getNome() {
         return nome;
     }
@@ -70,6 +76,7 @@ public class Continente {
         return jogador;
     }
 
+    @JsonProperty
     public int getBonus() {
         return bonus;
     }

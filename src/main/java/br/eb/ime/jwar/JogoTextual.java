@@ -72,7 +72,8 @@ public abstract class JogoTextual {
     }
 
     // use this to flush the output of feedCommand
-    public void flush() {}
+    public void flush() {
+    }
 
     public boolean feedCommand(String input) {
         String[] command = input.split("\\s");
@@ -285,7 +286,7 @@ public abstract class JogoTextual {
                     }
                     int oc = command.length > 1 ? parseInt(command[1]) : 1;
                     jogo.ocuparPais(oc);
-                    output("País ocupado com " + oc + " exército" + (oc > 1 ?  "s" : ""));
+                    output("País ocupado com " + oc + " exército" + (oc > 1 ? "s" : ""));
                     break;
                 case "q":
                 case "quit":

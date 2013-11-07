@@ -19,19 +19,20 @@
 package br.eb.ime.jwar.models;
 
 import br.eb.ime.jwar.models.objetivos.Objetivo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.NONE)
 public class Jogador {
 
     private final Cor cor;
     private List<Carta> cartas;
     private Objetivo objetivo;
-    @JsonIgnore
     private Tabuleiro tabuleiro;
 
     public Jogador(Cor cor) {
@@ -48,11 +49,11 @@ public class Jogador {
         return tabuleiro;
     }
 
+    @JsonProperty
     public Cor getCor() {
         return this.cor;
     }
 
-    @JsonIgnore
     public Collection<Pais> getPaises() {
         List<Pais> paises = new ArrayList<>();
         for (Pais pais : tabuleiro.getPaises())
@@ -61,7 +62,6 @@ public class Jogador {
         return paises;
     }
 
-    @JsonIgnore
     public Collection<Continente> getContinentes() {
         List<Continente> continentes = new ArrayList<>();
         for (Continente continente : tabuleiro.getContinentes())
@@ -88,6 +88,7 @@ public class Jogador {
         }
     }
 
+    @JsonProperty
     public List<Carta> getCartas() {
         return this.cartas;
     }
@@ -97,6 +98,7 @@ public class Jogador {
         objetivo.setDono(this);
     }
 
+    @JsonProperty
     public Objetivo getObjetivo() {
         return this.objetivo;
     }

@@ -18,15 +18,14 @@
 
 package br.eb.ime.jwar.models;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.NONE)
 public class Pais {
 
     private final String codigo;
@@ -48,19 +47,21 @@ public class Pais {
         this.exercitos = 1;
     }
 
+    @JsonProperty
     public String getNome() {
         return nome;
     }
 
+    @JsonProperty
     public String getCodigo() {
         return codigo;
     }
 
-    @JsonIgnore
     public Set<Pais> getFronteiras() {
         return fronteiras;
     }
 
+    @JsonProperty
     public Set<String> getCodigoFronteiras() {
         Set<String> codigoFronteiras = new HashSet<>();
         for (Pais fronteira : fronteiras)
@@ -68,6 +69,7 @@ public class Pais {
         return codigoFronteiras;
     }
 
+    @JsonProperty
     public int getExercitos() {
         return exercitos;
     }
@@ -88,7 +90,7 @@ public class Pais {
         this.dono = jogador;
     }
 
-    @JsonIgnore
+    @JsonProperty
     public Jogador getDono() {
         return this.dono;
     }

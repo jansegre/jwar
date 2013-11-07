@@ -18,6 +18,10 @@
 
 package br.eb.ime.jwar.models;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.NONE)
 public class Carta {
 
     public enum Simbolo {
@@ -69,10 +73,16 @@ public class Carta {
         return this.pais;
     }
 
+    @JsonProperty
+    public String getPaisCodigo() {
+        return this.pais.getCodigo();
+    }
+
     public boolean ehCuringa() {
         return this.curinga;
     }
 
+    @JsonProperty
     public Simbolo getSimbolo() {
         return this.simbolo;
     }

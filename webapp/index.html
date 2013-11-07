@@ -57,7 +57,7 @@ body {
 }
 
 .country:hover {
-  strike-width: 2px;
+  stroke-width: 2px;
   opacity: 0.8;
 }
 
@@ -553,7 +553,7 @@ body {
   });
 
   apiSocket.on('message', function (data) {
-    console.log(data);
+    console.log(data);//DEBUG
 
     if (data.output) {
       var cmd_log = $('<div>');
@@ -568,28 +568,25 @@ body {
 
     // update the state
     setTimeout(function() {
-      data.tabuleiro.continentes.forEach(function (cont) {
-        cont.paises.forEach(function (pais) {
-          var colorclass = "owner-" + (pais.corDono || "").toLowerCase();
-          var circles = svg.select("#" + pais.codigo + ".country-circle")
-            .selectAll("circle")
-            .data(armyList(pais.exercitos))
-            .attr("r", function(d) { return d.value + 3.5; })
-            .attr("cx", function(d) { return d.x - packsize / 2; })
-            .attr("cy", function(d) { return d.y - packsize / 2; })
-          window.circles = circles
-          circles.enter()
-            .append("circle")
-            .attr("r", function(d) { return d.value + 3.5; })
-            .attr("cx", function(d) { return d.x - packsize / 2; })
-            .attr("cy", function(d) { return d.y - packsize / 2; })
-            .attr("class", colorclass)
-          circles.exit()
-            .remove()
-          //d3.select("#" + pais.codigo + ".country-label")
-            //.text(pais.exercitos);
-            //.text(pais.nome + " [" + pais.exercitos + "]");
-        });
+      data.tabuleiro.paises.forEach(function (pais) {
+        var colorclass = "owner-" + (pais.dono.cor || "").toLowerCase();
+        var circles = svg.select("#" + pais.codigo + ".country-circle")
+          .selectAll("circle")
+          .data(armyList(pais.exercitos))
+          .attr("r", function(d) { return d.value + 3.5; })
+          .attr("cx", function(d) { return d.x - packsize / 2; })
+          .attr("cy", function(d) { return d.y - packsize / 2; })
+        circles.enter()
+          .append("circle")
+          .attr("r", function(d) { return d.value + 3.5; })
+          .attr("cx", function(d) { return d.x - packsize / 2; })
+          .attr("cy", function(d) { return d.y - packsize / 2; })
+          .attr("class", colorclass)
+        circles.exit()
+          .remove()
+        //d3.select("#" + pais.codigo + ".country-label")
+          //.text(pais.exercitos);
+          //.text(pais.nome + " [" + pais.exercitos + "]");
       });
     }, 500); // hack to wait for countries to load
   });

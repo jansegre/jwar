@@ -20,16 +20,15 @@ package br.eb.ime.jwar.models.objetivos;
 
 import br.eb.ime.jwar.models.Jogador;
 import br.eb.ime.jwar.models.Tabuleiro;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class Objetivo {
 
+    @JsonProperty
     protected String description;
 
-    @JsonIgnore
     protected Jogador dono;
 
     protected Objetivo() {
