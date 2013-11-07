@@ -36,7 +36,7 @@ public class ApiServer extends SocketIOServer {
         super(config);
 
         // Criar um jogo, por enquanto igual ao em Application
-        jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO), new RiskSecretMission());
+        jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO, Cor.VERDE, Cor.BRANCO), new RiskSecretMission());
 
         // Servir um chat para facilitar a comunicação da galera
         final SocketIONamespace chatServer = this.addNamespace("/chat");
