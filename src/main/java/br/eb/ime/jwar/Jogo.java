@@ -150,6 +150,14 @@ public final class Jogo {
         }
     }
 
+    public Map<Pais, Integer> getExercitosMovidos() {
+        return exercitosMovidos;
+    }
+
+    public Map<Continente, Integer> getExercitosNoContinente() {
+        return exercitosNoContinente;
+    }
+
     public Estado getEstadoAtual() {
         return estadoAtual;
     }
@@ -366,6 +374,13 @@ public final class Jogo {
     public int getExercitosParaDistribuir() {
         verificarEstado(Estado.REFORCANDO_TERRITORIOS, Estado.DISTRIBUICAO_INICIAL);
         return exercitosParaDistribuir;
+    }
+
+    public int totalReforcos() {
+        int total = exercitosParaDistribuir;
+        for (int ref : exercitosNoContinente.values())
+            total += ref;
+        return total;
     }
 
     private void calcularReforcos() {

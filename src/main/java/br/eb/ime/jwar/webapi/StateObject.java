@@ -19,18 +19,25 @@
 package br.eb.ime.jwar.webapi;
 
 import br.eb.ime.jwar.Jogo;
+import br.eb.ime.jwar.models.Continente;
 import br.eb.ime.jwar.models.Jogador;
+import br.eb.ime.jwar.models.Pais;
 import br.eb.ime.jwar.models.Tabuleiro;
 
 import java.util.List;
+import java.util.Map;
 
 public class StateObject {
     public Jogador atual;
+    public Jogador vencedor;
     public Jogo.Estado estado;
     public Tabuleiro tabuleiro;
     public String mapfile;
     public boolean welcome;
     public List<Integer> dadosAtaque, dadosDefesa;
+    public int reforcos;
+    public Map<Pais, Integer> movidos;
+    public Map<Continente, Integer> exercitosNoContinente;
 
     public StateObject(Jogo jogo, boolean welcome) {
         this.tabuleiro = jogo.getTabuleiro();
@@ -40,6 +47,9 @@ public class StateObject {
         this.estado = jogo.getEstadoAtual();
         this.dadosAtaque = jogo.getDadosAtaque();
         this.dadosDefesa = jogo.getDadosDefesa();
+        this.vencedor = jogo.vencedor();
+        this.reforcos = jogo.totalReforcos();
+        this.movidos = jogo.getExercitosMovidos();
     }
 
     public StateObject(Jogo jogo) {
