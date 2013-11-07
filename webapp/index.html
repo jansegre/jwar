@@ -29,6 +29,11 @@ body {
     background: white;
 }
 
+.jwar .panel-footer .label {
+    font-size: 100%;
+    font-size: 13px;
+}
+
 .map {
     padding: 0;
 }
@@ -38,13 +43,30 @@ body {
     margin-bottom: -4px;
 }
 
+.label { box-shadow: 0 0 2px black; }
+.label.owner-azul     { background-color: blue }
+.label.owner-amarelo  { background-color: yellow }
+.label.owner-vermelho { background-color: red }
+.label.owner-verde    { background-color: green }
+.label.owner-branco   { background-color: white }
+.label.owner-preto    { background-color: black; color: #ddd }
+.label-special {
+  background-color: #ddd;
+  color: #333;
+}
+.label .badge {
+  color: #999;
+  background-color: #fff;
+  margin-right: 4px;
+}
+
 .country-circle { fill: none }
-.owner-azul     { fill: blue }
-.owner-amarelo  { fill: yellow }
-.owner-vermelho { fill: red }
-.owner-verde    { fill: green }
-.owner-branco   { fill: white }
-.owner-preto    { fill: black }
+.country-circle .owner-azul     { fill: blue }
+.country-circle .owner-amarelo  { fill: yellow }
+.country-circle .owner-vermelho { fill: red }
+.country-circle .owner-verde    { fill: green }
+.country-circle .owner-branco   { fill: white }
+.country-circle .owner-preto    { fill: black }
 
 .country-circle circle {
     stroke: #002;
@@ -162,6 +184,12 @@ body {
   }
 }
 
+@media (min-width: 768px) and (max-width: 1400px) {
+  header .container {
+    padding-left: 110px;
+  }
+}
+
 
 </style>
 
@@ -171,8 +199,15 @@ body {
   <script src="js/respond.min.js"></script>
 <![endif]-->
 
+<!-- for the future: http://lab.hakim.se/forkit-js/ -->
+<div class="github-fork-ribbon-wrapper left hidden-xs">
+  <div class="github-fork-ribbon">
+    <a href="https://github.com/jansegre/jwar">Fork me on GitHub</a>
+  </div>
+</div>
+
 <!-- Fixed navbar -->
-<div class="navbar navbar-default navbar-static-top">
+<header class="navbar navbar-default navbar-static-top">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -184,8 +219,8 @@ body {
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
         <!--
+        <li class="active"><a href="#">Home</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#contact">Contact</a></li>
         <li class="dropdown">
@@ -208,7 +243,7 @@ body {
       </ul>
     </div>
   </div>
-</div>
+</header>
 
 <div class="container jwar">
 
@@ -220,7 +255,14 @@ body {
     <div class="panel panel-default well hide map-screen">
       <div class="panel-body map"></div>
       <div class="panel-footer">
-        <span class="label label-default selected-country">&nbsp;</span>
+        <div class="pull-left">
+          <span class="label label-special current-player"></span>
+          <span class="label label-special current-state"></span>
+        </div>
+        <div class="pull-right">
+          <span class="label label-default hovered-country"></span>
+        </div>
+        <div style="clear:both"></div>
       </div>
     </div>
   </div>
@@ -252,16 +294,7 @@ body {
       </form>
     </div>
   </div>
-
-  <!-- for the future: http://lab.hakim.se/forkit-js/ -->
-
 </div> <!-- /container -->
-
-<div class="github-fork-ribbon-wrapper right-bottom">
-  <div class="github-fork-ribbon">
-    <a href="https://github.com/jansegre/jwar">Fork me on GitHub</a>
-  </div>
-</div>
 
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="js/jquery-2.0.3.min.js"></script>
@@ -291,7 +324,9 @@ body {
     //.attr("height", height);
   window.svg = svg;//DEBUG
   var defs = svg.append("defs")
-  var hovered_country = d3.select(".selected-country");
+  var current_player = d3.select(".current-player");
+  var current_state = d3.select(".current-state");
+  var hovered_country = d3.select(".hovered-country");
 
   //var filter = defs.append("filter").attr("id", "shadow");
   //filter.append("feMorphology")
@@ -460,7 +495,9 @@ body {
     NA: 9,
     SA: 4,
     AN: 1
-  }
+  };
+
+  var country_state = {};
 
   function circleTransform(d) {
     return transform(d) + " rotate(" + (d.rotation = (d.rotation || (Math.random() * 360))) + ")";
@@ -512,8 +549,10 @@ body {
 
       svg.selectAll(".country,.country-label,.country-circle")
         .on("mouseover", function(d,i) {
+          var cs = country_state[d.properties.CC];
           hovered_country
-          .html(d.properties.CC + ": " + d.properties.NAME);
+          //.html(d.properties.CC + ": " + d.properties.NAME);
+          .html(d.properties.NAME + (cs ? " <span class=\"badge\">" + cs.exercitos + "</span>" : ""));
         });
       svg.selectAll(".country,.country-label,.country-circle")
         .on("click", function(d,i) {
@@ -562,6 +601,13 @@ body {
       return;
     }
 
+    current_player
+      .attr("class", current_player.attr("class").replace(/\bowner-.*\b/) + " owner-" + data.atual.cor.toLowerCase())
+      .text(data.atual.nome);
+
+    current_state
+      .text(data.estado);
+
     // load the map if recently connected
     if (data.welcome)
       loadMap(data.mapfile);
@@ -569,6 +615,7 @@ body {
     // update the state
     setTimeout(function() {
       data.tabuleiro.paises.forEach(function (pais) {
+        country_state[pais.codigo] = pais;
         var colorclass = "owner-" + (pais.dono.cor || "").toLowerCase();
         var circles = svg.select("#" + pais.codigo + ".country-circle")
           .selectAll("circle")

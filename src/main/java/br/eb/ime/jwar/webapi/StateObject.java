@@ -19,17 +19,27 @@
 package br.eb.ime.jwar.webapi;
 
 import br.eb.ime.jwar.Jogo;
+import br.eb.ime.jwar.models.Jogador;
 import br.eb.ime.jwar.models.Tabuleiro;
 
+import java.util.List;
+
 public class StateObject {
+    public Jogador atual;
+    public Jogo.Estado estado;
     public Tabuleiro tabuleiro;
     public String mapfile;
     public boolean welcome;
+    public List<Integer> dadosAtaque, dadosDefesa;
 
     public StateObject(Jogo jogo, boolean welcome) {
         this.tabuleiro = jogo.getTabuleiro();
         this.mapfile = jogo.getTemplate().getMapfile();
         this.welcome = welcome;
+        this.atual = jogo.jogadorAtual();
+        this.estado = jogo.getEstadoAtual();
+        this.dadosAtaque = jogo.getDadosAtaque();
+        this.dadosDefesa = jogo.getDadosDefesa();
     }
 
     public StateObject(Jogo jogo) {

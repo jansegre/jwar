@@ -54,6 +54,11 @@ public class Jogador {
         return this.cor;
     }
 
+    @JsonProperty
+    public String getNome() {
+        return this.cor.toString();//TODO: esquema de nomes
+    }
+
     public Collection<Pais> getPaises() {
         List<Pais> paises = new ArrayList<>();
         for (Pais pais : tabuleiro.getPaises())

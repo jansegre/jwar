@@ -418,6 +418,14 @@ public final class Jogo {
         return casualidadesDefesa;
     }
 
+    public List<Integer> getDadosAtaque() {
+        return dadosAtaque;
+    }
+
+    public List<Integer> getDadosDefesa() {
+        return dadosDefesa;
+    }
+
     // retorna a lista de dados de ataque
     public List<Integer> atacarPais(Pais atacante, Pais defensor) {
         verificarEstado(Estado.ESCOLHENDO_ATAQUE);
