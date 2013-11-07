@@ -49,12 +49,17 @@ public class WebApplication {
         }
     }
 
+    public static final int defaultPort = 8080;
+
     public static void main(String[] args) throws Exception {
         int port;
+        String envPort = System.getenv("PORT");
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
+        } else if (envPort != null) {
+            port = Integer.valueOf(envPort);
         } else {
-            port = 8080;
+            port = defaultPort;
         }
         System.out.println("File server on port " + port);
         new WebApplication(port).run();
