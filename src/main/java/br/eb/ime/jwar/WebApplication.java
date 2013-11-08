@@ -13,46 +13,20 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+
 package br.eb.ime.jwar;
 
 import br.eb.ime.jwar.webapi.ApiServer;
-import br.eb.ime.jwar.webapi.FileServerHandler;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import com.corundumstudio.socketio.Configuration;
 
 public class WebApplication {
-
-    private final int port;
-
-    public WebApplication(int port) {
-        this.port = port;
-    }
-
-    public void run() throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-        ApiServer apiServer = ApiServer.newConfiguredApiServer();
-        try {
-            apiServer.start();
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new FileServerHandler());
-
-            b.bind(port).sync().channel().closeFuture().sync();
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-            apiServer.stop();
-        }
-    }
 
     public static final int defaultPort = 8080;
 
     public static void main(String[] args) throws Exception {
         int port;
+
+        // Get the port
         String envPort = System.getenv("PORT");
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
@@ -61,7 +35,17 @@ public class WebApplication {
         } else {
             port = defaultPort;
         }
-        System.out.println("File server on port " + port);
-        new WebApplication(port).run();
+
+        // run the server forever
+        Configuration config = new Configuration();
+        config.setPort(port);
+        ApiServer apiServer = new ApiServer(config);
+
+        try {
+            apiServer.start();
+            Thread.sleep(Integer.MAX_VALUE);
+        } finally {
+            apiServer.stop();
+        }
     }
 }

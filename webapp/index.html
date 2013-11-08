@@ -648,9 +648,8 @@ body {
   var _ns = 'br.eb.ime.jwar.webapi.';
   var user = 'Usuário ' + Math.floor((Math.random()*1000)+1);
   console.log(user);
-  var endpointBase = location.protocol + '//' + location.hostname + ':9092';
-  var chatEndpoint = endpointBase + '/chat';
-  var apiEndpoint = endpointBase + '/api';
+  var chatEndpoint = '/chat';
+  var apiEndpoint = '/api';
   var chatSocket =  io.connect(chatEndpoint);
   var apiSocket = io.connect(apiEndpoint);
 

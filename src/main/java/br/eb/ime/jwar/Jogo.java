@@ -15,6 +15,7 @@
  * along with this program.
  *
  */
+
 package br.eb.ime.jwar;
 
 import br.eb.ime.jwar.excecoes.EntradaInvalida;

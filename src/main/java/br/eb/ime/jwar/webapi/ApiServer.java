@@ -15,6 +15,7 @@
  * along with this program.
  *
  */
+
 package br.eb.ime.jwar.webapi;
 
 import br.eb.ime.jwar.Jogo;
@@ -24,6 +25,8 @@ import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -31,9 +34,11 @@ public class ApiServer extends SocketIOServer {
 
     //TODO: permitir multiplos jogos simultâneos
     Jogo jogo;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public ApiServer(Configuration config) {
-        super(config);
+    public ApiServer(Configuration configuration) {
+        super(configuration);
+        super.setPipelineFactory(new ApiInitializer());
 
         // Criar um jogo, por enquanto igual ao em Application
         jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO, Cor.VERDE, Cor.BRANCO), new RiskSecretMission());
@@ -76,12 +81,5 @@ public class ApiServer extends SocketIOServer {
             }
         });
         apiServer.addJsonObjectListener(CommandObject.class, new CommandListener(jogo, apiServer));
-    }
-
-    public static ApiServer newConfiguredApiServer() {
-        Configuration config = new Configuration();
-        //config.setHostname("localhost");
-        config.setPort(9092);
-        return new ApiServer(config);
     }
 }

@@ -20,10 +20,8 @@ package br.eb.ime.jwar.webapi;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedFile;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.CharsetUtil;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -89,27 +87,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  *
  * </pre>
  */
-public class FileServerHandler extends ChannelInitializer<SocketChannel> {
-    @Override
-    public void initChannel(SocketChannel ch) throws Exception {
-        // Create a default pipeline implementation.
-        ChannelPipeline pipeline = ch.pipeline();
 
-        // Uncomment the following line if you want HTTPS
-        //SSLEngine engine = SecureChatSslContextFactory.getServerContext().createSSLEngine();
-        //engine.setUseClientMode(false);
-        //pipeline.addLast("ssl", new SslHandler(engine));
-
-        pipeline.addLast("decoder", new HttpRequestDecoder());
-        pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-        pipeline.addLast("encoder", new HttpResponseEncoder());
-        pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
-
-        pipeline.addLast("handler", new _FileServerHandler(true)); // Specify false if SSL.
-    }
-}
-
-class _FileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class FileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
@@ -119,20 +98,23 @@ class _FileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private final boolean useSendFile;
 
-    public _FileServerHandler(boolean useSendFile) {
-        this.useSendFile = useSendFile;
+    public FileServerHandler() {
+        this.useSendFile = true;
     }
 
     @Override
     public void channelRead0(
             ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
+        request.retain();
         if (!request.getDecoderResult().isSuccess()) {
             sendError(ctx, BAD_REQUEST);
+            ctx.fireChannelRead(request);
             return;
         }
 
         if (request.getMethod() != GET) {
             sendError(ctx, METHOD_NOT_ALLOWED);
+            ctx.fireChannelRead(request);
             return;
         }
 
@@ -140,6 +122,13 @@ class _FileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         final String path = sanitizeUri(uri);
         if (path == null) {
             sendError(ctx, FORBIDDEN);
+            ctx.fireChannelRead(request);
+            return;
+        }
+
+        //XXX: notice hardcoded socket.io namespace
+        if (uri.startsWith("/socket.io")) {
+            ctx.fireChannelRead(request);
             return;
         }
 
