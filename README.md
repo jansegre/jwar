@@ -13,17 +13,7 @@ Feito como trabalho da cadeira de Laboratório de Programação 2 do Instituo Mi
 
 Antes de contribuir leia esse README. Aparentemente você já está lendo, isso é um bom sinal.
 
-Leia as regras para entender como o jogo funciona. Se você já conhece, leia as regras mesmo assim
-para relembra-lás, se você acha que lembra leia mesmo assim. Se você acabou de jogar uma partida de
-War e está com as regras frescas, leia as regras, pode não ser o mesmo War de que estamos falando.
-
-Leia o código antes de escrever qualquer coisa. Leia o código de novo, leia mais um pouco, e
-tente entender, se não conseguir se esforce mais, se ainda assim estiver difícil estude um pouco
-de Java e leia o código de novo, se ainda assim estiver difícil peça ajuda pra alguém que saiba do
-que se trata.
-
-Depois de entender as regras e o código que já foi escrito aprenda como fazer um _fork_ do projeto
-e faça-o (exceto se você for um dos privilegiados a ter acesso a esse repositório).
+Leia as regras para entender como o jogo funciona.
 
 Esse projeto usa o [Maven](http://maven.apache.org/), não é necessário ter um conhecimento específico
 de Maven, apenas é necessário saber como importar um projeto desse tipo em sua IDE, se você não usar
