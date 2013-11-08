@@ -38,6 +38,7 @@ public class StateObject {
     public int reforcos;
     public Map<Pais, Integer> movidos;
     public Map<Continente, Integer> exercitosNoContinente;
+    public final String type = "STATE";
 
     public StateObject(Jogo jogo, boolean welcome) {
         this.tabuleiro = jogo.getTabuleiro();

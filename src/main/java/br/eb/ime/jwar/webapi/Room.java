@@ -18,23 +18,8 @@
 
 package br.eb.ime.jwar.webapi;
 
-public class CommandObject {
+import br.eb.ime.jwar.Jogo;
 
-    enum Type {
-        JOIN,
-        LEAVE,
-        COMMAND,
-        CREATE,
-        RESTART
-    }
-
-    public CommandObject() {
-        type = Type.COMMAND;
-    }
-
-    public String command;
-    public String output;
-    public String user;
-    public String room;
-    public Type type;
+public class Room {
+    public Jogo jogo;
 }

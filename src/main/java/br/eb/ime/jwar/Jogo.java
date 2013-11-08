@@ -92,8 +92,8 @@ public final class Jogo {
     private Map<Continente, Integer> exercitosNoContinente;
 
 
-    public Jogo(List<Cor> cores, Template template) {
-        if (cores.size() < 2)
+    public Jogo(Template template, Cor... cores) {
+        if (cores.length < 2)
             throw new EntradaInvalida("cores must have at least 2 elements");
 
         this.template = template;

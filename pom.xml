@@ -6,7 +6,7 @@
 
   <groupId>br.eb.ime.jwar</groupId>
   <artifactId>jwar</artifactId>
-  <version>0.1-ALPHA</version>
+  <version>0.2.0-BETA</version>
   <packaging>jar</packaging>
 
   <name>jwar</name>

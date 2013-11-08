@@ -32,6 +32,9 @@ import java.util.Set;
 public abstract class JogoTextual {
     protected Jogo jogo;
 
+    protected JogoTextual() {
+    }
+
     public JogoTextual(Jogo jogo) {
         this.jogo = jogo;
     }

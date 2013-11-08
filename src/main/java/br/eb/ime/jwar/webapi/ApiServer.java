@@ -18,9 +18,6 @@
 
 package br.eb.ime.jwar.webapi;
 
-import br.eb.ime.jwar.Jogo;
-import br.eb.ime.jwar.models.Cor;
-import br.eb.ime.jwar.models.templates.RiskSecretMission;
 import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
@@ -28,47 +25,75 @@ import com.corundumstudio.socketio.listener.DisconnectListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ApiServer extends SocketIOServer {
 
-    //TODO: permitir multiplos jogos simultâneos
-    Jogo jogo;
+    private final Map<String, Room> roomMap;
+
     private final Logger log = LoggerFactory.getLogger(getClass());
+
+    class RoomList {
+        Collection<String> rooms;
+
+        RoomList(Collection<String> rooms) {
+            this.rooms = rooms;
+        }
+    }
 
     public ApiServer(Configuration configuration) {
         super(configuration);
         super.setPipelineFactory(new ApiInitializer());
+        roomMap = new HashMap<>();
 
         // Criar um jogo, por enquanto igual ao em Application
-        jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO, Cor.VERDE, Cor.BRANCO), new RiskSecretMission());
+        //jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO, Cor.VERDE, Cor.BRANCO), new RiskSecretMission());
+
+        final SocketIOServer self = this;
 
         // Servir um chat para facilitar a comunicação da galera
         final SocketIONamespace chatServer = this.addNamespace("/chat");
         chatServer.addJsonObjectListener(ChatObject.class, new DataListener<ChatObject>() {
             @Override
             public void onData(SocketIOClient client, ChatObject msg, AckRequest ackRequest) {
-                // broadcast messages to all clients
-                msg.type = "message";
-                chatServer.getBroadcastOperations().sendJsonObject(msg);
+                switch (msg.type) {
+                    case JOIN:
+                        client.joinRoom(msg.room);
+                        self.getRoomOperations(msg.room).sendJsonObject(msg);
+                        break;
+                    case LEAVE:
+                        client.leaveRoom(msg.room);
+                        self.getRoomOperations(msg.room).sendJsonObject(msg);
+                        break;
+                    case MESSAGE:
+                        // broadcast messages to all clients on the same room
+                        self.getRoomOperations(msg.room).sendJsonObject(msg);
+                        break;
+                }
+                log.info(msg.toString());
             }
         });
-        chatServer.addConnectListener(new ConnectListener() {
+
+        self.addConnectListener(new ConnectListener() {
             @Override
-            public void onConnect(SocketIOClient socketIOClient) {
-                ChatObject msg = new ChatObject();
-                msg.message = "Alguém se conectou.";
-                msg.type = "connect";
-                chatServer.getBroadcastOperations().sendJsonObject(msg);
+            public void onConnect(SocketIOClient client) {
+                log.info(client.getRemoteAddress() + " connected");
+                //ChatObject msg = new ChatObject();
+                //msg.message = "Alguém se conectou.";
+                //msg.type = "connect";
+                //chatServer.getBroadcastOperations().sendJsonObject(msg);
             }
         });
-        chatServer.addDisconnectListener(new DisconnectListener() {
+        self.addDisconnectListener(new DisconnectListener() {
             @Override
-            public void onDisconnect(SocketIOClient socketIOClient) {
-                ChatObject msg = new ChatObject();
-                msg.message = "Alguém se desconectou.";
-                msg.type = "disconnect";
-                chatServer.getBroadcastOperations().sendJsonObject(msg);
+            public void onDisconnect(SocketIOClient client) {
+                log.info(client.getRemoteAddress() + " disconnected");
+                //ChatObject msg = new ChatObject();
+                //msg.message = "Alguém se desconectou.";
+                //msg.type = "disconnect";
+                //chatServer.getBroadcastOperations().sendJsonObject(msg);
             }
         });
 
@@ -77,9 +102,13 @@ public class ApiServer extends SocketIOServer {
         apiServer.addConnectListener(new ConnectListener() {
             @Override
             public void onConnect(SocketIOClient client) {
-                client.sendJsonObject(new StateObject(jogo, true));
+                // Send the room list
+                client.sendJsonObject(roomMap.keySet());
+                //client.sendJsonObject(new StateObject(jogo, true));
             }
         });
-        apiServer.addJsonObjectListener(CommandObject.class, new CommandListener(jogo, apiServer));
+        apiServer.addJsonObjectListener(CommandObject.class, new RoomManager(roomMap, self));
+
+        //this.get
     }
 }

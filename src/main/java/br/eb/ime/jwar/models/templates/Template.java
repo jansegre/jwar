@@ -31,6 +31,7 @@ public abstract class Template {
     protected List<Objetivo> objetivos;
     protected List<Carta> baralho;
     protected String mapfile;
+    protected int minPlayers;
 
     public Set<Continente> getContinentes() {
         return continentes;
@@ -46,6 +47,10 @@ public abstract class Template {
 
     public String getMapfile() {
         return mapfile;
+    }
+
+    public int getMinPlayers() {
+        return minPlayers;
     }
 
     public abstract int exercitosPorTroca(int i);

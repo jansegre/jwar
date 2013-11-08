@@ -36,6 +36,7 @@ public class RiskSecretMission extends Template {
 
     public RiskSecretMission() {
         mapfile = "maps/risk/world.json";
+        minPlayers = 4;
 
         // Continentes
 

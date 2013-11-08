@@ -20,12 +20,19 @@ package br.eb.ime.jwar.webapi;
 
 public class ChatObject {
 
+    enum Type {
+        JOIN,
+        LEAVE,
+        MESSAGE
+    }
+
     public String user;
     public String message;
-    public String type;
+    public String room;
+    public Type type;
 
     public ChatObject() {
-        this.type = "system";
+        type = Type.MESSAGE;
     }
 
     public ChatObject(String message) {
@@ -36,5 +43,19 @@ public class ChatObject {
     public ChatObject(String user, String message) {
         this(message);
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        switch (type) {
+            case MESSAGE:
+                return "Message on room " + room + " from user " + user + ": " + message;
+            case JOIN:
+                return "User " + user + " joined room " + room + ": " + message;
+            case LEAVE:
+                return "User " + user + " left room " + room + ": " + message;
+            default:
+                return "Unkown message " + room + ":" + user + ":" + message + ":";
+        }
     }
 }

@@ -1,0 +1,213 @@
+body {
+  min-width: 400px;
+}
+
+/*fix to navbar input*/
+.navbar .form-control {
+  margin: 8px;
+}
+
+.input-short {
+  width: 140px;
+}
+
+@media (max-width: 767px) {
+  span.visible-xs {
+    display: inline !important;
+  }
+}
+
+.welcome .form-inline {
+  margin-bottom: 10px;
+}
+
+.navbar-brand {
+  position: relative;
+}
+
+.navbar-brand .version {
+  position: absolute;
+  bottom: 0;
+  left: 15px;
+  font-size: 10px;
+}
+
+.jwar .well {
+  padding: 0;
+}
+
+.jwar .panel-footer {
+  background: white;
+}
+
+.jwar .panel-footer .label {
+  font-size: 100%;
+  font-size: 13px;
+}
+
+.map {
+  padding: 0;
+}
+.map svg {
+  max-height: 10000px;
+  max-width: 5000px;
+  margin-bottom: -4px;
+}
+
+.label { box-shadow: 0 0 2px black; }
+.label[class*="owner-"] { color: #eee }
+.label.owner-azul     { background-color: blue }
+.label.owner-amarelo  { background-color: yellow; color: #333 }
+.label.owner-vermelho { background-color: red }
+.label.owner-verde    { background-color: green }
+.label.owner-branco   { background-color: white; color: #333 }
+.label.owner-preto    { background-color: black }
+.label-special {
+  background-color: #ddd;
+  color: #333;
+}
+.label .badge {
+  color: #999;
+  background-color: #fff;
+  margin-right: 4px;
+}
+
+.panel-footer .btn {
+  /*padding: 1px 8px;*/
+  display: inline;
+  padding: 4px 9px;
+}
+
+.country-circle { fill: none }
+.country-circle .owner-azul     { fill: blue }
+.country-circle .owner-amarelo  { fill: yellow }
+.country-circle .owner-vermelho { fill: red }
+.country-circle .owner-verde    { fill: green }
+.country-circle .owner-branco   { fill: white }
+.country-circle .owner-preto    { fill: black }
+
+.country-circle circle {
+  stroke: #002;
+  stroke-opacity: .5;
+  stroke-width: .5px;
+}
+
+.country-label:hover, .country-circle:hover, .country:hover {
+  cursor: pointer;
+}
+
+.country:hover {
+  stroke-width: 2px;
+  opacity: 0.8;
+}
+
+/*.country-label {
+ display: block;
+ fill: #aaa;
+ font-family: "Open Sans";
+ font-size: 14px;
+ font-weight: 300;
+ text-anchor: middle;
+}*/
+
+.country {
+  fill: #999;
+  stroke: #111;
+  stroke-opacity: .8;
+  stroke-width: .5px;
+  stroke-linejoin: round;
+}
+
+.graticule {
+  fill: none;
+  stroke: #111;
+  stroke-opacity: .1;
+  stroke-width: .5px;
+}
+
+.outline {
+  fill: none;
+  stroke: #002;
+  stroke-opacity: .5;
+  stroke-width: .5px;
+}
+
+.country.AN.c0  { fill: #ffffff; }
+.country.AF.c0  { fill: #a407b7; }
+.country.AF.c1  { fill: #9418be; }
+.country.AF.c2  { fill: #7008b4; }
+.country.AF.c3  { fill: #8b05c5; }
+.country.AF.c4  { fill: #9700b2; }
+.country.AF.c5  { fill: #7d00af; }
+.country.AS.c0  { fill: #d76100; }
+.country.AS.c1  { fill: #ef5100; }
+.country.AS.c2  { fill: #db3500; }
+.country.AS.c3  { fill: #f14b05; }
+.country.AS.c4  { fill: #fb6c08; }
+.country.AS.c5  { fill: #ff8a1e; }
+.country.AS.c6  { fill: #ff8427; }
+.country.AS.c7  { fill: #ffb738; }
+.country.AS.c8  { fill: #ff7f1c; }
+.country.AS.c9  { fill: #ff5115; }
+.country.AS.c10 { fill: #ff8007; }
+.country.AS.c11 { fill: #ffa000; }
+.country.AU.c0  { fill: #c10003; }
+.country.AU.c1  { fill: #b40024; }
+.country.AU.c2  { fill: #690016; }
+.country.AU.c3  { fill: #9e0309; }
+.country.EU.c0  { fill: #0094ec; }
+.country.EU.c1  { fill: #002abb; }
+.country.EU.c2  { fill: #0055da; }
+.country.EU.c3  { fill: #0692f0; }
+.country.EU.c4  { fill: #000f2b; }
+.country.EU.c5  { fill: #0082b8; }
+.country.EU.c6  { fill: #0069c9; }
+.country.NA.c0  { fill: #ff9b13; }
+.country.NA.c1  { fill: #e7d149; }
+.country.NA.c2  { fill: #ffe627; }
+.country.NA.c3  { fill: #eac42c; }
+.country.NA.c4  { fill: #e4a200; }
+.country.NA.c5  { fill: #ffed18; }
+.country.NA.c6  { fill: #e4bb2c; }
+.country.NA.c7  { fill: #bb9000; }
+.country.NA.c8  { fill: #ffd600; }
+.country.SA.c0  { fill: #00940d; }
+.country.SA.c1  { fill: #00d211; }
+.country.SA.c2  { fill: #41a223; }
+.country.SA.c3  { fill: #19b512; }
+
+/* chat styles */
+
+.chat, .command {
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+.chat-user {
+  font-weight: bold;
+}
+
+.chat-user:after {
+  content: ": ";
+}
+
+.chat-log {
+  padding: 5px 10px 5px;
+}
+
+.console-log {
+  margin: 10px 0 0;
+}
+
+@media (min-width: 768px) {
+  .chat-form .form-group, .command-form .form-group {
+    width: 300px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1400px) {
+  header .container {
+    padding-left: 110px;
+  }
+}

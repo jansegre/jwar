@@ -25,7 +25,6 @@ import br.eb.ime.jwar.models.templates.RiskSecretMission;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 public class Application extends JogoTextual {
 
@@ -65,7 +64,7 @@ public class Application extends JogoTextual {
     }
 
     static public void main(String[] args) {
-        Application app = new Application(new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO), new RiskSecretMission()));
+        Application app = new Application(new Jogo(new RiskSecretMission(), Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO));
         app.mainloop();
     }
 }
