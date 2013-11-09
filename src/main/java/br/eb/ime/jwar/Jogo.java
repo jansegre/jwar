@@ -407,7 +407,7 @@ public final class Jogo {
 
         if (paisOrigem.getDono() != atual)
             throw new EntradaInvalida("Você não é dono do país " + paisOrigem + ".");
-        if (paisOrigem.getDono() != atual)
+        if (paisDestino.getDono() != atual)
             throw new EntradaInvalida("Você não é dono do país " + paisDestino + ".");
         if (nExercito > paisOrigem.getExercitos())
             throw new EntradaInvalida("País " + paisOrigem + "não possui tantos exércitos assim.");
