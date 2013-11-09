@@ -4,6 +4,17 @@ Jogo de War em Java.
 
 Feito como trabalho da cadeira de Laboratório de Programação 2 do Instituo Militar de Engenharia.
 
+## Colocando pra funcionar
+
+Compile e rode, a porta padrão é 8080, pode ser passada pela variável de ambiente PORT.
+
+    mvn package
+    java -cp target/classes:"target/dependency/*" br.eb.ime.jwar.WebApplication
+
+Existe uma interface de linha de comando (CLI):
+
+    java -cp target/classes:"target/dependency/*" br.eb.ime.jwar.Application
+
 ## Regras
 
 - [Regras oficiais da Grow](http://www.grow.com.br/uploads/p185601alh15441mm1q3q1mjn1j011.pdf)
