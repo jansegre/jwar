@@ -481,7 +481,8 @@
 
     apiSocket.json.send({
         '@class': _ns + 'CommandObject',
-        command: command
+        command: command,
+        room: room
     });
   });
 
