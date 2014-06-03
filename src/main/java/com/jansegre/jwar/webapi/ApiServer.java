@@ -22,28 +22,31 @@ import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ApiServer extends SocketIOServer {
 
     private final Map<String, Room> roomMap;
-
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    class RoomList {
-        Collection<String> rooms;
-
-        RoomList(Collection<String> rooms) {
-            this.rooms = rooms;
-        }
-    }
+    private final ApiSocket apiSocket;
+    private final int apiPort = 4242;
 
     public ApiServer(Configuration configuration) {
+        this(configuration, true);
+    }
+
+    public ApiServer(Configuration configuration, boolean useSocketApi) {
         super(configuration);
         super.setPipelineFactory(new ApiInitializer());
         roomMap = new HashMap<>();
@@ -109,6 +112,43 @@ public class ApiServer extends SocketIOServer {
         });
         apiServer.addJsonObjectListener(CommandObject.class, new RoomManager(roomMap, self));
 
-        //this.get
+        if (useSocketApi) {
+            apiSocket = new ApiSocket(roomMap);
+        } else {
+            apiSocket = null;
+        }
+    }
+
+    @Override
+    public void start() {
+        // Reference: http://netty.io/wiki/user-guide-for-4.x.html
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap b = new ServerBootstrap();
+            b.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        public void initChannel(SocketChannel ch) throws Exception {
+                            ch.pipeline().addLast(apiSocket);
+                        }
+                    })
+                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+
+            // Bind and start to accept incoming connections.
+            ChannelFuture f = b.bind(apiPort).syncUninterruptibly();
+            log.info("ApiSocket started at port: {}", apiPort);
+
+            // Also start parent
+            super.start();
+
+            // Wait until the server socket is closed.
+            f.channel().closeFuture().syncUninterruptibly();
+        } finally {
+            workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
+        }
     }
 }
