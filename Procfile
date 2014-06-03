@@ -1,1 +1,1 @@
-web: java -cp target/classes:"target/dependency/*" br.eb.ime.jwar.WebApplication
+web: java -cp target/classes:"target/dependency/*" com.jansegre.jwar.WebApplication

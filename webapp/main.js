@@ -306,7 +306,7 @@
   $(".current-player").popover();
 
   // API communication
-  var _ns = 'br.eb.ime.jwar.webapi.';
+  var _ns = 'com.jansegre.jwar.webapi.';
   var user = 'Usuário ' + Math.floor((Math.random()*1000)+1);
   console.log(user);
   var chatEndpoint = '/chat';
