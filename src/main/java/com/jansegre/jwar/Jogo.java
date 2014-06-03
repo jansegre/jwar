@@ -94,13 +94,14 @@ public final class Jogo {
 
 
     public Jogo(Template template, Cor... cores) {
+        this(template, false, cores);
+    }
 
-        //TODO: parametrizar isso:
-        this.usarCartas = false;
-
+    public Jogo(Template template, boolean usarCartas, Cor... cores) {
         if (cores.length < 2)
             throw new EntradaInvalida("cores must have at least 2 elements");
 
+        this.usarCartas = usarCartas;
         this.template = template;
         this.rodadas = 0;
         this.trocaAtual = 0;
