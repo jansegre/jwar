@@ -1,15 +1,30 @@
-% vim: filetype=prolog et sw=4 ts=4 sts=4
-%
-:- module(rules, [get/3, getall/3, set/4, setall/4, territory/1, neighbours/2, continent/1, territory_continent/2, player/2, owner/3, armies/3, min_armies/3, objective/3, satisfies/2, initial_round/1, next_player/2, transition/4]).
+/*
+ * This file is part of JWar.
+ *
+ * JWar is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.
+ *
+ */
+:- module(rules, [get/3, getall/3, set/4, setall/4, territory/1, neighbours/2, continent/1, territory_continent/2, player/2, owner/3, armies/3, min_armies/3, objective/3, satisfies/2, initial_round/1, next_player/2, transition/4, possible/2]).
 
 %
-% sample map (in the future this will have to be loaded)
+% sample:
 %
-% -- a - b       g --
-%     \ / \     /
-%      c   e - f
-%      |       |
-%      d       h - i
+% -- a(1) - b(3)        g(1) --
+%       \   /  \         /
+%        c(6)   e(2) - f(4)
+%         |             |
+%        d(2)          h(3) - i(1)
 %
 sample_map([
     [
@@ -29,28 +44,20 @@ sample_map([
         [cc, [h, i], 2]
     ]
 ]).
-%TODO: predicate to load a map
-%load_map([T, C]) :-
-%:- sample_map(M), load_map(M).
-
-% sample state:
-%
-% -- a(1) - b(3)        g(1) --
-%       \   /  \         /
-%        c(6)   e(2) - f(4)
-%         |             |
-%        d(2)          h(3) - i(1)
-%
-sample([
+sample_state([
    [a,  b,  c,  d,  e,  f,  g,  h,  i], % territories
-   [1,  3,  6,  2,  2,  4,  1,  3,  1], % armies
+   [1,  3,  1,  1,  2,  2,  1,  3,  1], % armies
+   %[1,  3,  6,  2,  2,  4,  1,  3,  1], % armies
    [p2, p2, p2, p2, p1, p2, p3, p3, p4], % owners
    [p1, p2, p3, p4], % players
    [[world], [conts, 1, aa], [kill, p5], [min, 3, 2]], % objective
-   p1, % current player
+   p2, % current player
    1, % round (0 is initial distribution)
-   attacking, % stage (placing, attacking, moving)
-   0 % armies to place
+   moving, % stage (placing, attacking, rolling, moving)
+   0, % armies to place
+   [], % attack (used to hold an attack state before rolling the dice)
+   %[] % prev_armies (used to hold the previous distribution of armies, for the moving stage)
+   [1,  3,  1,  1,  2,  2,  1,  3,  1]
 ]).
 
 % helper function
@@ -68,7 +75,9 @@ get(player,      V, S) :- nth1(6, S, V).
 get(round,       V, S) :- nth1(7, S, V).
 get(stage,       V, S) :- nth1(8, S, V).
 get(to_place,    V, S) :- nth1(9, S, V).
-% get_all(+PropList, ?ValueList, +State)
+get(attack,      V, S) :- nth1(10, S, V).
+get(prev_armies, V, S) :- nth1(11, S, V).
+% getall(+PropList, ?ValueList, +State)
 getall([], [], _).
 getall([P | Pl], [V | Vl], S) :- get(P, V, S), getall(Pl, Vl, S).
 % set(?Prop, +Value, +State, -NewState)
@@ -81,28 +90,25 @@ set(player,      V, S, N) :- snth1(6, S, V, N).
 set(round,       V, S, N) :- snth1(7, S, V, N).
 set(stage,       V, S, N) :- snth1(8, S, V, N).
 set(to_place,    V, S, N) :- snth1(9, S, V, N).
-% set_all(+PropList, ?ValueList, +State, -NewState)
+set(attack,      V, S, N) :- snth1(10, S, V, N).
+set(prev_armies, V, S, N) :- snth1(11, S, V, N).
+% setall(+PropList, ?ValueList, +State, -NewState)
 setall([], [], S, S).
 setall([P | Pl], [V | Vl], S, N) :- set(P, V, S, Sn), setall(Pl, Vl, Sn, N).
 
 % base constructs, consistency is not enforced
 %
-% t(territory, neighbours)
 :- dynamic t/2.
-t(a, [b, c, g]).
-t(b, [a, c, e]).
-t(c, [a, b, d]).
-t(d, [c]).
-t(e, [b, f]).
-t(f, [e, g, h]).
-t(g, [a, f]).
-t(h, [i, f]).
-t(i, [h]).
-% c(continent, territories, bonus)
+% t(territory, neighbours)
 :- dynamic c/3.
-c(aa, [a, b, c, d], 3).
-c(bb, [e, f, g], 2).
-c(cc, [h, i], 2).
+% c(continent, territories, bonus)
+addt_([Ter, Nei]) :- assertz(t(Ter, Nei)).
+addc_([Con, Ters, Bon]) :- assertz(c(Con, Ters, Bon)).
+load_map([T, C]) :-
+    retractall(t(_, _)),
+    retractall(c(_, _, _)),
+    maplist(addt_, T),
+    maplist(addc_, C).
 % o(objective, player, special_args, state).
 % world domination, no args
 o(world, _, _, [_, _, [] | _]).
@@ -155,14 +161,24 @@ set_owner(P, T, S, Ns) :-
 armies(N, T, [[T | _], [N | _] | _]).
 armies(N, T, [[_ | L], [_ | M] | _]) :- armies(N, T, [L, M | _]).
 
-% add_armies(+AddArmies, ?Territory, +State, -NewState)
-add_armies(N, T, S, Ns) :-
-    getall([territories, armies], [Terrs, Arms], S),
+% prev_armies(?Armies, ?Territory, +State)
+prev_armies(N, T, [[T | _], _, _, _, _, _, _, _, _, _, [N | _] | _]).
+prev_armies(N, T, [[_ | L], _, _, _, _, _, _, _, _, _, [_ | M] | _]) :- armies(N, T, [L, M | _]).
+
+% add_(+Prop, +AddArmies, ?Territory, +State, -NewState)
+add_(Prop, N, T, S, Ns) :-
+    getall([territories, Prop], [Terrs, Arms], S),
     nth1(Ti, Terrs, T),
     nth1(Ti, Arms, Ta),
     NTa is Ta + N,
     snth1(Ti, Arms, NTa, NArms),
-    set(armies, NArms, S, Ns).
+    set(Prop, NArms, S, Ns).
+
+% add_armies(+AddArmies, ?Territory, +State, -NewState)
+add_armies(AddArmies, Territory, State, NewState) :- add_(armies, AddArmies, Territory, State, NewState).
+
+% add_armies(+AddArmies, ?Territory, +State, -NewState)
+add_prev_armies(AddArmies, Territory, State, NewState) :- add_(prev_armies, AddArmies, Territory, State, NewState).
 
 % min_armies(+TerritoryList, ?Min, +State)
 % ref: http://stackoverflow.com/a/3966139/947511
@@ -193,26 +209,26 @@ initial_round(S) :- get(round, 0, S).
 % The game state machine
 % ======================
 
+%TODO: improve this to avoid same state generated from different paths
+% ref: http://stackoverflow.com/questions/10611585/get-list-of-sets-where-the-sum-of-each-set-is-x
+% ref: http://www.swi-prolog.org/pldoc/man?section=clpfd
+%:- [library(clpfd)].
+%get_combos(Sum, Length, List) :-
+%    length(List, Length),
+%    List ins 0..Sum,
+%    sum(List, #=, Sum),
+%    label(List).
+
 % partial transitions
 % place army on T
-transition_([place, T], S, Ns) :-
+transition_([place, T], [S, Ns]) :-
     getall([player, to_place], [Player, ToPlace], S),
-    %getall([player, territories, armies, to_place], [Player, Terrs, Arms, ToPlace], S),
     owner(Player, T, S),
-    %nth1(Ti, Terrs, T),
-    %nth1(Ti, Arms, Ta),
-    %NTa is Ta + 1,
-    %snth1(Ti, Arms, NTa, NArms),
     NToPlace is ToPlace - 1,
-    %setall([armies, to_place], [NArms, NToPlace], S, Ns).
     add_armies(1, T, S, Sp),
     set(to_place, NToPlace, Sp, Ns).
 % attack Tdef from Tatk
-transition_([attack, Tdef, Tatk], S, Ns, P, Satk) :-
-    getall([stage, player], [attacking, Player], S),
-    owner(Player, Tatk, S),
-    neighbours(Tatk, Tdef),
-    not(owner(Player, Tdef, S)),
+transition_([attack, Tdef, Tatk], [S, Ns, P, Satk]) :-
     armies(Natk, Tatk, S),
     armies(Ndef, Tdef, S),
     %XXX: the number of dices is fixed to the max possible
@@ -223,44 +239,76 @@ transition_([attack, Tdef, Tatk], S, Ns, P, Satk) :-
     prob(Datk, Ddef, Catk, Cdef, P),
     Satk is Datk - Catk,
     add_armies(-Catk, Tatk, S, Sp),
-    add_armies(-Cdef, Tdef, Sp, Ns).
-
-% transition(?[id | params], +State, -NextState, -Probability)
-% place army on T, continue placing
-transition([place, T], S, Ns, 1.0) :-
-    getall([stage, to_place], [placing, N], S),
-    N > 1,
-    transition_([place, T], S, Ns).
-% place army on T, go to attack stage
-transition([place, T], S, Ns, 1.0) :-
-    getall([stage, to_place], [placing, 1], S),
-    transition_([place, T], S, Sp),
-    set(stage, attacking, Sp, Ns).
-% attack Tdef from Tatk, leading to an occupation
-transition([attack, Tdef, Tatk], S, Ns, P) :-
-    transition_([attack, Tdef, Tatk], S, Sp, P, Satk),
-    armies(0, Tdef, Sp),
-    get(player, Player, S),
-    add_armies(-Satk, Tatk, Sp, Sp2),
-    add_armies(Satk, Tdef, Sp2, Sp3),
-    set_owner(Player, Tdef, Sp3, Ns).
-% attack Tdef from Tatk, not leading to an occupation
-transition([attack, Tdef, Tatk], S, Ns, P) :-
-    transition_([attack, Tdef, Tatk], S, Ns, P, _),
-    armies(Ndef, Tdef, Ns),
-    Ndef > 0.
-% done attacking
-transition([done], S, Ns, 1.0) :-
-    get(stage, attacking, S),
-    set(stage, moving, S, Ns).
-% 
-transition([next], S, Ns, 1.0) :-
+    add_armies(-Cdef, Tdef, Sp, Spp),
+    set(attack, [], Spp, Ns).
+% next player
+transition_([next], [S, Ns]) :-
     getall([stage, round], [moving, Round], S),
     next_player(NPlayer, Radd, S),
     NRound is Round + Radd,
     %TODO: calculate armies_to_place
     NToPlace is 3,
-    setall([round, to_place, stage, player], [NRound, NToPlace, placing, NPlayer], S, Ns).
+    setall([round, to_place, stage, player, prev_armies], [NRound, NToPlace, placing, NPlayer, []], S, Ns).
+
+% transition(?[id | params], +State, -NextState, -Probability)
+% place army on T, continue placing
+transition([place, T], S, Ns, 1.0) :-
+    getall([stage, to_place], [placing, N], S), N > 1,
+    transition_([place, T], [S, Ns]).
+% place army on T, go to attack stage
+transition([place, T], S, Ns, 1.0) :-
+    getall([round, stage, to_place], [R, placing, 1], S), R > 0,
+    transition_([place, T], [S, Sp]),
+    set(stage, attacking, Sp, Ns).
+% place army on T, go to next player, initial round
+transition([place, T], S, Ns, 1.0) :-
+    getall([round, stage, to_place], [0, placing, 1], S),
+    transition_([place, T], [S, Sp]),
+    set(stage, attacking, Sp, Spp),
+    transition_([next], [Spp, Ns]).
+% attack Tdef from Tatk, leading to an occupation
+transition([attack, Tdef, Tatk], S, Ns, 1.0) :-
+    getall([stage, player], [attacking, Player], S),
+    owner(Player, Tatk, S),
+    neighbours(Tatk, Tdef),
+    not(owner(Player, Tdef, S)),
+    setall([attack, stage], [[Tdef, Tatk], rolling], S, Ns).
+% attack Tdef from Tatk, leading to an occupation
+transition([roll], S, Ns, P) :-
+    getall([stage, attack], [rolling, [Tdef, Tatk]], S),
+    transition_([attack, Tdef, Tatk], [S, Sp, P, Satk]),
+    armies(0, Tdef, Sp),
+    get(player, Player, S),
+    add_armies(-Satk, Tatk, Sp, Sp2),
+    add_armies(Satk, Tdef, Sp2, Sp3),
+    set_owner(Player, Tdef, Sp3, Sp4),
+    set(stage, attacking, Sp4, Ns).
+% attack Tdef from Tatk, not leading to an occupation
+transition([roll], S, Ns, P) :-
+    getall([stage, attack], [rolling, [Tdef, Tatk]], S),
+    transition_([attack, Tdef, Tatk], [S, Sp, P, _]),
+    armies(Ndef, Tdef, Sp),
+    Ndef > 0,
+    set(stage, attacking, Sp, Ns).
+% done attacking
+transition([done], S, Ns, 1.0) :-
+    getall([stage, armies], [attacking, Arms], S),
+    setall([stage, prev_armies], [moving, Arms], S, Ns).
+% move an army from Torig to Tdest
+transition([move, Torig, Tdest], S, Ns, 1.0) :-
+    getall([stage, player], [moving, Player], S),
+    owner(Player, Torig, S),
+    neighbours(Torig, Tdest),
+    owner(Player, Tdest, S),
+    %Torig \== Tdest,
+    prev_armies(N, Torig, S), N > 1,
+    %format('~d~n', [N]),
+    add_armies(-1, Torig, S, Sp),
+    add_prev_armies(-1, Torig, Sp, Spp),
+    add_armies(1, Tdest, Spp, Ns).
+% next player
+transition([next], S, Ns, 1.0) :-
+    transition_([next], [S, Ns]).
 
 % prob(?AtkDices, ?DefDices, ?AtkDeaths, ?DefDeaths, -Prob).
 % official dices are D6
@@ -308,3 +356,40 @@ p(3, 3, 0, 3, 0.1376028807). %  6420 / 46656
 p(3, 3, 1, 2, 0.2146990741). % 10017 / 46656
 p(3, 3, 2, 1, 0.2646604938). % 12348 / 46656
 p(3, 3, 3, 0, 0.3830375514). % 17871 / 46656
+
+
+% The artificial intelligence(s)
+% ==============================
+
+% possible(+InitialState, +Depth, -TransitionPath, -FinalState)
+:- use_module(library('http/json')).
+:- use_module(library('http/json_convert')).
+possible(S, 0, @null, S).
+possible(S, D, Tj, Fs) :-
+    D > 0,
+    transition(T, S, Ns, P),
+    Nd is D - 1,
+    findall(Tc, possible(Ns, Nd, Tc, Fs), Lc),
+    build_stat(T, P, Lc, Tj, Fs).
+% build_stat(+Trans, +Prob, +Children, -JsonObject).
+build_stat(T, 1.0, [@null], J, _) :- J = json([t=T]).
+build_stat(T, P, [@null], J, _) :- P \= 1.0, J = json([t=T, p=P]).
+build_stat(T, 1.0, [N | L], J, _) :- N \= @null, J = json([t=T, children=[N | L]]).
+build_stat(T, P, [N | L], J, _) :- P \= 1.0, N \= @null, J = json([t=T, p=P, children=[N | L]]).
+
+possible(S, D) :-
+    open('t.json', write, Out),
+    findall(T, possible(S, D, T, _), Lt),
+    json_write(Out, json([s=S, t=[''], children=Lt]), [step=4, tab=0]),
+    close(Out).
+
+%expectmultimax
+
+
+% Load samples
+% ============
+
+:- sample_map(M), load_map(M).
+
+%
+% vim: filetype=prolog et sw=4 ts=4 sts=4
