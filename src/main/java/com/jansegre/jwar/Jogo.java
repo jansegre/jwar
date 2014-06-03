@@ -90,9 +90,14 @@ public final class Jogo {
     private boolean jogoComecou;
     private Map<Pais, Integer> exercitosMovidos;
     private Map<Continente, Integer> exercitosNoContinente;
+    private boolean usarCartas;
 
 
     public Jogo(Template template, Cor... cores) {
+
+        //TODO: parametrizar isso:
+        this.usarCartas = false;
+
         if (cores.length < 2)
             throw new EntradaInvalida("cores must have at least 2 elements");
 
@@ -164,7 +169,7 @@ public final class Jogo {
     }
 
     private Estado avancaJogador() {
-        if (conquistouExercito)
+        if (conquistouExercito && usarCartas)
             darCarta();
 
         List<Jogador> jogadores = tabuleiro.getJogadores();
@@ -298,11 +303,14 @@ public final class Jogo {
     }
 
     public void fazerTrocaDeCartas(Carta carta1, Carta carta2, Carta carta3) {
+        if (!usarCartas) {
+            throw new EntradaInvalida("O uso de cartas foi desabilitado.");
+        }
         verificarEstado(Estado.REFORCANDO_TERRITORIOS);
 
         // verificar se o usuario tem as cartas usadas
         if (!atual.ehDono(carta1) || !atual.ehDono(carta2) || !atual.ehDono(carta3)) {
-            throw new EntradaInvalida("Invalid cartas for this user! He not has one or more these cartas");
+            throw new EntradaInvalida("Uma das cartas especificadas não pertence ao jogador.");
         }
 
         // verificar se troca é possível
@@ -340,7 +348,7 @@ public final class Jogo {
 
         if (pais.getDono() != atual)
             throw new EstadoInvalido("Esse país não é seu.");
-        if (atual.getCartas().size() >= 5)
+        if (atual.getCartas().size() >= 5 && usarCartas)
             throw new EstadoInvalido("Você deve fazer uma troca primeiro.");
 
         Continente cont = getContinente(pais);

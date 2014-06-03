@@ -116,7 +116,11 @@ public abstract class JogoTextual {
                     int j = parseInt(command[2]);
                     int k = parseInt(command[3]);
                     List<Carta> cartas1 = jogo.jogadorAtual().getCartas();
-                    jogo.fazerTrocaDeCartas(cartas1.get(i), cartas1.get(j), cartas1.get(k));
+                    try {
+                        jogo.fazerTrocaDeCartas(cartas1.get(i), cartas1.get(j), cartas1.get(k));
+                    } catch (IndexOutOfBoundsException e) {
+                        output("Erro! Uma das cartas especificadas não existe.");
+                    }
                     break;
                 case "ok":
                 case "avançar":
