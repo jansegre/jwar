@@ -15,7 +15,7 @@
  * along with this program.
  *
  */
-:- module(rules, [get/3, getall/3, set/4, setall/4, territory/1, neighbours/2, continent/1, territory_continent/2, player/2, owner/3, armies/3, min_armies/3, objective/3, satisfies/2, initial_round/1, next_player/2, transition/4, possible/2]).
+:- module(game, [get/3, getall/3, set/4, setall/4, territory/1, neighbours/2, continent/1, territory_continent/2, player/2, owner/3, armies/3, min_armies/3, objective/3, satisfies/2, initial_round/1, next_player/2, transition/4, possible/2]).
 
 %
 % sample:
@@ -26,6 +26,7 @@
 %         |             |
 %        d(2)          h(3) - i(1)
 %
+
 sample_map([
     [
         [a, [b, c, g]],
@@ -53,7 +54,7 @@ sample_state([
    [[world], [conts, 1, aa], [kill, p5], [min, 3, 2]], % objective
    p2, % current player
    1, % round (0 is initial distribution)
-   moving, % stage (placing, attacking, rolling, moving)
+   moving, % stage (placing, attacking, rolling, occupying, moving)
    0, % armies to place
    [], % attack (used to hold an attack state before rolling the dice)
    %[] % prev_armies (used to hold the previous distribution of armies, for the moving stage)
@@ -121,6 +122,7 @@ o(min, X, [Nt, Na], [_, [_ | La], [_ | Lp] | _]) :- o(min, X, [Nt, Na], [_, La, 
 o(min, X, [Nt], S) :- o(min, X, [Nt, 1], S), !.
 % eliminate player, args: [Player]
 o(kill, X, [Y], [_, _, L | _]) :- not(member(Y, L)), member(X, L), !.
+% FIXME: should be [NExtraConts | Conts]
 % certain continents, args: [MinArmies | Conts]
 o(conts, _, [_], _).
 o(conts, X, [Na, C | Lc], S) :- findall(T, territory_continent(T, C), Lt), findall(T, owner(X, T, S), Lt), o(conts, X, [Na | Lc], S).
@@ -243,7 +245,8 @@ transition_([attack, Tdef, Tatk], [S, Ns, P, Satk]) :-
     set(attack, [], Spp, Ns).
 % next player
 transition_([next], [S, Ns]) :-
-    getall([stage, round], [moving, Round], S),
+    %getall([stage, round], [moving, Round], S),
+    get(round, Round, S),
     next_player(NPlayer, Radd, S),
     NRound is Round + Radd,
     %TODO: calculate armies_to_place
@@ -270,19 +273,21 @@ transition([place, T], S, Ns, 1.0) :-
 transition([attack, Tdef, Tatk], S, Ns, 1.0) :-
     getall([stage, player], [attacking, Player], S),
     owner(Player, Tatk, S),
+    armies(Natk, Tatk, S),
+    Natk > 1,
     neighbours(Tatk, Tdef),
     not(owner(Player, Tdef, S)),
     setall([attack, stage], [[Tdef, Tatk], rolling], S, Ns).
 % attack Tdef from Tatk, leading to an occupation
 transition([roll], S, Ns, P) :-
     getall([stage, attack], [rolling, [Tdef, Tatk]], S),
-    transition_([attack, Tdef, Tatk], [S, Sp, P, Satk]),
+    transition_([attack, Tdef, Tatk], [S, Sp, P, _]),
     armies(0, Tdef, Sp),
     get(player, Player, S),
-    add_armies(-Satk, Tatk, Sp, Sp2),
-    add_armies(Satk, Tdef, Sp2, Sp3),
-    set_owner(Player, Tdef, Sp3, Sp4),
-    set(stage, attacking, Sp4, Ns).
+    %add_armies(-Satk, Tatk, Sp, Sp2),
+    %add_armies(Satk, Tdef, Sp2, Sp3),
+    set_owner(Player, Tdef, Sp, Sp4),
+    set(stage, occupying, Sp4, Ns).
 % attack Tdef from Tatk, not leading to an occupation
 transition([roll], S, Ns, P) :-
     getall([stage, attack], [rolling, [Tdef, Tatk]], S),
@@ -290,6 +295,16 @@ transition([roll], S, Ns, P) :-
     armies(Ndef, Tdef, Sp),
     Ndef > 0,
     set(stage, attacking, Sp, Ns).
+% occupy recently attacked with N troops
+transition([occupy, N], S, Ns, 1.0) :-
+    getall([stage, attack], [occupying, [Tdef, Tatk]], S),
+    numlist(1, 3, Numl),
+    member(N, Numl),
+    armies(Natk, Tatk, S),
+    N < Natk,
+    add_armies(-N, Tatk, S, Sp),
+    add_armies(N, Tdef, Sp, Spp),
+    set(stage, attacking, Spp, Ns).
 % done attacking
 transition([done], S, Ns, 1.0) :-
     getall([stage, armies], [attacking, Arms], S),
@@ -308,6 +323,7 @@ transition([move, Torig, Tdest], S, Ns, 1.0) :-
     add_armies(1, Tdest, Spp, Ns).
 % next player
 transition([next], S, Ns, 1.0) :-
+    get(stage, moving, S),
     transition_([next], [S, Ns]).
 
 % prob(?AtkDices, ?DefDices, ?AtkDeaths, ?DefDeaths, -Prob).
@@ -386,10 +402,78 @@ possible(S, D) :-
 %expectmultimax
 
 
+% Interfacing with the server
+% ===========================
+
+:- use_module(library(socket)).
+
+% sgame(-Game, +Room), with local server and default port
+sgame(['localhost', 4242, Room], Room).
+% sgame(-Game, +Host, +Port, +Room)
+sgame([H, P, R], H, P, R).
+
+% query_cmd(+Game, +Command, -Result)
+query_cmd([H, P, Ro], Q, T) :-
+    tcp_socket(So),
+    tcp_connect(So, H:P, S),
+    stream_pair(S, R, W),
+    format(W, "CMD ~w ~w~n", [Ro, Q]),
+    flush_output(W),
+    read_term(R, T, [double_quotes(string)]),
+    close(S).
+
+% query_state(+Game, -Result)
+query_state([H, P, Ro], T) :-
+    tcp_socket(So),
+    tcp_connect(So, H:P, S),
+    stream_pair(S, R, W),
+    format(W, "STATE ~w~n", [Ro]),
+    flush_output(W),
+    read_term(R, T, [double_quotes(string)]),
+    close(S).
+
+% query_map(+Game, -Result)
+query_map([H, P, Ro], M) :-
+    tcp_socket(So),
+    tcp_connect(So, H:P, S),
+    stream_pair(S, R, W),
+    format(W, "MAP ~w~n", [Ro]),
+    flush_output(W),
+    read_term(R, M, [double_quotes(string)]),
+    close(S).
+
+% Playing the game
+% ================
+
+% play(+Game, +Player, +Strategy)
+play(G, P, S) :-
+    query_map(G, [200, M]),
+    load_map(M),
+    play_loop(G, P, S).
+
+play_loop(G, P, S) :-
+    % sleep for 1 second
+    sleep(1.0),
+    query_state(G, [200, St]),
+    (get(player, P, St) *->
+        nl,
+        step(S, St, Cmd),
+        write(Cmd),
+        write(': '),
+        query_cmd(G, Cmd, Out),
+        write(Out), nl;
+        write('.')),
+    flush_output,
+    play_loop(G, P, simple).
+
+step(simple, S, T) :- transition(T, S, _, _), !.
+
+
 % Load samples
 % ============
 
-:- sample_map(M), load_map(M).
+% uncomment to use sample map:
+%:- sample_map(M), load_map(M).
 
 %
 % vim: filetype=prolog et sw=4 ts=4 sts=4
