@@ -15,7 +15,7 @@
  * along with this program.
  *
  */
-:- module(game, [get/3, getall/3, set/4, setall/4, territory/1, neighbours/2, continent/1, territory_continent/2, player/2, owner/3, armies/3, min_armies/3, objective/3, satisfies/2, evaluate/3, initial_round/1, next_player/2, transition/4, possible/2, play/3]).
+:- module(game, [get/3, getall/3, set/4, setall/4, territory/1, neighbours/2, continent/1, territory_continent/2, player/2, owner/3, armies/3, min_armies/3, objective/3, satisfies/2, evaluate/3, initial_round/1, next_player/2, transition/4, expectmultimax/3, possible/3, play/3]).
 
 %
 % sample:
@@ -224,7 +224,7 @@ objective(P, O, [_, _, _, [_ | L], [_ | M] | _]) :- objective(P, O, [_, _, _, L,
 satisfies(P, S) :- objective(P, [Obj | Args], S), o(Obj, P, Args, S).
 
 % evaluate(?Player, -Value, +State)
-evaluate(P, V, S) :- objective(P, [Ob | Args], S), v(Ob, P, Args, S, V).
+evaluate(P, V, S) :- objective(P, [Ob | Args], S), v(Ob, P, Args, S, V), !.
 
 
 % next_player(?NextPlayer, +State)
@@ -236,6 +236,12 @@ next_player(N, S) :- next_player(N, _, S).
 
 % initial_round(+State)
 initial_round(S) :- get(round, 0, S).
+
+% armies_to_place(+Player, -Armies, +State)
+%TODO: take continent bonus into account
+armies_to_place(P, A, S) :-
+    aggregate_all(count, owner(P, _, S), Nt),
+    A is max(ceil(Nt / 3), 3).
 
 
 % The game state machine
@@ -278,8 +284,7 @@ transition_([next], [S, Ns]) :-
     get(round, Round, S),
     next_player(NPlayer, Radd, S),
     NRound is Round + Radd,
-    %TODO: calculate armies_to_place
-    NToPlace is 3,
+    armies_to_place(NPlayer, NToPlace, S),
     setall([round, to_place, stage, player, prev_armies], [NRound, NToPlace, placing, NPlayer, []], S, Ns).
 
 % transition(?[id | params], +State, -NextState, -Probability)
@@ -406,30 +411,94 @@ p(3, 3, 3, 0, 0.3830375514). % 17871 / 46656
 
 :- use_module(library('http/json')).
 :- use_module(library('http/json_convert')).
-possible(S, 0, @null, S).
-possible(S, D, Tj, Fs) :-
-    D > 0,
-    transition(T, S, Ns, P),
-    Nd is D - 1,
-    findall(Tc, possible(Ns, Nd, Tc, Fs), Lc),
-    build_stat(T, P, Lc, Tj, Fs).
+possible(S, _, 0, @null, _, S).
+possible(S, 0, _, @null, _, S).
+possible(S, D, MaxD, Tj, Lt, Fs) :-
+    D > 0, MaxD > 0,
+    get(player, Pl, S), (
+        % cut move
+        get(stage, moving, S) *-> T = [next | _];
+        % cut attacks
+        get(stage, attacking, S) *-> T = [done | _];
+        true
+    ),
+    transition(T, S, Ns, P), (
+        T = [next | _] *-> NLt = false;
+        T = [place, Ter], Lt \= false *-> Lt = Ter, NLt = Ter;
+        NLt = Lt
+    ),
+    get(player, Np, Ns),
+    (Pl \= Np *->
+        Nd is D - 1;
+        Nd is D),
+    NMaxD is MaxD - 1,
+    findall(Tc, possible(Ns, Nd, NMaxD, Tc, NLt, Fs), Lc),
+    build_stat(T, P, Lc, Tj, S).
 % build_stat(+Trans, +Prob, +Children, -JsonObject).
-build_stat(T, 1.0, [@null], J, _) :- J = json([t=T]).
-build_stat(T, P, [@null], J, _) :- P \= 1.0, J = json([t=T, p=P]).
-build_stat(T, 1.0, [N | L], J, _) :- N \= @null, J = json([t=T, children=[N | L]]).
-build_stat(T, P, [N | L], J, _) :- P \= 1.0, N \= @null, J = json([t=T, p=P, children=[N | L]]).
+build_stat(T, P, [@null], J, S) :-
+    P \= 1.0 *->
+        J = json([s=S, t=T, p=P]);
+        J = json([s=S, t=T]).
+build_stat(T, P, [N | L], J, S) :-
+    P \= 1.0 *->
+        N \= @null, J = json([s=S, t=T, p=P, children=[N | L]]);
+        N \= @null, J = json([s=S, t=T, children=[N | L]]).
 
-possible(S, D) :-
+possible(S, D, MD) :-
     open('t.json', write, Out),
-    findall(T, possible(S, D, T, _), Lt),
+    findall(T, possible(S, D, MD, T, _, _), Lt),
     json_write(Out, json([s=S, t=[''], children=Lt]), [step=4, tab=0]),
     close(Out).
 
 % The ExpectMultiMax
 % ------------------
 
+% helper function to sum two lists [a, b, c] + [d, e, f] = [a + d, b + e, c + f]
+% ref: http://stackoverflow.com/questions/15933103/prolog-summing-numbers-from-two-lists
+list_sum([], [], []).
+list_sum([H1 | T1], [H2 | T2], [X | L3]) :- list_sum(T1, T2, L3), X is H1 + H2.
+list_sum([H1 | T1], [H2 | T2], [X | L3]) :- list_sum(T1, T2, L3), X is H1 + H2.
+list_sum([L], L).
+list_sum([L1, L2 | LL], L3) :- list_sum(L1, L2, LR), list_sum([LR | LL], L3), !.
+multiply_list([], _, []).
+multiply_list([N | Ns], P, [M | Ms]) :-
+    M is N * P,
+    multiply_list(Ns, P, Ms).
+
+expectmultimax_eval(S, V) :-
+    findall(Ev, (player(P, S), evaluate(P, Ev, S)), V).
+
 % expectmultimax(+State, +Depth, -Transition)
-%expectmultimax(S, D, T) :-
+expectmultimax(S, D, T) :- expectmultimax(S, D, T, [], _).
+
+% expectmultimax(+State, +Depth, -Transition, _, +State)
+expectmultimax(S, D, T, _, V) :-
+    D > 0,
+    get(stage, rolling, S) *->
+        Nd is D - 1,
+        findall(PVi, (
+            transition(_, S, Ns, Pi),
+            (Nd == 0 *->
+                expectmultimax_eval(Ns, Vi);
+                expectmultimax(Ns, Nd, _, _, Vi)),
+            multiply_list(Vi, Pi, PVi)
+        ), Lpv),
+        list_sum(Lpv, V);
+        Nd is D - 1,
+        % max because evaluation is inversed
+        aggregate_all(min(Pv, [Ti, Vi]), (
+            transition(Ti, S, Ns, 1.0),
+            (Nd == 0 *->
+                expectmultimax_eval(Ns, Vi);
+                expectmultimax(Ns, Nd, _, _, Vi)),
+            sum_list(Vi, PPv),
+            getall([players, player], [Pl, Pi], S),
+            nth1(Np, Pl, Pi),
+            nth1(Np, Vi, CPv),
+            Pv is PPv - 2 * CPv
+        ), min(_, [T, V])).
+
+
 
 % Interfacing with the server
 % ===========================
@@ -495,6 +564,10 @@ play_loop(G, P, S) :-
     flush_output,
     play_loop(G, P, simple).
 
+step(expectmultimax, S, T) :-
+    expectmultimax(S, 2, T),
+    !.
+
 step(simple, S, T) :-
     transition(T, S, _, _),
     !.
@@ -513,6 +586,10 @@ step(random, S, T) :-
 
 % uncomment to use sample map:
 :- sample_map(M), load_map(M).
+
+% real samples:
+% Map = [[[ka,[mo,ir,ja,ya,al]],[af,[me,in,uk,ur,ch]],[in,[af,me,si,ch]],[me,[af,in,uk,eg,ef,se]],[si,[in,ng,id,ch]],[sb,[ir,mo,ya,ur,ch]],[mo,[ka,ir,sb,ch]],[ir,[ka,mo,sb,ya,ch]],[ja,[ka,ch]],[ya,[ka,ir,sb]],[ur,[af,uk,sb,ch]],[ch,[af,in,si,ir,sb,mo,ja,ur]],[co,[sa,na,ef]],[sa,[co,ef,ma]],[na,[co,br,eg,ef,se,we]],[eg,[na,me,ef,se,we]],[ef,[co,na,sa,me,eg,ma]],[ma,[sa,ef]],[wa,[ea,ng,id]],[ea,[wa,ng]],[ng,[wa,ea,id]],[id,[wa,si,ng]],[ve,[br,ca,pe]],[br,[na,ve,ar,pe]],[ar,[br,pe]],[pe,[ve,br,ar]],[ab,[on,wu,nt,al]],[ca,[ve,eu,wu]],[eu,[ca,qu,on,wu]],[gr,[ic,qu,nt]],[qu,[eu,gr,on]],[on,[ab,eu,qu,wu,nt]],[wu,[ab,eu,ca,on]],[nt,[ab,gr,on,al]],[al,[ka,ab,nt]],[ne,[sc,uk,gb,se,we]],[sc,[ne,uk,gb]],[uk,[ne,sc,af,me,ur,se]],[ic,[gr,gb]],[gb,[ne,sc,ic,we]],[se,[ne,me,eg,uk,we]],[we,[ne,na,eg,gb,se]]],[[as,[ka,af,in,me,si,sb,mo,ir,ja,ya,ur,ch],7],[af,[co,sa,na,eg,ef,ma],3],[au,[wa,ea,ng,id],2],[sa,[ve,br,ar,pe],2],[na,[ab,ca,eu,gr,qu,on,wu,nt,al],5],[eu,[ne,sc,uk,ic,gb,se,we],5]]]
+% State = [[ea,br,gb,nt,ca,ve,on,ka,qu,me,id,ic,ma,sc,ur,ar,se,in,wu,si,ir,uk,eu,mo,ya,ng,ab,ch,wa,gr,ja,we,af,al,pe,eg,co,ef,na,sa,ne,sb],[1,4,1,1,1,1,1,1,4,1,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,1,1,1,1,1,4,1,1,1,1,1,7,1,1],[verde,amarelo,azul,azul,branco,amarelo,branco,preto,verde,preto,vermelho,vermelho,verde,verde,preto,preto,verde,branco,amarelo,branco,azul,azul,azul,preto,vermelho,amarelo,vermelho,azul,amarelo,branco,preto,verde,vermelho,preto,amarelo,verde,azul,vermelho,vermelho,branco,amarelo,branco],[branco,amarelo,verde,azul,preto,vermelho],[[conts,1,eu,sa],[kill,preto],[conts,0,as,sa],[kill,vermelho],[conts,0,as,af],[conts,1,eu,au]],branco,1,attacking,0,[],[1,4,1,1,1,1,1,1,4,1,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,1,1,1,1,1,4,1,1,1,1,1,7,1,1]]
 
 %
 % vim: filetype=prolog et sw=4 ts=4 sts=4
