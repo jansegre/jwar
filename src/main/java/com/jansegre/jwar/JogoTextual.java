@@ -32,10 +32,15 @@ import java.util.Set;
 public abstract class JogoTextual {
     protected Jogo jogo;
 
-    protected JogoTextual() {
+    public JogoTextual() {
+        setJogo(null);
     }
 
     public JogoTextual(Jogo jogo) {
+        setJogo(jogo);
+    }
+
+    public void setJogo(Jogo jogo) {
         this.jogo = jogo;
     }
 
@@ -83,7 +88,7 @@ public abstract class JogoTextual {
         if (command.length <= 0)
             return true;
         try {
-            switch (command[0]) {
+            switch (command[0].toLowerCase()) {
                 case "cur":
                 case "current":
                 case "atual":
@@ -284,6 +289,7 @@ public abstract class JogoTextual {
                     output(defensor.showShortSummary());
                     break;
                 case "oc":
+                case "occ":
                 case "ocupar":
                 case "occupy":
                     if (command.length > 2) {

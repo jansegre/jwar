@@ -33,4 +33,9 @@ public class ConquistarMundo extends Objetivo {
                 return false;
         return true;
     }
+
+    @Override
+    public String toPrologString() {
+        return "[world]";
+    }
 }

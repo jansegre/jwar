@@ -56,4 +56,12 @@ public class DerrotarJogador extends Objetivo {
 
         return true;
     }
+
+    @Override
+    public String toPrologString() {
+        if (dono.getCor() == corInimigo || !getTabuleiro().getCores().contains(corInimigo)) {
+            return alternativo.toPrologString();
+        }
+        return "[kill," + this.corInimigo.toString().toLowerCase() + "]";
+    }
 }

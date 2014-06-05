@@ -25,7 +25,8 @@ public class CommandObject {
         LEAVE,
         COMMAND,
         CREATE,
-        RESTART
+        RESTART,
+        DESTROY
     }
 
     public CommandObject() {

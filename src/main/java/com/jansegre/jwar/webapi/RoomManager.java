@@ -32,7 +32,7 @@ import java.util.Map;
 public class RoomManager extends JogoTextual implements DataListener<CommandObject> {
 
     private SocketIOServer server;
-    Map<String, Room> roomMap;
+    public Map<String, Room> roomMap;
 
     public RoomManager(Map<String, Room> roomMap, SocketIOServer server) {
         this.roomMap = roomMap;
@@ -48,6 +48,14 @@ public class RoomManager extends JogoTextual implements DataListener<CommandObje
                 createRoom(roomName);
                 cmd.room = roomName;
                 client.sendJsonObject(cmd);
+                break;
+
+            case DESTROY:
+                //TODO: implement
+                break;
+
+            case RESTART:
+                //TODO: implement
                 break;
 
             case JOIN:
@@ -75,9 +83,14 @@ public class RoomManager extends JogoTextual implements DataListener<CommandObje
                 flushToRoom(cmd.room);
 
                 // update everyone's state
-                server.getRoomOperations(cmd.room).sendJsonObject(new StateObject(jogo));
+                pushStateToRoom(cmd.room, jogo);
+
                 break;
         }
+    }
+
+    public void pushStateToRoom(String roomName, Jogo jogo) {
+        server.getRoomOperations(roomName).sendJsonObject(new StateObject(jogo));
     }
 
     private void createRoom(String roomName) {

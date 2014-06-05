@@ -77,4 +77,18 @@ public class ConquistarContinentes extends Objetivo {
             return true;
         }
     }
+
+    @Override
+    public String toPrologString() {
+        String out = "[conts,";
+        out += minExtraContinentes + ",";
+        for (Iterator<Continente> continenteIterator = continentes.iterator(); continenteIterator.hasNext();) {
+            Continente continente = continenteIterator.next();
+            out += continente.getCodigo().toLowerCase();
+            if (continenteIterator.hasNext())
+                out += ",";
+        }
+        out += "]";
+        return out;
+    }
 }

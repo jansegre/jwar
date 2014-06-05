@@ -49,4 +49,6 @@ public abstract class Objetivo {
     public String toString() {
         return description;
     }
+
+    public String toPrologString() { return "[unknown]"; }
 }

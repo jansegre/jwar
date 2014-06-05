@@ -46,4 +46,9 @@ public class ConquistarNPaises extends Objetivo {
                 count++;
         return count >= nPaises;
     }
+
+    @Override
+    public String  toPrologString() {
+        return "[min," + nPaises + "," + minExercitos + "]";
+    }
 }

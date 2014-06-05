@@ -23,13 +23,14 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.Delimiters;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ import java.util.Map;
 
 public class ApiServer extends SocketIOServer {
 
-    private final Map<String, Room> roomMap;
+    private final RoomManager roomManager;
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final ApiSocket apiSocket;
     private final int apiPort = 4242;
@@ -49,7 +50,7 @@ public class ApiServer extends SocketIOServer {
     public ApiServer(Configuration configuration, boolean useSocketApi) {
         super(configuration);
         super.setPipelineFactory(new ApiInitializer());
-        roomMap = new HashMap<>();
+        roomManager = new RoomManager(new HashMap<String, Room>(), this);
 
         // Criar um jogo, por enquanto igual ao em Application
         //jogo = new Jogo(Arrays.asList(Cor.AZUL, Cor.VERMELHO, Cor.AMARELO, Cor.PRETO, Cor.VERDE, Cor.BRANCO), new RiskSecretMission());
@@ -106,14 +107,14 @@ public class ApiServer extends SocketIOServer {
             @Override
             public void onConnect(SocketIOClient client) {
                 // Send the room list
-                client.sendJsonObject(roomMap.keySet());
+                client.sendJsonObject(roomManager.roomMap.keySet());
                 //client.sendJsonObject(new StateObject(jogo, true));
             }
         });
-        apiServer.addJsonObjectListener(CommandObject.class, new RoomManager(roomMap, self));
+        apiServer.addJsonObjectListener(CommandObject.class, roomManager);
 
         if (useSocketApi) {
-            apiSocket = new ApiSocket(roomMap);
+            apiSocket = new ApiSocket(roomManager);
         } else {
             apiSocket = null;
         }
@@ -131,7 +132,17 @@ public class ApiServer extends SocketIOServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(apiSocket);
+                            ChannelPipeline pipeline = ch.pipeline();
+
+                            // Add the text line codec combination first,
+                            pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
+                            // the encoder and decoder are static as these are sharable
+                            pipeline.addLast("decoder", new StringDecoder());
+                            pipeline.addLast("encoder", new StringEncoder());
+
+                            // and then business logic.
+                            pipeline.addLast("handler", apiSocket);
+
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

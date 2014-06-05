@@ -110,6 +110,8 @@ public final class Jogo {
         this.jogoComecou = false;
         this.exercitosMovidos = new HashMap<>();
         this.exercitosNoContinente = new HashMap<>();
+        this.paisAtaque = null;
+        this.paisDefesa = null;
 
         // jogadores
         List<Jogador> jogadores = new LinkedList<>();
@@ -387,7 +389,7 @@ public final class Jogo {
     }
 
     public int getExercitosParaDistribuir() {
-        verificarEstado(Estado.REFORCANDO_TERRITORIOS, Estado.DISTRIBUICAO_INICIAL);
+        //verificarEstado(Estado.REFORCANDO_TERRITORIOS, Estado.DISTRIBUICAO_INICIAL);
         return exercitosParaDistribuir;
     }
 
@@ -444,6 +446,14 @@ public final class Jogo {
     private List<Integer> dadosAtaque, dadosDefesa;
     private int casualidadesAtaque, casualidadesDefesa, maxOcupar;
     private Pais paisAtaque, paisDefesa;
+
+    public Pais getPaisAtaque() {
+        return paisAtaque;
+    }
+
+    public Pais getPaisDefesa() {
+        return paisDefesa;
+    }
 
     public int getCasualidadesAtaque() {
         return casualidadesAtaque;
