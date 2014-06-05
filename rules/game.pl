@@ -267,8 +267,7 @@ transition([place, T], S, Ns, 1.0) :-
 transition([place, T], S, Ns, 1.0) :-
     getall([round, stage, to_place], [0, placing, 1], S),
     transition_([place, T], [S, Sp]),
-    set(stage, attacking, Sp, Spp),
-    transition_([next], [Spp, Ns]).
+    transition_([next], [Sp, Ns]).
 % attack Tdef from Tatk, leading to an occupation
 transition([attack, Tdef, Tatk], S, Ns, 1.0) :-
     getall([stage, player], [attacking, Player], S),
@@ -284,8 +283,6 @@ transition([roll], S, Ns, P) :-
     transition_([attack, Tdef, Tatk], [S, Sp, P, _]),
     armies(0, Tdef, Sp),
     get(player, Player, S),
-    %add_armies(-Satk, Tatk, Sp, Sp2),
-    %add_armies(Satk, Tdef, Sp2, Sp3),
     set_owner(Player, Tdef, Sp, Sp4),
     set(stage, occupying, Sp4, Ns).
 % attack Tdef from Tatk, not leading to an occupation
@@ -315,9 +312,7 @@ transition([move, Torig, Tdest], S, Ns, 1.0) :-
     owner(Player, Torig, S),
     neighbours(Torig, Tdest),
     owner(Player, Tdest, S),
-    %Torig \== Tdest,
     prev_armies(N, Torig, S), N > 1,
-    %format('~d~n', [N]),
     add_armies(-1, Torig, S, Sp),
     add_prev_armies(-1, Torig, Sp, Spp),
     add_armies(1, Tdest, Spp, Ns).
@@ -466,7 +461,17 @@ play_loop(G, P, S) :-
     flush_output,
     play_loop(G, P, simple).
 
-step(simple, S, T) :- transition(T, S, _, _), !.
+step(simple, S, T) :-
+    transition(T, S, _, _),
+    !.
+
+:- use_module(library(random)).
+step(random, S, T) :-
+    findall(Tp, transition(Tp, S, _, _), Tlist),
+    write(Tlist), nl,
+    random_member(T, Tlist),
+    !.
+
 
 
 % Load samples
