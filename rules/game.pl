@@ -15,7 +15,7 @@
  * along with this program.
  *
  */
-:- module(game, [get/3, getall/3, set/4, setall/4, territory/1, neighbours/2, continent/1, territory_continent/2, player/2, owner/3, armies/3, min_armies/3, objective/3, satisfies/2, initial_round/1, next_player/2, transition/4, possible/2]).
+:- module(game, [get/3, getall/3, set/4, setall/4, territory/1, neighbours/2, continent/1, territory_continent/2, player/2, owner/3, armies/3, min_armies/3, objective/3, satisfies/2, evaluate/3, initial_round/1, next_player/2, transition/4, possible/2, play/3]).
 
 %
 % sample:
@@ -110,6 +110,8 @@ load_map([T, C]) :-
     retractall(c(_, _, _)),
     maplist(addt_, T),
     maplist(addc_, C).
+
+:- use_module(library(aggregate)).
 % o(objective, player, special_args, state).
 % world domination, no args
 o(world, _, _, [_, _, [] | _]).
@@ -128,6 +130,27 @@ o(conts, _, [_], _).
 o(conts, X, [Na, C | Lc], S) :- findall(T, territory_continent(T, C), Lt), findall(T, owner(X, T, S), Lt), o(conts, X, [Na | Lc], S).
 % to be used in the future
 o(unknown, _, _, _).
+% v(objective, player, special_args, state, evaluation).
+v(world, X, _, S, V) :-
+    aggregate_all(count, disowner(X, _, S), V).
+v(min, X, [Nt, Na], S, V) :-
+    aggregate_all(count,
+        (owner(X, T, S), armies(N, T, S), N >= Na), Nx),
+    V is Nt - Nx.
+v(min, X, [Nt], S, V) :- v(min, X, [Nt, 1], S, V).
+v(kill, _, [Y], S, V) :- aggregate_all(count, owner(Y, _, S), V).
+v(conts, X, [Nex | Cons], S, V) :-
+    aggregate_all(sum(Pv), (member(C, Cons), aggregate_all(count, (territory_continent(T, C), disowner(X, T, S)), Pv)), V1),
+    (Nex > 0 *->
+        findall(Pc, (continent(C), not(member(C, Cons)), aggregate_all(count, (territory_continent(T, C), disowner(X, T, S)), Pc)), Pl),
+        msort(Pl, Pls),
+        length(Plm, Nex),
+        append(Plm, _, Pls),
+        sum_list(Plm, V2);
+    V2 is 0),
+    V is V1 + V2.
+%TODO: what about evaluation of unkown? fallback to world?
+v(unknown, X, _, S, V) :- v(world, X, _, S, V).
 
 % territory(?Territor)
 territory(X) :- t(X, _).
@@ -151,6 +174,10 @@ player(X, [_, _, _, P | _]) :- member(X, P).
 % owner(?Player, ?Territory, +State)
 owner(P, T, [[T | _], _, [P | _] | _]).
 owner(P, T, [[_ | L], _, [_ | M] | _]) :- owner(P, T, [L, _, M | _]).
+
+% disowner(?Player, ?Territory, +State)
+disowner(P, T, [[T | _], _, [Q | _] | _]) :- Q \= P.
+disowner(P, T, [[_ | L], _, [_ | M] | _]) :- disowner(P, T, [L, _, M | _]).
 
 % set_owner(+NewOwner, ?Territory, +State, -NewState)
 set_owner(P, T, S, Ns) :-
@@ -196,6 +223,9 @@ objective(P, O, [_, _, _, [_ | L], [_ | M] | _]) :- objective(P, O, [_, _, _, L,
 % checks if player P satisfies its objective
 satisfies(P, S) :- objective(P, [Obj | Args], S), o(Obj, P, Args, S).
 
+% evaluate(?Player, -Value, +State)
+evaluate(P, V, S) :- objective(P, [Ob | Args], S), v(Ob, P, Args, S, V).
+
 
 % next_player(?NextPlayer, +State)
 % next_player(?NextPlayer, -NextRound, +State)
@@ -233,9 +263,9 @@ transition_([place, T], [S, Ns]) :-
 transition_([attack, Tdef, Tatk], [S, Ns, P, Satk]) :-
     armies(Natk, Tatk, S),
     armies(Ndef, Tdef, S),
-    %XXX: the number of dices is fixed to the max possible
-    %     so the possibility tree doesn't expand too much,
-    %     but officially you could attack with less.
+    % the number of dices is fixed to the max possible
+    % so the possibility tree doesn't expand too much,
+    % in Risk rules you could attack with less.
     Datk is min(3, Natk - 1),
     Ddef is min(3, Ndef),
     prob(Datk, Ddef, Catk, Cdef, P),
@@ -245,7 +275,6 @@ transition_([attack, Tdef, Tatk], [S, Ns, P, Satk]) :-
     set(attack, [], Spp, Ns).
 % next player
 transition_([next], [S, Ns]) :-
-    %getall([stage, round], [moving, Round], S),
     get(round, Round, S),
     next_player(NPlayer, Radd, S),
     NRound is Round + Radd,
@@ -372,7 +401,9 @@ p(3, 3, 3, 0, 0.3830375514). % 17871 / 46656
 % The artificial intelligence(s)
 % ==============================
 
-% possible(+InitialState, +Depth, -TransitionPath, -FinalState)
+% Helper predicates to draw the state tree
+% ----------------------------------------
+
 :- use_module(library('http/json')).
 :- use_module(library('http/json_convert')).
 possible(S, 0, @null, S).
@@ -394,8 +425,11 @@ possible(S, D) :-
     json_write(Out, json([s=S, t=[''], children=Lt]), [step=4, tab=0]),
     close(Out).
 
-%expectmultimax
+% The ExpectMultiMax
+% ------------------
 
+% expectmultimax(+State, +Depth, -Transition)
+%expectmultimax(S, D, T) :-
 
 % Interfacing with the server
 % ===========================
@@ -478,7 +512,7 @@ step(random, S, T) :-
 % ============
 
 % uncomment to use sample map:
-%:- sample_map(M), load_map(M).
+:- sample_map(M), load_map(M).
 
 %
 % vim: filetype=prolog et sw=4 ts=4 sts=4
