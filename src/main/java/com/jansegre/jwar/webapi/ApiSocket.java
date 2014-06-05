@@ -52,13 +52,13 @@ public class ApiSocket extends SimpleChannelInboundHandler<String> {
         };
     }
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        // Send greeting for a new connection.
-        //ctx.write("[100, \"Welcome to JWar! It is " + new Date() + " now.\"].\r\n");
-        //ctx.flush();
-        log.info("Connected.");
-    }
+    //@Override
+    //public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    //    // Send greeting for a new connection.
+    //    //ctx.write("[100, \"Welcome to JWar! It is " + new Date() + " now.\"].\r\n");
+    //    //ctx.flush();
+    //    log.info("Connected.");
+    //}
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, String request) throws Exception {
@@ -73,8 +73,7 @@ public class ApiSocket extends SimpleChannelInboundHandler<String> {
         if (command.length > 1 && !roomMap.containsKey(command[1])) {
             responseCode = 404;
             response = "Jogo não encontrado.";
-            log.info("<= [" + responseCode + ", \"" + response + "\"].");
-            future = ctx.write("[" + responseCode + ", \"" + response + "\"].");
+            future = send(ctx, "[" + responseCode + ", \"" + response + "\"].");
         } else if (command.length == 2 && command[0].equalsIgnoreCase("state")) {
             Jogo jogo = roomMap.get(command[1]).jogo;
             // Send the game state formatted for the prolog engine
@@ -161,8 +160,7 @@ public class ApiSocket extends SimpleChannelInboundHandler<String> {
             }
             response += "]]";
             responseCode = 200;
-            log.info("Sending: [" + responseCode + ", " + response + "].");
-            future = ctx.write("[" + responseCode + ", " + response + "].");
+            future = send(ctx, "[" + responseCode + ", " + response + "].");
         } else if (command.length == 2 && command[0].equalsIgnoreCase("map")) {
             Jogo jogo = roomMap.get(command[1]).jogo;
             // Send the map formatted for the prolog engine
@@ -204,7 +202,7 @@ public class ApiSocket extends SimpleChannelInboundHandler<String> {
             }
             response += "]]";
             responseCode = 200;
-            future = ctx.write("[" + responseCode + ", " + response + "].");
+            future = send(ctx, "[" + responseCode + ", " + response + "].");
         } else if (command.length == 3 && command[0].equalsIgnoreCase("cmd")) {
             Jogo jogo = roomMap.get(command[1]).jogo;
             jogoTextual.setJogo(jogo);
@@ -234,12 +232,11 @@ public class ApiSocket extends SimpleChannelInboundHandler<String> {
                 jogoTextual.feedCommand(realCmd);
             }
             roomManager.pushStateToRoom(command[1], jogo);
-            log.info("Sending: [" + responseCode + ", \"" + response.trim().replaceAll("\n", ";") + "\"].");
-            future = ctx.write("[" + responseCode + ", \"" + response.trim().replaceAll("\n", ";") + "\"].");
+            future = send(ctx, "[" + responseCode + ", \"" + response.trim().replaceAll("\n", ";") + "\"].");
         } else {
             responseCode = 400;
-            response = "Comando inválido, formato: `<ROOM|MAP> <room number> [command]`.";
-            future = ctx.write("[" + responseCode + ", \"" + response + "\"].");
+            response = "Comando inválido, formato: `<CMD|MAP|STATUS> <room number> [command]`.";
+            future = send(ctx, "[" + responseCode + ", \"" + response + "\"].");
         }
 
         // We do not need to write a ChannelBuffer here.
@@ -247,6 +244,11 @@ public class ApiSocket extends SimpleChannelInboundHandler<String> {
 
         // Close connection after response is sent
         future.addListener(ChannelFutureListener.CLOSE);
+    }
+
+    private ChannelFuture send(ChannelHandlerContext ctx, String msg) {
+        log.info("<= {}", msg);
+        return ctx.write(msg);
     }
 
     @Override
