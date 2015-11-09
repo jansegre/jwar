@@ -1,6 +1,6 @@
 # JWar
 
-Jogo de War em Java.
+Jogo de [War](https://pt.wikipedia.org/wiki/War) ([Risk](https://en.wikipedia.org/wiki/Risk_(game))) em Java.
 
 Feito como trabalho da cadeira de Laboratório de Programação 2 do Instituo Militar de Engenharia.
 
